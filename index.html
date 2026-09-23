@@ -93,6 +93,11 @@
   .kontrol button { background: none; border: 1px solid var(--cizgi); padding: 9px 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
   .kontrol button:hover { border-color: var(--kemik); color: var(--kemik); }
   .kontrol svg { width: 14px; height: 14px; }
+  .ikinci { display: grid; gap: 4px; margin-top: 22px; padding: 18px 20px; border: 1px solid var(--pas); text-decoration: none; color: var(--kemik); background: linear-gradient(90deg, rgba(142, 42, 28, 0.18), transparent); }
+  .ikinci:hover { border-color: var(--pas-acik); background: linear-gradient(90deg, rgba(192, 69, 47, 0.28), transparent); }
+  .ikinci-etiket { font: 700 0.7rem/1 var(--f-mono); letter-spacing: 0.26em; color: var(--pas-acik); }
+  .ikinci-baslik { font: 400 clamp(1.8rem, 5vw, 2.6rem)/1 var(--f-baslik); letter-spacing: 0.04em; }
+  .ikinci-alt { font: italic 400 1rem/1.4 var(--f-metin); color: #bdb7aa; }
   .serit { flex: 1 1 180px; height: 3px; background: var(--cizgi); min-width: 120px; }
   .serit i { display: block; height: 100%; width: 0; background: var(--pas-acik); }
   .sure { font-variant-numeric: tabular-nums; color: var(--kemik); }
@@ -167,6 +172,11 @@
     <label class="anahtar"><input type="checkbox" id="ortamAcik" checked> Ortam sesi</label>
     <button type="button" id="sesDurum" class="ses-durum" data-durum="kapali" title="Ses durumu; ses gelmiyorsa dokunun"><span class="vu" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span id="sesYazi">Ses kapalı</span></button>
   </div>
+  <a class="ikinci" href="fragman2.html">
+    <span class="ikinci-etiket">YENİ · İKİNCİ KAYIT</span>
+    <span class="ikinci-baslik">KAFES II</span>
+    <span class="ikinci-alt">Gerçek şempanze kamera tuzağı görüntülerinden kurgulanan ikinci fragman →</span>
+  </a>
 </section>
 
 <main lang="tr">

@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KAFES II</title>
+<meta name="description" content="KAFES II: ikinci kayıt. Gerçek şempanze kamera tuzağı görüntülerinden kurgulanmış kurgusal korku fragmanı.">
+<style>
+  :root {
+    color-scheme: dark;
+    --kara: #060708;
+    --kemik: #d8d2c4;
+    --soluk: #8d8a82;
+    --pas: #8e2a1c;
+    --pas-acik: #c0452f;
+    --ir: #86c98f;
+    --cizgi: rgba(216, 210, 196, 0.13);
+    --f-baslik: Impact, Haettenschweiler, "Arial Narrow Bold", "Franklin Gothic Heavy", sans-serif;
+    --f-metin: Georgia, "Times New Roman", serif;
+    --f-mono: "Courier New", Courier, ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; background: var(--kara); }
+  body { color: var(--kemik); font: 400 1.05rem/1.7 var(--f-metin); -webkit-font-smoothing: antialiased; padding-bottom: env(safe-area-inset-bottom, 0px); }
+  a { color: var(--ir); text-underline-offset: 3px; }
+  a:hover { color: var(--kemik); }
+  :focus-visible { outline: 2px solid var(--pas-acik); outline-offset: 3px; }
+  .kap { max-width: 1080px; margin-inline: auto; padding-inline: 18px; }
+  header { padding-block: 34px 22px; }
+  .geri { font: 700 0.75rem/1 var(--f-mono); letter-spacing: 0.2em; text-transform: uppercase; color: var(--soluk); text-decoration: none; }
+  .geri:hover { color: var(--kemik); }
+  .ust-not { font: 700 0.7rem/1 var(--f-mono); letter-spacing: 0.28em; color: var(--ir); margin: 22px 0 12px; }
+  h1 { margin: 0; font: 400 clamp(3.6rem, 14vw, 9rem)/0.85 var(--f-baslik); letter-spacing: 0.02em; text-transform: uppercase; }
+  h1 span { color: var(--pas); }
+  .slogan { margin: 14px 0 0; font: italic 400 clamp(1.05rem, 2.2vw, 1.35rem)/1.4 var(--f-metin); color: #b9b2a3; max-width: 52ch; }
+
+  .oynatici { position: relative; aspect-ratio: 16 / 9; width: 100%; max-width: 100%; background: #000; border: 1px solid var(--cizgi); }
+  .oynatici video { position: absolute; inset: 0; width: 100%; height: 100%; display: block; background: #000; }
+  .perde {
+    position: absolute; inset: 0; display: grid; place-items: center; padding: 22px; text-align: center;
+    background: linear-gradient(rgba(6,7,8,0.45), rgba(6,7,8,0.88));   /* altta kapak görseli görünür */
+  }
+  .perde-ic { max-width: 520px; }
+  .perde h2 { margin: 0 0 10px; font: 400 clamp(1.4rem, 4vw, 2.2rem)/1.05 var(--f-baslik); letter-spacing: 0.05em; text-transform: uppercase; }
+  .perde p { margin: 0 0 18px; color: #c9c3b5; font-size: 0.98rem; }
+  .dugme {
+    display: inline-flex; align-items: center; gap: 10px; cursor: pointer;
+    border: 1px solid var(--kemik); background: var(--kemik); color: var(--kara);
+    padding: 13px 20px; font: 700 0.85rem/1 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .dugme:hover { background: var(--pas-acik); border-color: var(--pas-acik); color: var(--kemik); }
+  .dugme svg { width: 14px; height: 14px; }
+  .alt-bilgi { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 18px; padding: 10px 0 0; font: 400 0.8rem/1.5 var(--f-mono); color: var(--soluk); }
+
+  main { padding-block: 40px 70px; }
+  section { display: grid; grid-template-columns: minmax(0, 0.75fr) minmax(0, 2fr); gap: 16px 56px; padding-block: 48px; border-top: 1px solid var(--cizgi); }
+  h2.bb { margin: 0; font: 400 clamp(1.6rem, 3.2vw, 2.4rem)/1 var(--f-baslik); letter-spacing: 0.05em; text-transform: uppercase; }
+  .govde > * { max-width: 66ch; }
+  .govde p { margin: 0 0 1em; }
+  .kaynaklar { margin: 0; padding-left: 1.3em; display: grid; gap: 12px; font-size: 0.95rem; }
+  .kaynaklar li::marker { color: var(--ir); font-family: var(--f-mono); }
+  .kaynaklar .lisans { font: 400 0.8rem var(--f-mono); color: var(--soluk); }
+  footer { border-top: 1px solid var(--cizgi); color: var(--soluk); font-size: 0.85rem; padding-block: 28px 44px; }
+  footer p { margin: 0 0 8px; max-width: 80ch; }
+  @media (max-width: 760px) { section { grid-template-columns: minmax(0, 1fr); padding-block: 36px; } }
+</style>
+</head>
+<body>
+<header class="kap">
+  <a class="geri" href="index.html">← KAFES</a>
+  <p class="ust-not">İKİNCİ KAYIT · KAMERA TUZAĞI GÖRÜNTÜLERİ · 01:13</p>
+  <h1>Kafes <span>II</span></h1>
+  <p class="slogan">Kamerayı onlar buldu.</p>
+</header>
+
+<div class="kap">
+  <div class="oynatici">
+    <video id="video" playsinline preload="metadata" poster="kafes2-kapak.jpg" aria-label="KAFES II fragmanı">
+      <source src="kafes2.mp4" type="video/mp4">
+      Tarayıcınız bu videoyu oynatamıyor. <a href="kafes2.mp4">Videoyu doğrudan açın.</a>
+    </video>
+    <div class="perde" id="uyari">
+      <div class="perde-ic">
+        <h2>Uyarı: yüksek ses ve ani korkutma</h2>
+        <p>Bu fragman yüksek sesler, çığlıklar, ani bir korkutma anı (1:02 civarı) ve ışık titremeleri içerir. Ses açıkken izlemek için tasarlandı.</p>
+        <button class="dugme" type="button" id="izle"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>Sesli izle</button>
+      </div>
+    </div>
+  </div>
+  <div class="alt-bilgi"><span>480p · 73 sn · kulaklıkla izleyin</span><span>Fragman lisansı: <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.tr" target="_blank" rel="noopener">CC BY-SA 4.0</a></span></div>
+</div>
+
+<main class="kap">
+  <section aria-labelledby="h-ne">
+    <h2 class="bb" id="h-ne">Bu görüntüler</h2>
+    <div class="govde">
+      <p>Fragmandaki şempanzelerin hepsi gerçek. Görüntülerin çoğu, vahşi şempanzeleri incelemek için Batı Afrika ormanlarına kurulmuş bilimsel kamera tuzaklarından geliyor. Bu kayıtlarda iri erkek şempanzeler, taş fırlatarak ve ağaçlara vurarak tehdit gösterisi yapıyor. Bu, gerçek bir davranış.</p>
+      <p>Yüz yakın planları ve tel örgü arkasındaki bakış hayvanat bahçesi kayıtlarından, son yüz ise Uganda'da çekilmiş bir fotoğraftan. Hikâye, tarihler, "istasyon" ve yazı kartları tamamen kurgudur; görüntüler gece kamerası görünümü için renklendirildi, kırpıldı ve kurgulandı.</p>
+      <p>Keman müziği ve korku sesleri kod ile sentezlendi (Claude). Kamera tuzağı kayıtlarındaki vuruş ve kıpırtı sesleri orijinal.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-kaynak">
+    <h2 class="bb" id="h-kaynak">Kaynaklar ve lisanslar</h2>
+    <div class="govde">
+      <ol class="kaynaklar">
+        <li>Kamera tuzağı kayıtları (s3, s4, s5, s7): Kühl HS, Kalan AK, Arandjelovic M ve ark., MPI-EVA PanAf / Chimbo Foundation. <i>Chimpanzee accumulative stone throwing.</i> Scientific Reports 6, 22219 (2016). <a href="https://doi.org/10.1038/srep22219" target="_blank" rel="noopener">doi:10.1038/srep22219</a> · Wikimedia Commons:
+          <a href="https://commons.wikimedia.org/wiki/File:Chimpanzee-accumulative-stone-throwing-srep22219-s3.ogv" target="_blank" rel="noopener">s3</a>,
+          <a href="https://commons.wikimedia.org/wiki/File:Chimpanzee-accumulative-stone-throwing-srep22219-s4.ogv" target="_blank" rel="noopener">s4</a>,
+          <a href="https://commons.wikimedia.org/wiki/File:Chimpanzee-accumulative-stone-throwing-srep22219-s5.ogv" target="_blank" rel="noopener">s5</a>,
+          <a href="https://commons.wikimedia.org/wiki/File:Chimpanzee-accumulative-stone-throwing-srep22219-s7.ogv" target="_blank" rel="noopener">s7</a>
+          <br><span class="lisans"><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> · değişiklik: kırpma (filigran alanı), renk, kurgu, zaman damgası</span></li>
+        <li>Hayvanat bahçesi kayıtları: NaIzletuSi, Ljubljana Hayvanat Bahçesi (2023). Wikimedia Commons:
+          <a href="https://commons.wikimedia.org/wiki/File:2023-08-18_ZOO_LJUBLJANA_-_Pan_troglodytes_3.webm" target="_blank" rel="noopener">3</a>,
+          <a href="https://commons.wikimedia.org/wiki/File:2023-08-18_ZOO_LJUBLJANA_-_Pan_troglodytes_4.webm" target="_blank" rel="noopener">4</a>,
+          <a href="https://commons.wikimedia.org/wiki/File:2023-08-18_ZOO_LJUBLJANA_-_Pan_troglodytes_6.webm" target="_blank" rel="noopener">6</a>
+          <br><span class="lisans"><a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener">CC BY 3.0</a> · değişiklik: kırpma, yakınlaştırma, renk, hız, kurgu</span></li>
+        <li>Son yüz: Rod Waddington, <i>Chimpanzee, Kibale, Uganda.</i> <a href="https://commons.wikimedia.org/wiki/File:Chimpanzee,_Kibale,_Uganda_(23022998774).jpg" target="_blank" rel="noopener">Wikimedia Commons</a>
+          <br><span class="lisans"><a href="https://creativecommons.org/licenses/by-sa/2.0/" target="_blank" rel="noopener">CC BY-SA 2.0</a> · değişiklik: kırpma, renk, hareketlendirme</span></li>
+      </ol>
+      <p style="margin-top:1.2em">Fragman, bu kaynakların türetilmiş bir eseridir ve <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.tr" target="_blank" rel="noopener">CC BY-SA 4.0</a> ile paylaşılır. Kaynakların sahipleri bu kurguyu onaylamış değildir.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="kap">
+  <p><strong>KAFES II bir kurgudur.</strong> Kişiler, yerler ve olaylar hayal ürünüdür; gösterilen şempanzeler gerçek hayvanlardır ve hiçbirine zarar verilmemiştir.</p>
+  <p>Gerçek şempanzeler nesli tehlikede olan, korunması gereken hayvanlardır.</p>
+</footer>
+
+<script>
+(() => {
+  const video = document.getElementById("video");
+  const perde = document.getElementById("uyari");
+  document.getElementById("izle").addEventListener("click", () => {
+    perde.hidden = true;
+    video.controls = true;
+    video.muted = false;
+    video.volume = 1;
+    const p = video.play();
+    if (p && p.catch) p.catch(() => { video.controls = true; });
+    video.focus();
+  });
+})();
+</script>
+</body>
+</html>
