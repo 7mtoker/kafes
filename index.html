@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>KAFES</title>
 <meta name="description" content="KAFES: kurgusal bir korku filmi. Fragmandaki her görüntü ve ses bu sayfanın kodunda gerçek zamanlı üretilir.">
 <style>
@@ -760,7 +761,7 @@
   }
   float golge(vec3 p, vec3 L, float mx){
     float g = 1.0, t = 0.03;
-    for(int i=0;i<14;i++){
+    for(int i=0;i<8;i++){
       float h = disKabuk(p + L*t).x;
       g = min(g, 10.0*h/t);
       t += clamp(h, 0.03, 0.5);
@@ -770,7 +771,7 @@
   }
   float ao(vec3 p, vec3 n){
     float o = 0.0, w = 1.0;
-    for(int i=1;i<=3;i++){ float hh = 0.05*float(i); o += (hh - disKabuk(p+n*hh).x)*w; w *= 0.6; }
+    for(int i=1;i<=2;i++){ float hh = 0.06*float(i); o += (hh - disKabuk(p+n*hh).x)*w; w *= 0.6; }
     return clamp(1.0 - 2.2*o, 0.0, 1.0);
   }
 
@@ -823,9 +824,9 @@
 
   vec3 sacilma(vec3 ro, vec3 rd, float tmax, float j){
     float tm = max(0.0, min(tmax, 16.0) - 0.7);
-    float dt = tm/10.0;
+    float dt = tm/5.0;
     vec3 s = vec3(0.0);
-    for(int i=0;i<10;i++){
+    for(int i=0;i<5;i++){
       float tt = 0.7 + (float(i) + j)*dt;
       vec3 p = ro + rd*tt;
       vec3 L; float dl; float I = fener(p, L, dl);
@@ -848,12 +849,12 @@
     for(int gecis=0; gecis<3; gecis++){
       vec3 m = vec3(1e3, -1.0, 0.0);
       bool vur = false;
-      for(int i=0;i<110;i++){
+      for(int i=0;i<72;i++){
         vec3 p = ro + rd*t;
         m = disKabuk(p);
-        if(m.y > -0.5 && m.x < 0.0012*t + 0.0006){ vur = true; break; }
-        t += m.x*0.92;
-        if(t > 40.0) break;
+        if(m.y > -0.5 && m.x < 0.0015*t + 0.0008){ vur = true; break; }
+        t += m.x*0.95;
+        if(t > 28.0) break;
       }
       if(!vur){ tSon = 40.0; break; }
       tSon = t;
@@ -874,9 +875,9 @@
         vec3 L; float dl; float I = fener(p, L, dl);
         float gl = I > 0.002 ? golge(p + n0*0.05, L, dl) : 1.0;
         float fl = KURK*uKurk[k];
-        float adim = fl/9.0;
+        float adim = fl/5.0;
         bool deri = false;
-        for(int s=0; s<16; s++){
+        for(int s=0; s<8; s++){
           vec3 q = ro + rd*t;
           vec2 c = sempanze(k, q);
           if(c.x < 0.0015){ deri = true; break; }
@@ -884,7 +885,7 @@
           if(x >= 0.999 && s > 1) break;
           float tel = gur(vec3(dot(q,B)*240.0, dot(q,C)*240.0, dot(q,hk)*22.0));
           float yog = smoothstep(0.52, 0.8, tel)*(1.0-x)*2.4 + (1.0-x)*(1.0-x)*0.7;
-          float a = 1.0 - exp(-yog*adim*150.0);
+          float a = 1.0 - exp(-yog*adim*190.0);
           vec3 kc = kilRenk(q, n0, rd, x, gl)*exp(-uSis*t);
           renk += (1.0-alfa)*a*kc; alfa += (1.0-alfa)*a;
           if(alfa > 0.97) break;
@@ -949,9 +950,12 @@
       this.J = new Float32Array(96); this.HF = new Float32Array(6); this.HU = new Float32Array(6); this.FW = new Float32Array(6);
       this.S = new Float32Array(8);
     }
-    ciz(d, olcek) {
+    /* piksel: çizilecek toplam piksel sayısı (bütçe). Ekran ne kadar büyük olursa olsun GPU yükü sabit kalır. */
+    ciz(d, piksel) {
       const gl = this.gl, u = this.u, tv = this.tuval;
-      const w = Math.max(64, Math.round(tv.clientWidth * olcek)), h = Math.max(36, Math.round(tv.clientHeight * olcek));
+      if (gl.isContextLost()) return;
+      const oran = (tv.clientWidth || 16) / (tv.clientHeight || 9);
+      const w = Math.max(96, Math.round(Math.sqrt(piksel * oran))), h = Math.max(54, Math.round(w / oran));
       if (tv.width !== w || tv.height !== h) { tv.width = w; tv.height = h; }
       gl.viewport(0, 0, w, h);
       if (d.siyah) { gl.clearColor(0, 0, 0, 1); gl.clear(gl.COLOR_BUFFER_BIT); return; }
@@ -1248,18 +1252,34 @@
   }
 
   /* ======================= Oynatıcı ======================= */
+  /* GPU güvenliği: çizim yalnızca fragman oynarken ve ekranda görünürken yapılır,
+     saniyede en fazla 20 kare, sabit piksel bütçesiyle. Kareler çok yavaşlarsa
+     bütçe düşer; cihaz yine yetişemezse görüntü durur, ses devam eder. */
+  const PIKSEL_EN_AZ = 192 * 108, PIKSEL_EN_COK = 384 * 216, KARE_ARASI = 50;
   const tuval = document.getElementById("tuval");
-  let cizici = null;
-  try { cizici = new Cizici(tuval); } catch (e) {
+  let cizici = null, cizimKapali = false;
+  function cizimiDurdur(neden) {
+    if (cizimKapali) return;
+    cizimKapali = true;
     const div = document.createElement("div"); div.className = "webgl-yok";
-    div.textContent = "Bu tarayıcı WebGL2 desteklemiyor; fragman çizilemiyor. (" + String(e.message).slice(0, 120) + ")";
+    div.textContent = neden;
     document.getElementById("fragman").append(div);
-    console.error(e);
   }
+  function ciziciAl() {
+    if (cizici || cizimKapali) return cizici;
+    try { cizici = new Cizici(tuval); } catch (e) {
+      console.error(e);
+      cizimiDurdur("Bu tarayıcıda WebGL2 çalışmıyor; görüntü çizilemiyor, ses devam ediyor.");
+    }
+    return cizici;
+  }
+  tuval.addEventListener("webglcontextlost", (e) => { e.preventDefault(); cizimiDurdur("Ekran kartı çizimi durdurdu. Bilgisayarınızı korumak için görüntü kapatıldı; ses devam ediyor."); });
+  let fragmanGorunur = true;
+  new IntersectionObserver((g) => { fragmanGorunur = g[0].isIntersecting; }).observe(document.getElementById("fragman"));
   const korkuKutusu = document.getElementById("korkutmaAcik");
   const kartEl = document.getElementById("kart");
   const oy = { calis: false, T0: 0, durdu: 0, bitti: false };
-  let olcek = 0.5, sonKare = performance.now(), ortalama = 16;
+  let piksel = 320 * 180, sonCizim = 0, ortalama = 50, agirKare = 0;
 
   function suan() {
     if (!A) return 0;
@@ -1309,19 +1329,24 @@
   korkuKutusu.addEventListener("change", () => { if (A && oy.T0 && !oy.bitti) { const t = suan(); oy.T0 = A.ctx.currentTime - t; } });
 
   function dongu(now) {
-    const dt = now - sonKare; sonKare = now;
-    ortalama = ortalama * 0.92 + dt * 0.08;
-    if (ortalama > 40 && olcek > 0.3) olcek -= 0.01;
-    else if (ortalama < 22 && olcek < 0.62) olcek += 0.004;
     const t = suan();
     if (oy.calis && t >= ZAMAN.sure) { oy.calis = false; oy.bitti = true; oy.durdu = ZAMAN.sure; arayuz(); }
-    if (cizici && A && oy.T0) {
+    const cizilsin = oy.calis && fragmanGorunur && !document.hidden && !cizimKapali && now - sonCizim >= KARE_ARASI;
+    if (cizilsin && ciziciAl()) {
+      const dt = sonCizim ? now - sonCizim : KARE_ARASI;
+      sonCizim = now;
+      if (dt < 1000) {
+        ortalama = ortalama * 0.85 + dt * 0.15;
+        if (ortalama > 80) piksel = Math.max(PIKSEL_EN_AZ, piksel * 0.9);
+        else if (ortalama < 58) piksel = Math.min(PIKSEL_EN_COK, piksel * 1.02);
+        agirKare = dt > 500 ? agirKare + 1 : Math.max(0, agirKare - 0.25);
+        if (agirKare >= 3 && piksel <= PIKSEL_EN_AZ * 1.01) cizimiDurdur("Bu cihaz görüntüyü yeterince hızlı çizemiyor. Bilgisayarınızı yormamak için görüntü durduruldu; ses devam ediyor.");
+        else if (agirKare >= 3) { piksel = PIKSEL_EN_AZ; agirKare = 0; }
+      }
       const d = durumAl(Math.min(t, ZAMAN.sure - 0.001));
-      cizici.ciz(d, olcek);
-    } else if (cizici && !A) {
-      const d = durumAl(8.5 + (now / 1000) % 6);
-      d.isik = 11;
-      cizici.ciz(d, 0.35);
+      if (!cizimKapali) cizici.ciz(d, piksel);
+    } else if (!oy.calis) {
+      sonCizim = 0;
     }
     kartGuncelle(A && oy.T0 ? t : -1);
     document.getElementById("serit").style.width = ((t / ZAMAN.sure) * 100).toFixed(2) + "%";
@@ -1347,7 +1372,7 @@
   const sonKayit = document.getElementById("sonKayit");
   let korkuOldu = false, korkuSayac = null, korkuCizici = null;
   function sayfaKorkusu() {
-    if (korkuOldu || !korkuKutusu.checked || !A) return;
+    if (korkuOldu || !korkuKutusu.checked || !A || cizimKapali) return;
     korkuOldu = true;
     const kap = document.getElementById("korkutma");
     kap.hidden = false;
@@ -1364,7 +1389,7 @@
         if (lt > 0.95) { kap.hidden = true; return; }
         const d = sYuz(Math.min(0.85, lt + 0.14));
         d.t = 68 + lt; d.sahne = "yuz";
-        korkuCizici.ciz(d, 0.4);
+        korkuCizici.ciz(d, PIKSEL_EN_AZ * 1.5);
         requestAnimationFrame(kare);
       };
       requestAnimationFrame(kare);
