@@ -98,6 +98,10 @@
   .sure { font-variant-numeric: tabular-nums; color: var(--kemik); }
   .anahtar { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
   .anahtar input { accent-color: var(--pas-acik); width: 16px; height: 16px; }
+  .ses-durum .vu { display: inline-flex; align-items: end; gap: 2px; height: 12px; }
+  .ses-durum .vu i { width: 3px; height: 3px; background: var(--soluk); transition: height 0.08s linear; }
+  .ses-durum[data-durum="acik"] .vu i { background: var(--pas-acik); }
+  .ses-durum[data-durum="kapali"] { border-color: var(--pas-acik); color: var(--kemik); }
 
   /* ---------- Bölümler ---------- */
   main { max-width: 1180px; margin-inline: auto; padding: 0 18px 80px; }
@@ -160,6 +164,8 @@
     <div class="serit" aria-hidden="true"><i id="serit"></i></div>
     <span class="sure" id="sure">00:00 / 01:18</span>
     <label class="anahtar"><input type="checkbox" id="korkutmaAcik" checked> Korkutmalar açık</label>
+    <label class="anahtar"><input type="checkbox" id="ortamAcik" checked> Ortam sesi</label>
+    <button type="button" id="sesDurum" class="ses-durum" data-durum="kapali" title="Ses durumu; ses gelmiyorsa dokunun"><span class="vu" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span id="sesYazi">Ses kapalı</span></button>
   </div>
 </section>
 
@@ -317,10 +323,10 @@
     const ust = [[0, 0.6, 0.03], [0, 0.7, 0.05], [0, 0.78, 0.08], [0.17, 0.6, 0.02], null, null, [-0.17, 0.6, 0.02]];
     L[1] = rotY(ust[0], bur); L[2] = rotY(ust[1], bur); L[3] = rotY(ust[2], bur * 1.6);
     L[4] = rotY(ust[3], bur); L[7] = rotY(ust[6], bur);
-    L[6] = o.eller || [0.15, 0.3, 0.33]; L[9] = [-0.15, 0.3, 0.33];
+    L[6] = o.eller || [0.22, 0.04, 0.2]; L[9] = [-0.22, 0.04, 0.2];   // parmak eklemleri yerde, kollar gövde yanında
     L[10] = [0.1, 0.2, 0.02]; L[13] = [-0.1, 0.2, 0.02];
     L[12] = [0.13, 0.07, 0.34]; L[15] = [-0.13, 0.07, 0.34];
-    L[5] = ik2(L[4], L[6], KOL1, KOL2, [0.6, -0.3, -0.2]); L[8] = ik2(L[7], L[9], KOL1, KOL2, [-0.6, -0.3, -0.2]);
+    L[5] = ik2(L[4], L[6], KOL1, KOL2, [0.25, -0.1, -1]); L[8] = ik2(L[7], L[9], KOL1, KOL2, [-0.25, -0.1, -1]);
     L[11] = ik2(L[10], L[12], BAC1, BAC2, [0.3, 0.5, 0.6]); L[14] = ik2(L[13], L[15], BAC1, BAC2, [-0.3, 0.5, 0.6]);
     return Object.assign({ J: yerlestir(kok, yaw, L) }, govdeYon(yaw, basYaw, o.egim || 0));
   }
@@ -720,7 +726,9 @@
         float rr = 0.14 + 0.2*h12(c+5.5);
         ag = length(p.xz - mz) - rr - 0.03*gur(vec3(p.xz*9.0, p.y*1.6)) - 0.05*exp(-p.y*3.0);
       }
-      ag = min(ag, kenar + 0.06);
+      // Hücre kenarına olan mesafe ile adım sınırlanır; ağaç yüzeyi kenardan en az ~0.4 m içeride olduğundan
+      // 0.4 pay güvenli. (0.06 iken kenar boyunca ilerleyen ışınlar adım bitirip koyu "huni" bırakıyordu.)
+      ag = min(ag, kenar + 0.4);
       if(ag < r.x) r = vec2(ag, 6.0);
     }
     if(uGovde.z > 0.0){
@@ -789,7 +797,7 @@
       float b = dot(oc, L);
       if(b <= 0.0 || b > mx) continue;
       float d = sqrt(max(0.0, dot(oc, oc) - b*b));
-      g = min(g, smoothstep(0.12, 0.34 + 0.08*b, d));
+      g = min(g, mix(1.0, smoothstep(0.08, 0.24 + 0.02*b, d), exp(-0.35*b)));  // uzaklaştıkça gölge söner
     }
     return clamp(g, 0.0, 1.0);
   }
@@ -799,7 +807,9 @@
     return clamp(1.0 - 2.2*o, 0.0, 1.0);
   }
 
-  vec3 kilRenk(vec3 p, vec3 n, vec3 rd, float x, float gl){
+  // Kıl rengi: şempanze kılı siyaha yakın koyu kahve. Işık kamerayla aynı yönden geldiği için
+  // Kajiya-Kay parlaması her kılda en yüksek değerine çıkar; gerçek kıl ışığın ancak ~%4'ünü yansıtır.
+  vec3 kilRenk(vec3 p, vec3 n, vec3 rd, float x, float gl, float tel){
     vec3 L; float dl; float I = fener(p, L, dl);
     vec3 T = normalize(vec3(0.0,-1.0,0.0) - n*dot(vec3(0.0,-1.0,0.0), n) + vec3(0.0,0.0,1e-3));
     float TL = dot(T, L), TV = dot(T, -rd);
@@ -808,9 +818,10 @@
     float par = pow(max(0.0, TL*TV + sL*sV), 38.0);
     float par2 = pow(max(0.0, TL*TV + sL*sV), 9.0);
     float kok = mix(0.3, 1.0, x);
-    vec3 taban = mix(vec3(0.028,0.022,0.019), vec3(0.075,0.058,0.046), x);
-    vec3 c = taban*I*dif*kok*gl*1.6*ISIKRENK;
-    c += (vec3(0.55,0.47,0.38)*par*0.35 + vec3(0.22,0.13,0.07)*par2*0.25)*I*gl*kok*ISIKRENK;
+    float degis = 0.55 + 0.9*tel;                                          // tel tel parlaklık farkı
+    vec3 taban = mix(vec3(0.004,0.0035,0.003), vec3(0.016,0.012,0.009), x)*degis;
+    vec3 c = taban*I*dif*kok*gl*1.4*ISIKRENK;
+    c += (vec3(0.42,0.36,0.29)*par*0.045 + vec3(0.2,0.12,0.06)*par2*0.03)*I*gl*kok*degis*ISIKRENK;
     c += taban*uAmb*vec3(0.22,0.27,0.38)*kok*0.6;
     return c;
   }
@@ -832,7 +843,7 @@
       alb = mix(alb, vec3(0.06,0.075,0.045), smoothstep(0.6,0.8,gur(p*3.0))*0.6);
       parlak = 0.03;
     } else {
-      if(bolge < 1.5){ alb = vec3(0.085,0.062,0.052); parlak = 0.22; sert = 26.0; sar = 0.45; }       // yüz derisi: koyu, yağlı
+      if(bolge < 1.5){ alb = vec3(0.032,0.025,0.022); parlak = 0.18; sert = 26.0; sar = 0.35; }       // yetişkin yüz derisi: koyu gri-kahve, yağlı
       else if(bolge < 2.5){ alb = vec3(0.045,0.022,0.012); parlak = 1.6; sert = 140.0; }               // ıslak, koyu kahve göz
       else if(bolge < 3.5){ alb = vec3(0.5,0.44,0.31); parlak = 0.5; sert = 60.0; sar = 0.2; }          // sarımsı dişler
       else { alb = vec3(0.16,0.035,0.04); parlak = 0.5; sert = 40.0; sar = 0.5; }                      // ağız içi
@@ -851,13 +862,13 @@
     float dt = tm/5.0;
     vec3 s = vec3(0.0);
     for(int i=S0;i<5;i++){
-      float tt = 0.7 + (float(i) + j)*dt;
+      float tt = 0.7 + (float(i) + 0.5 + (j - 0.5)*0.15)*dt;   // hafif titreşim: kumlanma olmadan bant da yok
       vec3 p = ro + rd*tt;
       vec3 L; float dl; float I = fener(p, L, dl);
       float yog = 0.45 + 0.9*gur(p*0.55 + vec3(uZaman*0.07, 0.0, uZaman*0.04));
       s += I*yog*exp(-uSis*tt)*dt;
     }
-    return s*uSis*ISIKRENK*0.06;
+    return s*uSis*ISIKRENK*0.022;
   }
 
   vec3 aces(vec3 x){ return clamp((x*(2.51*x + 0.03))/(x*(2.43*x + 0.59) + 0.14), 0.0, 1.0); }
@@ -904,17 +915,18 @@
           if(c.x < 0.0015){ deri = true; break; }
           float x = clamp(c.x/fl, 0.0, 1.0);
           if(x >= 0.999 && s > 1) break;
-          float tel = gur(vec3(dot(q,B)*240.0, dot(q,C)*240.0, dot(q,hk)*22.0));
-          float yog = smoothstep(0.52, 0.8, tel)*(1.0-x)*2.4 + (1.0-x)*(1.0-x)*0.7;
+          // Tel/tutam deseni 480p'de seçilebilecek kalınlıkta: kıllar tutam tutam, yüzey boyunca aşağı akar
+          float tel = gur(vec3(dot(q,B)*95.0, dot(q,C)*95.0, dot(q,hk)*9.0));
+          float yog = smoothstep(0.45, 0.8, tel)*(1.0-x)*2.6 + (1.0-x)*(1.0-x)*0.8;
           float a = 1.0 - exp(-yog*adim*190.0);
-          vec3 kc = kilRenk(q, n0, rd, x, gl)*exp(-uSis*t);
+          vec3 kc = kilRenk(q, n0, rd, x, gl, tel)*exp(-uSis*t);
           renk += (1.0-alfa)*a*kc; alfa += (1.0-alfa)*a;
           if(alfa > 0.97) break;
           t += adim;
         }
         if(deri && alfa < 0.97){
           vec3 q = ro + rd*t;
-          vec3 c = vec3(0.05,0.04,0.036)*fener(q, L, dl)*gl*max(0.0, dot(n0, L))*exp(-uSis*t);
+          vec3 c = vec3(0.012,0.01,0.009)*fener(q, L, dl)*gl*max(0.0, dot(n0, L))*exp(-uSis*t);
           renk += (1.0-alfa)*c; alfa = 1.0;
         }
         if(alfa > 0.97) break;
@@ -1011,7 +1023,7 @@
       const nis = add(d.nisan, mul(r, gecik[0] * 2)).map((x, i) => x + (i === 1 ? gecik[1] * 2 : 0));
       gl.uniform3fv(u.uIsikP, isikP);
       gl.uniform3fv(u.uIsikY, nrm(sub(nis, isikP)));
-      gl.uniform1f(u.uIsik, (d.isik === undefined ? 16 : d.isik) * titreme(d.t) * (0.97 + 0.03 * Math.sin(d.t * 37.0)));
+      gl.uniform1f(u.uIsik, (d.isik === undefined ? 12 : d.isik) * titreme(d.t) * (0.97 + 0.03 * Math.sin(d.t * 37.0)));
       for (let k = 0; k < 2; k++) {
         const m = d.maymun[k];
         if (!m) { this.S.set([0, 0, 0, -1], k * 4); continue; }
@@ -1031,7 +1043,7 @@
       gl.uniform3fv(u.uDalA, d.dal ? d.dal.a : [0, 0, 0]); gl.uniform3fv(u.uDalB, d.dal ? d.dal.b : [0, 1, 0]); gl.uniform1f(u.uDalR, d.dal ? d.dal.r : 0);
       gl.uniform3fv(u.uGovde, d.govdeA || [0, 0, 0]);
       gl.uniform1f(u.uSis, d.sis); gl.uniform1f(u.uAmb, d.amb); gl.uniform1f(u.uPoz, d.pozlama);
-      gl.uniform1f(u.uAgac, d.agac); gl.uniform1f(u.uGren, 0.07);
+      gl.uniform1f(u.uAgac, d.agac); gl.uniform1f(u.uGren, 0.035);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
   }
@@ -1039,6 +1051,8 @@
   /* ======================= Ses: korku kemanı ve orman ======================= */
   let A = null;
   function sesKur() {
+    // iPhone/iPad: sessiz mod anahtarı açıkken de web sesinin çalması için oturumu "playback" yap
+    try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (e) { /* desteklenmiyor */ }
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const son = ctx.createDynamicsCompressor();
     son.threshold.value = -10; son.knee.value = 4; son.ratio.value = 12; son.attack.value = 0.003; son.release.value = 0.2;
@@ -1050,10 +1064,67 @@
     yanki.buffer = ir;
     const islak = ctx.createGain(); islak.gain.value = 0.3;
     yanki.connect(islak); islak.connect(ana);
-    ana.connect(son); son.connect(ctx.destination);
+    const olcer = ctx.createAnalyser(); olcer.fftSize = 512;
+    ana.connect(son); son.connect(olcer); olcer.connect(ctx.destination);
     const gb = ctx.createBuffer(1, ctx.sampleRate * 3, ctx.sampleRate);
     const g = gb.getChannelData(0); for (let i = 0; i < g.length; i++) g[i] = Math.random() * 2 - 1;
-    A = { ctx, ana, yanki, gurultu: gb, bus: null };
+    const ortam = ctx.createGain(); ortam.gain.value = 0; ortam.connect(ana); ortam.connect(yanki);
+    A = { ctx, ana, yanki, gurultu: gb, bus: null, olcer, olcum: new Float32Array(512), ortam, ortamKuruldu: false };
+  }
+  /* Her kullanıcı dokunuşunda eşzamanlı çağrılır: tarayıcıların ses kilidini kesin olarak açar. */
+  function sesiAc() {
+    if (!A) sesKur();
+    if (A.ctx.state !== "running") A.ctx.resume();
+    const b = A.ctx.createBuffer(1, 1, A.ctx.sampleRate);   // sessiz tek örnek: iOS kilidini açar
+    const s = A.ctx.createBufferSource(); s.buffer = b; s.connect(A.ctx.destination); s.start(0);
+    if (!A.ortamKuruldu) ortamKur();
+  }
+  /* Sitenin arka plan ortam sesi: rüzgâr, alçak yaylı dronu, arada uzak şempanze çağrıları ve keman flajoleleri.
+     Fragman oynarken ve korkutma anında kısılır; kontrol çubuğundan kapatılabilir. */
+  function ortamKur() {
+    A.ortamKuruldu = true;
+    const t = A.ctx.currentTime + 0.1, cok = 6 * 3600;
+    ruzgar(t, t + cok, 0.05, A.ortam);
+    yay(73.4, t, cok, 0.045, { atak: 4, birak: 2, parlak: 900, govde: 150, vib: 0.15, pan: -0.3 }, A.ortam);
+    yay(110, t + 2, cok, 0.025, { atak: 6, birak: 2, parlak: 1100, govde: 180, vib: 0.2, tremolo: 0.35, pan: 0.3 }, A.ortam);
+    let sonraki = A.ctx.currentTime + 6;
+    setInterval(() => {
+      if (!A || A.ctx.state !== "running" || A.ctx.currentTime + 3 < sonraki) return;
+      const z = sonraki, r = Math.random(), pan = Math.random() * 1.6 - 0.8;
+      if (r < 0.35) huZinciri(z, 0.022, pan, A.ortam, false);
+      else if (r < 0.7) { const f = [1318, 1175, 1397, 988][Math.floor(Math.random() * 4)]; yay(f, z, 5, 0.018, { atak: 2.4, birak: 1.2, pont: true, tremolo: 7, vib: 0.4, pan }, A.ortam); }
+      else if (r < 0.85) gicirti(z, 0.05, A.ortam);
+      else { for (let i = 0; i < 4; i++) hisirti(z + i * 0.35 + Math.random() * 0.1, 0.025, 2600, 0.06, pan, A.ortam); }
+      sonraki = z + 14 + Math.random() * 16;
+    }, 1000);
+  }
+  let ortamSon = null;
+  function ortamGuncelle() {
+    if (!A || !A.ortamKuruldu) return;
+    const acik = document.getElementById("ortamAcik").checked && !oy.calis && !hazirlik.bekle && document.getElementById("korkutma").hidden;
+    if (acik === ortamSon) return;   // yalnızca durum değişince (otomasyon olayları birikmesin)
+    ortamSon = acik;
+    A.ortam.gain.cancelScheduledValues(A.ctx.currentTime);
+    A.ortam.gain.setTargetAtTime(acik ? 0.9 : 0, A.ctx.currentTime, acik ? 1.2 : 0.15);
+  }
+  const vuCubuk = document.querySelectorAll("#sesDurum .vu i");
+  const sesDurumEl = document.getElementById("sesDurum"), sesYaziEl = document.getElementById("sesYazi");
+  function sesGostergesi() {
+    const s = sesSeviyesi();
+    const durum = s < 0 ? "kapali" : "acik";
+    if (sesDurumEl.dataset.durum !== durum) {
+      sesDurumEl.dataset.durum = durum;
+      sesYaziEl.textContent = durum === "acik" ? "Ses açık" : "Ses kapalı · dokunun";
+    }
+    const db = s > 0 ? 20 * Math.log10(s) : -100;
+    vuCubuk.forEach((c, i) => { c.style.height = (db > -60 + i * 10 ? 3 + i * 2 : 3) + "px"; });
+    sesDurumEl.dataset.seviye = s < 0 ? "-1" : s.toFixed(4);
+  }
+  function sesSeviyesi() {
+    if (!A || A.ctx.state !== "running") return -1;
+    A.olcer.getFloatTimeDomainData(A.olcum);
+    let s = 0; for (let i = 0; i < A.olcum.length; i++) s += A.olcum[i] * A.olcum[i];
+    return Math.sqrt(s / A.olcum.length);
   }
   function yeniBus() {
     if (A.bus) { const eski = A.bus; eski.gain.setTargetAtTime(0, A.ctx.currentTime, 0.03); setTimeout(() => eski.disconnect(), 400); }
@@ -1290,7 +1361,8 @@
   /* GPU güvenliği: çizim yalnızca fragman oynarken ve ekranda görünürken yapılır,
      saniyede en fazla 20 kare, sabit piksel bütçesiyle. Kareler çok yavaşlarsa
      bütçe düşer; cihaz yine yetişemezse görüntü durur, ses devam eder. */
-  const PIKSEL_EN_AZ = 192 * 108, PIKSEL_EN_COK = 384 * 216, KARE_ARASI = 50;
+  // 480p hedef (854×480); cihaz yetişemezse kendiliğinden düşer
+  const PIKSEL_EN_AZ = 192 * 108, PIKSEL_EN_COK = 854 * 480, KARE_ARASI = 50;
   const tuval = document.getElementById("tuval");
   let cizici = null, cizimKapali = false;
   function cizimiDurdur(neden) {
@@ -1314,7 +1386,7 @@
   const korkuKutusu = document.getElementById("korkutmaAcik");
   const kartEl = document.getElementById("kart");
   const oy = { calis: false, T0: 0, durdu: 0, bitti: false };
-  let piksel = 320 * 180, sonCizim = 0, ortalama = 50, agirKare = 0;
+  let piksel = 854 * 480, sonCizim = 0, ortalama = 50, agirKare = 0;
 
   function suan() {
     if (!A) return 0;
@@ -1405,11 +1477,16 @@
     oy.calis = true; arayuz();
   }
   document.getElementById("oynat").addEventListener("click", () => {
-    if (!A || oy.bitti || !oy.T0) return baslat(true);
+    sesiAc();
+    if (oy.bitti || !oy.T0) return baslat(true);
     return oy.calis ? duraklat() : devam();
   });
-  document.getElementById("baslatOrtu").addEventListener("click", () => (A && oy.T0 && !oy.bitti ? devam() : baslat(true)));
-  document.getElementById("basaDon").addEventListener("click", async () => { if (A && A.ctx.state === "suspended") await A.ctx.resume(); baslat(true); });
+  document.getElementById("baslatOrtu").addEventListener("click", () => { const vardi = !!A; sesiAc(); return vardi && oy.T0 && !oy.bitti ? devam() : baslat(true); });
+  document.getElementById("basaDon").addEventListener("click", () => { sesiAc(); baslat(true); });
+  document.getElementById("sesDurum").addEventListener("click", () => sesiAc());
+  document.getElementById("ortamAcik").addEventListener("change", () => { sesiAc(); ortamGuncelle(); });
+  // Sayfanın herhangi bir yerine ilk dokunuşta da ses kilidi açılsın (ortam sesi için)
+  ["pointerdown", "keydown"].forEach((ev) => document.addEventListener(ev, () => { if (!A || A.ctx.state !== "running") { try { sesiAc(); } catch (e) { /* yok */ } } }, { capture: true }));
   korkuKutusu.addEventListener("change", () => { if (A && oy.T0 && !oy.bitti) { const t = suan(); oy.T0 = A.ctx.currentTime - t; } });
 
   function dongu(now) {
@@ -1437,6 +1514,8 @@
     document.getElementById("serit").style.width = ((t / ZAMAN.sure) * 100).toFixed(2) + "%";
     document.getElementById("sure").textContent = iki(t / 60) + ":" + iki(t % 60) + " / 01:18";
     document.getElementById("saat").textContent = "23.09.1994 02:14:" + iki(t % 60);
+    ortamGuncelle();
+    sesGostergesi();
     requestAnimationFrame(dongu);
   }
   requestAnimationFrame(dongu);
@@ -1444,6 +1523,7 @@
   /* ======================= Uyarı kapısı ======================= */
   const uyari = document.getElementById("uyari");
   function kapiKapat(korku) {
+    sesiAc();
     korkuKutusu.checked = korku;
     uyari.hidden = true;
     document.getElementById("baslatOrtu").focus();
