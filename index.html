@@ -712,8 +712,10 @@
     return vec2(tum, bolge);
   }
 
+  // Çevre şekli bilerek gürültüsüz: bu fonksiyon programa beş kez kopyalanıyor ve gürültü çağrıları
+  // Windows'ta derleme süresini on saniyelerce uzatıyordu. Zemin pürüzü ve kabuk dokusu renklendirmede.
   vec2 dunya(vec3 p){
-    float zem = p.y - 0.05*fbm(vec3(p.xz*2.5, 0.0)) - 0.02*gur(vec3(p.xz*14.0, 1.0));
+    float zem = p.y - 0.035*sin(p.x*2.3 + sin(p.z*1.7))*sin(p.z*2.1 + 1.3) - 0.012*sin(p.x*9.1)*sin(p.z*8.3);
     vec2 r = vec2(zem, 5.0);
     if(uAgac > 0.5){
       vec2 c = floor(p.xz/3.2); vec2 lc = p.xz - c*3.2;
@@ -724,7 +726,8 @@
       float ag = 1e3;
       if(!bos){
         float rr = 0.14 + 0.2*h12(c+5.5);
-        ag = length(p.xz - mz) - rr - 0.03*gur(vec3(p.xz*9.0, p.y*1.6)) - 0.05*exp(-p.y*3.0);
+        vec2 dq = p.xz - mz;
+        ag = length(dq) - rr - 0.015*sin(atan(dq.y, dq.x)*9.0 + p.y*0.7) - 0.05*exp(-p.y*3.0);
       }
       // Hücre kenarına olan mesafe ile adım sınırlanır; ağaç yüzeyi kenardan en az ~0.4 m içeride olduğundan
       // 0.4 pay güvenli. (0.06 iken kenar boyunca ilerleyen ışınlar adım bitirip koyu "huni" bırakıyordu.)
@@ -732,11 +735,12 @@
       if(ag < r.x) r = vec2(ag, 6.0);
     }
     if(uGovde.z > 0.0){
-      float gv = length(p.xz - uGovde.xy) - uGovde.z - 0.03*gur(vec3(p.xz*9.0, p.y*1.6)) - 0.08*exp(-p.y*2.5);
+      vec2 dg = p.xz - uGovde.xy;
+      float gv = length(dg) - uGovde.z - 0.015*sin(atan(dg.y, dg.x)*9.0 + p.y*0.7) - 0.08*exp(-p.y*2.5);
       if(gv < r.x) r = vec2(gv, 6.0);
     }
     if(uDalR > 0.0){
-      float dl = konik(p, uDalA, uDalB, uDalR, uDalR*0.55) - 0.01*gur(p*22.0);
+      float dl = konik(p, uDalA, uDalB, uDalR, uDalR*0.55);
       if(dl < r.x) r = vec2(dl, 6.0);
     }
     return r;
@@ -893,7 +897,11 @@
         t += m.x*0.95;
         if(t > 28.0) break;
       }
-      if(!vur){ tSon = 40.0; break; }
+      // Adımlar yüzeye çok yakınken tükendiyse (sıyıran ışın) orayı yüzey say; yoksa koyu delik kalır
+      if(!vur){
+        if(t < 27.0 && m.y > -0.5 && m.x < 0.08) vur = true;
+        else { tSon = 40.0; break; }
+      }
       tSon = t;
       vec3 p = ro + rd*t;
       if(m.y > 9.5){
@@ -905,7 +913,7 @@
         vec3 hk = normalize(T*0.75 + n0*0.65);
         vec3 B = normalize(cross(n0, hk)); vec3 C = cross(hk, B);
         vec3 L; float dl; float I = fener(p, L, dl);
-        float gl = I > 0.002 ? golge(p + n0*0.05, L, dl) : 1.0;
+        float gl = 1.0;   // kürk: çevre gölgesi atlanır (derleme süresi); kıl içi gölge kilRenk'te
         float fl = KURK*uKurk[k];
         float adim = fl/5.0;
         bool deri = false;
@@ -916,7 +924,12 @@
           float x = clamp(c.x/fl, 0.0, 1.0);
           if(x >= 0.999 && s > 1) break;
           // Tel/tutam deseni 480p'de seçilebilecek kalınlıkta: kıllar tutam tutam, yüzey boyunca aşağı akar
-          float tel = gur(vec3(dot(q,B)*95.0, dot(q,C)*95.0, dot(q,hk)*9.0));
+          // İki ölçekli tel deseni + tutam kıvrımı: düzenli "örgü" görünümünü kırar
+          float kivrim = gur(q*18.0) - 0.5;
+          vec3 qb = q + B*kivrim*0.03;
+          float tel = 0.62*gur(vec3(dot(qb,B)*95.0, dot(qb,C)*95.0, dot(qb,hk)*9.0))
+                    + 0.38*gur(vec3(dot(qb,B)*210.0 + 7.1, dot(qb,C)*210.0, dot(qb,hk)*15.0));
+          tel *= 0.75 + 0.5*gur(q*6.0);
           float yog = smoothstep(0.45, 0.8, tel)*(1.0-x)*2.6 + (1.0-x)*(1.0-x)*0.8;
           float a = 1.0 - exp(-yog*adim*190.0);
           vec3 kc = kilRenk(q, n0, rd, x, gl, tel)*exp(-uSis*t);
@@ -937,10 +950,11 @@
       break;
     }
     if(kati && alfa < 0.999){
-      vec3 c = yuzeyRenk(kP, kN, rd, kMat, kBolge)*exp(-uSis*kT);
+      float sg = exp(-uSis*kT);
+      vec3 c = yuzeyRenk(kP, kN, rd, kMat, kBolge)*sg + vec3(0.020,0.025,0.032)*uAmb*(1.0 - sg);  // uzak yüzey sis rengine solar
       renk += (1.0-alfa)*c; alfa = 1.0;
     }
-    vec3 sisRenk = vec3(0.010,0.013,0.018)*uAmb;
+    vec3 sisRenk = vec3(0.020,0.025,0.032)*uAmb;   // yüzeylerin solduğu sis rengiyle aynı: uzakta kontrast kalmaz
     renk += (1.0-alfa)*sisRenk;
     renk = mix(sisRenk, renk, 1.0) + sacilma(ro, rd, tSon, j) ;
 
@@ -1437,12 +1451,15 @@
     oy.calis = true;
     arayuz();
   }
-  /* Her karede bir kez çağrılır; hazırsa fragmanı başlatır. */
+  /* Her karede bir kez çağrılır; hazırsa fragmanı başlatır.
+     Paralel derleme varsa hemen başlatır: fragmanın ilk ~6 saniyesi zaten siyah ekran ve yazı,
+     derleme o sırada arka planda sürer (bkz. tutmaKontrol). */
   function hazirlikKontrol() {
     hazirlik.kare++;
     const c = ciziciAl();
     if (!c || cizimKapali) return gercektenBaslat();          // görüntü yok: yalnızca ses
-    if (!c.paralel && hazirlik.kare < 3) return;              // önce "hazırlanıyor" yazısı ekrana çizilsin
+    if (c.paralel) return gercektenBaslat();
+    if (hazirlik.kare < 3) return;                            // önce "hazırlanıyor" yazısı ekrana çizilsin
     try {
       if (c.hazir()) return gercektenBaslat();
     } catch (e) {
@@ -1455,6 +1472,39 @@
       gercektenBaslat();
     }
   }
+  /* Görüntü gereken ana (siyah açılışın sonu) gelindiğinde program hâlâ derleniyorsa fragmanı
+     o noktada tutar: ses ve zaman birlikte durur, hazır olunca birlikte devam eder.
+     İlk ziyarette Windows'ta derleme 10-30 sn sürebilir; tarayıcı sonrasını önbellekten yükler. */
+  const tutma = { aktif: false, bas: 0 };
+  function tutmaKontrol() {
+    if (!A) return;
+    if (!oy.calis) { tutma.aktif = false; return; }
+    let hazir = true;
+    if (cizici && !cizimKapali) {
+      try { hazir = cizici.hazir(); } catch (e) {
+        console.error(e);
+        cizimiDurdur("Görüntü programı bu ekran kartında derlenemedi; ses devam ediyor.");
+      }
+    }
+    if (!tutma.aktif) {
+      if (!hazir && suan() > 5.6) {
+        tutma.aktif = true; tutma.bas = performance.now();
+        A.ctx.suspend();
+        hazirlikYazisi(true);
+      }
+      return;
+    }
+    const gecen = (performance.now() - tutma.bas) / 1000;
+    if (hazir || gecen > 120) {
+      if (!hazir) cizimiDurdur("Görüntü iki dakikada hazırlanamadı; yalnızca ses çalıyor.");
+      tutma.aktif = false;
+      hazirlikYazisi(false);
+      A.ctx.resume();
+    } else {
+      kartEl.textContent = "Görüntü hazırlanıyor… " + Math.floor(gecen) + " sn";
+    }
+  }
+  setInterval(tutmaKontrol, 250);
   // Ekran yenilemesi yavaşlasa da hazırlık kontrolü sürsün
   setInterval(() => { if (hazirlik.bekle) hazirlikKontrol(); }, 250);
   // Görüntü programını, sayfa açıldıktan kısa süre sonra arka planda derlemeye başla.
@@ -1510,7 +1560,7 @@
     } else if (!oy.calis) {
       sonCizim = 0;
     }
-    if (!hazirlik.bekle) kartGuncelle(A && oy.T0 ? t : -1);
+    if (!hazirlik.bekle && !tutma.aktif) kartGuncelle(A && oy.T0 ? t : -1);
     document.getElementById("serit").style.width = ((t / ZAMAN.sure) * 100).toFixed(2) + "%";
     document.getElementById("sure").textContent = iki(t / 60) + ":" + iki(t % 60) + " / 01:18";
     document.getElementById("saat").textContent = "23.09.1994 02:14:" + iki(t % 60);
