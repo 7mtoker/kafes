@@ -1,0 +1,863 @@
+<title>Maymunlar ve SIV</title>
+<meta name="description" content="Maymunlarda bağışıklık yetmezliği virüsü (SIV) üzerine, her sayısı kaynaklı, sürreal bir farkındalık sayfası.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,400;1,6..96,500&family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,600;1,7..72,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    color-scheme: dark;
+    --gece: #15122a;
+    --gece-2: #1d1837;
+    --gece-3: #262046;
+    --kemik: #efe7d6;
+    --soluk: #aba3c2;
+    --okra: #e2b35e;
+    --okra-koyu: #b8843c;
+    --liken: #86bbad;
+    --cizgi: rgba(239, 231, 214, 0.14);
+    --f-gosteri: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
+    --f-metin: "Literata", "Iowan Old Style", Georgia, serif;
+    --f-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--gece);
+    color: var(--kemik);
+    font: 300 1.0625rem/1.7 var(--f-metin);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--okra); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+  a:hover { color: var(--kemik); }
+  :focus-visible { outline: 2px solid var(--okra); outline-offset: 3px; border-radius: 2px; }
+  .gizli { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* ---------- Sahne ---------- */
+  .sahne {
+    position: relative;
+    height: clamp(540px, 88vh, 780px);
+    overflow: hidden;
+    background: linear-gradient(180deg, #120f26 0%, #2a1f4d 48%, #5a3d66 76%, #9a6a55 100%);
+  }
+  .sahne canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .sahne-yazi {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    padding: 96px 20px 44px;
+    background: linear-gradient(180deg, transparent, rgba(13, 10, 26, 0.72) 42%, rgba(13, 10, 26, 0.94));
+  }
+  .sahne-ic { max-width: 1080px; margin-inline: auto; }
+  .kas {
+    font: 500 0.72rem/1.4 var(--f-mono);
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--liken); margin: 0 0 14px;
+  }
+  h1 {
+    font: italic 400 clamp(2.7rem, 7.4vw, 6rem)/0.98 var(--f-gosteri);
+    letter-spacing: -0.015em;
+    margin: 0 0 22px; max-width: 13ch;
+    text-wrap: balance;
+  }
+  h1 em { font-style: normal; color: var(--okra); }
+  .giris { max-width: 58ch; margin: 0 0 26px; color: #ddd4c2; font-size: 1.12rem; }
+  .eylemler { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; }
+  .dugme {
+    display: inline-flex; align-items: center; gap: 10px;
+    font: 500 0.95rem/1 var(--f-metin);
+    background: var(--okra); color: #1a1326;
+    border: 0; border-radius: 999px; padding: 13px 22px 13px 18px; cursor: pointer;
+  }
+  .dugme:hover { background: #f0c677; }
+  .dugme svg { width: 18px; height: 18px; }
+  .sessiz-baglanti { color: var(--kemik); font-size: 0.95rem; }
+
+  /* ---------- İçerik ---------- */
+  main { padding-bottom: 140px; }
+  .icerik { max-width: 1080px; margin-inline: auto; padding-inline: 20px; }
+  .oda {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.7fr);
+    gap: 28px 64px;
+    padding-block: 76px;
+    border-top: 1px solid var(--cizgi);
+  }
+  .oda:first-child { border-top: 0; }
+  .oda-bas { position: relative; }
+  .oda-bas > div { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 28px); }
+  .f-delik { width: 22px; height: 64px; color: var(--okra); opacity: 0.8; margin-bottom: 16px; display: block; }
+  h2 {
+    font: italic 400 clamp(1.9rem, 3.4vw, 2.6rem)/1.08 var(--f-gosteri);
+    margin: 0; text-wrap: balance;
+  }
+  .oda-govde > * { max-width: 62ch; }
+  .oda-govde p { margin: 0 0 1.15em; }
+  .oda-govde p:last-child { margin-bottom: 0; }
+  .yorum { color: var(--soluk); font-style: italic; }
+  .kaynak-isareti {
+    font: 500 0.7rem/1 var(--f-mono);
+    vertical-align: 0.35em; margin-left: 3px;
+    text-decoration: none; color: var(--okra);
+    padding: 2px 4px; border: 1px solid rgba(226, 179, 94, 0.35); border-radius: 3px;
+  }
+  .kaynak-isareti:hover { background: rgba(226, 179, 94, 0.14); color: var(--kemik); }
+  .terim { font-style: italic; color: var(--kemik); font-weight: 400; }
+
+  .dev {
+    margin: 8px 0 30px; padding: 26px 0 26px 26px;
+    border-left: 1px solid var(--okra);
+  }
+  .dev-sayi {
+    font: italic 400 clamp(3.4rem, 9vw, 6.2rem)/0.9 var(--f-gosteri);
+    color: var(--okra); display: block; margin-bottom: 12px;
+    font-variant-numeric: lining-nums;
+  }
+  .dev p { margin: 0; color: #ddd4c2; }
+
+  .yol { list-style: none; margin: 0; padding: 0; position: relative; }
+  .yol::before { content: ""; position: absolute; left: 5.4rem; top: 8px; bottom: 8px; width: 1px; background: var(--cizgi); }
+  .yol li { display: grid; grid-template-columns: 5.4rem minmax(0, 1fr); gap: 0 26px; padding-block: 11px; position: relative; }
+  .yol li::after { content: ""; position: absolute; left: calc(5.4rem - 4px); top: 21px; width: 9px; height: 9px; border-radius: 50%; background: var(--gece); border: 1px solid var(--okra); }
+  .yol .yil { font: 500 0.85rem/1.9 var(--f-mono); color: var(--okra); font-variant-numeric: tabular-nums; }
+  .yol .olay { padding-left: 4px; }
+
+  .yapilacak { list-style: none; padding: 0; margin: 0; display: grid; gap: 18px; }
+  .yapilacak li { padding-left: 30px; position: relative; }
+  .yapilacak li::before {
+    content: ""; position: absolute; left: 0; top: 0.72em; width: 14px; height: 1px; background: var(--liken);
+  }
+  .yapilacak strong { font-weight: 600; color: var(--kemik); }
+
+  .eserler { list-style: none; margin: 18px 0 0; padding: 0; border-top: 1px solid var(--cizgi); }
+  .eserler li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; padding: 14px 0; border-bottom: 1px solid var(--cizgi); }
+  .eserler .ad { font: italic 400 1.25rem/1.3 var(--f-gosteri); }
+  .eserler .bilgi { font: 400 0.8rem/1.9 var(--f-mono); color: var(--soluk); }
+  .eserler li[data-simdi] .ad { color: var(--okra); }
+  .eserler button {
+    background: none; border: 1px solid var(--cizgi); color: var(--kemik);
+    font: 400 0.8rem/1 var(--f-mono); border-radius: 999px; padding: 7px 12px; cursor: pointer;
+  }
+  .eserler button:hover { border-color: var(--okra); color: var(--okra); }
+
+  #kaynaklar { margin: 0; padding-left: 1.6em; display: grid; gap: 14px; font-size: 0.95rem; }
+  #kaynaklar li { padding-left: 6px; scroll-margin-top: 24px; }
+  #kaynaklar li::marker { font: 500 0.8rem var(--f-mono); color: var(--okra); }
+  #kaynaklar li:target { background: rgba(226, 179, 94, 0.1); outline: 1px solid rgba(226, 179, 94, 0.4); outline-offset: 6px; }
+  #kaynaklar .doi { font: 400 0.8rem var(--f-mono); word-break: break-all; }
+
+  footer {
+    border-top: 1px solid var(--cizgi);
+    color: var(--soluk); font-size: 0.85rem;
+    padding-block: 32px 150px;
+  }
+  footer p { margin: 0 0 6px; max-width: 70ch; }
+
+  /* ---------- Çalar ---------- */
+  .calar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+    background: rgba(18, 15, 36, 0.9);
+    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+    border-top: 1px solid var(--cizgi);
+  }
+  .calar-ic { max-width: 1080px; margin-inline: auto; display: flex; align-items: center; gap: 14px; }
+  .calar button.yuvarlak {
+    flex: none; width: 44px; height: 44px; border-radius: 50%;
+    display: grid; place-items: center; cursor: pointer;
+    background: var(--okra); color: #1a1326; border: 0;
+  }
+  .calar button.yuvarlak.ikincil { background: transparent; color: var(--kemik); border: 1px solid var(--cizgi); width: 38px; height: 38px; }
+  .calar button.yuvarlak.ikincil:hover { border-color: var(--okra); color: var(--okra); }
+  .calar svg { width: 18px; height: 18px; }
+  .calar-bilgi { flex: 1; min-width: 0; }
+  .calar-satir { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+  .calar-eser { font: italic 400 1.1rem/1.2 var(--f-gosteri); white-space: nowrap; }
+  .calar-alt { font: 400 0.75rem/1.2 var(--f-mono); color: var(--soluk); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ilerleme { height: 2px; background: var(--cizgi); margin-top: 8px; border-radius: 2px; overflow: hidden; }
+  .ilerleme i { display: block; height: 100%; width: 0; background: var(--okra); }
+  .nota {
+    flex: none; min-width: 4.4rem; text-align: center;
+    font: 500 0.8rem/1 var(--f-mono); color: var(--liken);
+    border: 1px solid var(--cizgi); border-radius: 999px; padding: 8px 10px;
+  }
+  .ses { flex: none; display: flex; align-items: center; }
+  .ses input { width: 96px; accent-color: var(--okra); }
+
+  @media (max-width: 760px) {
+    .oda { grid-template-columns: minmax(0, 1fr); padding-block: 56px; gap: 18px; }
+    .oda-bas > div { position: static; }
+    .f-delik { height: 44px; width: 16px; margin-bottom: 10px; }
+    .yol::before { left: 4.2rem; }
+    .yol li { grid-template-columns: 4.2rem minmax(0, 1fr); gap: 0 20px; }
+    .yol li::after { left: calc(4.2rem - 4px); }
+    .ses, .nota { display: none; }
+    .sahne-yazi { padding-bottom: 32px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { scroll-behavior: auto !important; transition: none !important; }
+  }
+</style>
+
+<header class="sahne" id="ust">
+  <canvas id="tuval" aria-hidden="true"></canvas>
+  <div class="sahne-yazi">
+    <div class="sahne-ic">
+      <p class="kas">Bir farkındalık rüyası · primatlar ve bağışıklık yetmezliği virüsleri</p>
+      <h1>Maymunlar <em>AIDS</em> olur mu?</h1>
+      <p class="giris">Bazıları olur, çoğu olmaz. Aradaki farkın hikâyesi ormanda başlıyor, laboratuvardan geçiyor ve insanlığın en büyük salgınlarından birine varıyor. Bu sayfadaki her sayı, en alttaki bilimsel bir kaynağa bağlı.</p>
+      <div class="eylemler">
+        <button class="dugme" type="button" id="sahneOynat">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+          <span>Kemanı başlat</span>
+        </button>
+        <a class="sessiz-baglanti" href="#kaynak-listesi">Önce kaynakları görmek istiyorum</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="icerik">
+
+    <section class="oda" aria-labelledby="b-siv">
+      <div class="oda-bas"><div>
+        <svg class="f-delik" viewBox="0 0 22 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="15" cy="6" r="3.2" fill="currentColor" stroke="none"/><path d="M15 9 C 17 22, 4 26, 7 55"/><circle cx="7" cy="58" r="3.2" fill="currentColor" stroke="none"/><path d="M4 30 l6 2 M12 34 l6 2"/></svg>
+        <h2 id="b-siv">Virüsün adı HIV değil, SIV</h2>
+      </div></div>
+      <div class="oda-govde">
+        <p>Maymunlarda bağışıklık sistemini hedef alan virüsün adı <span class="terim">SIV</span>: <span lang="en">simian immunodeficiency virus</span>, yani maymun bağışıklık yetmezliği virüsü. İnsanlardaki HIV ile aynı virüs grubundandır ve HIV'in kendisi de SIV'den türemiştir.</p>
+        <p class="claim" data-cite="k1">SIV'ler, Sahra altı Afrika'da 40'tan fazla insan dışı primat türünde doğal olarak bulunur.<a class="kaynak-isareti" href="#k1" aria-label="Kaynak 1">1</a></p>
+        <p class="yorum">Türkçede gündelik olarak “maymun” dediğimiz grup, şempanze ve goril gibi insansı maymunları da kapsıyor. Bu sayfa hepsini birlikte ele alıyor ve gerektiğinde ayırıyor.</p>
+      </div>
+    </section>
+
+    <section class="oda" aria-labelledby="b-dogal">
+      <div class="oda-bas"><div>
+        <svg class="f-delik" viewBox="0 0 22 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="15" cy="6" r="3.2" fill="currentColor" stroke="none"/><path d="M15 9 C 17 22, 4 26, 7 55"/><circle cx="7" cy="58" r="3.2" fill="currentColor" stroke="none"/><path d="M4 30 l6 2 M12 34 l6 2"/></svg>
+        <h2 id="b-dogal">Çoğu taşır, hastalanmaz</h2>
+      </div></div>
+      <div class="oda-govde">
+        <p class="claim" data-cite="k2">Afrika yeşil maymunları ve is renkli mangabeyler (<span lang="en">sooty mangabey</span>) gibi <span class="terim">doğal konak</span> türler, kanlarında yüksek miktarda virüs taşısalar da genellikle AIDS'e ilerlemez. Tedavi edilmeyen HIV'li insanlarda ve doğal konak olmayan makaklarda ise enfeksiyon AIDS'e ilerler.<a class="kaynak-isareti" href="#k2" aria-label="Kaynak 2">2</a></p>
+        <p class="claim" data-cite="k2">Araştırmacılar bu direnci üç özelliğe bağlıyor: akut enfeksiyondan sonra bağışıklık sistemindeki aşırı aktivasyonun sönmesi, virüsün daha dar bir hücre grubunu enfekte edebilmesi ve anneden yavruya bulaşın sınırlı kalması.<a class="kaynak-isareti" href="#k2" aria-label="Kaynak 2">2</a></p>
+        <p class="yorum">Yani belirleyici olan virüsün varlığı değil, konakla virüs arasındaki ilişkinin nasıl dengelendiği.</p>
+      </div>
+    </section>
+
+    <section class="oda" aria-labelledby="b-gombe">
+      <div class="oda-bas"><div>
+        <svg class="f-delik" viewBox="0 0 22 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="15" cy="6" r="3.2" fill="currentColor" stroke="none"/><path d="M15 9 C 17 22, 4 26, 7 55"/><circle cx="7" cy="58" r="3.2" fill="currentColor" stroke="none"/><path d="M4 30 l6 2 M12 34 l6 2"/></svg>
+        <h2 id="b-gombe">İstisna: Gombe'nin şempanzeleri</h2>
+      </div></div>
+      <div class="oda-govde">
+        <p class="claim" data-cite="k3">Tanzanya'daki Gombe Ulusal Parkı'nda insan varlığına alışkın iki şempanze topluluğundan 94 birey, 9 yılı aşkın süre izlendi.<a class="kaynak-isareti" href="#k3" aria-label="Kaynak 3">3</a></p>
+        <div class="dev claim" data-cite="k3">
+          <span class="dev-sayi">10–16 kat</span>
+          <p>SIVcpz taşıyan 17 şempanzenin yaşa göre düzeltilmiş ölüm riski, taşımayan 77 şempanzeye göre bu kadar yüksek bulundu.<a class="kaynak-isareti" href="#k3" aria-label="Kaynak 3">3</a></p>
+        </div>
+        <p class="claim" data-cite="k3">Enfekte dişilerin doğum yapma olasılığı daha düşük, yavrularının ölüm oranı daha yüksekti. Ölen enfekte şempanzelerde CD4+ T hücre kaybı da dahil olmak üzere AIDS'e benzeyen bağışıklık hasarı görüldü.<a class="kaynak-isareti" href="#k3" aria-label="Kaynak 3">3</a></p>
+        <p class="claim" data-cite="k1">Şempanzeler bu virüsü büyük olasılıkla avladıkları küçük maymunlardan aldı: SIVcpz, kızıl başlı mangabeylerin ve <i>Cercopithecus</i> cinsi maymunların virüslerinin birleşmesinden (rekombinasyon) oluşmuş bir melezdir.<a class="kaynak-isareti" href="#k1" aria-label="Kaynak 1">1</a></p>
+        <p class="yorum">Gombe çalışması, “SIV doğal konaklarında hep zararsızdır” varsayımını yıktı.</p>
+      </div>
+    </section>
+
+    <section class="oda" aria-labelledby="b-makak">
+      <div class="oda-bas"><div>
+        <svg class="f-delik" viewBox="0 0 22 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="15" cy="6" r="3.2" fill="currentColor" stroke="none"/><path d="M15 9 C 17 22, 4 26, 7 55"/><circle cx="7" cy="58" r="3.2" fill="currentColor" stroke="none"/><path d="M4 30 l6 2 M12 34 l6 2"/></svg>
+        <h2 id="b-makak">Laboratuvardaki makaklar</h2>
+      </div></div>
+      <div class="oda-govde">
+        <p class="claim" data-cite="k6">“Maymun AIDS'ine” yol açan virüs ilk kez 1985'te, ABD'deki New England Bölgesel Primat Araştırma Merkezi'nde bağışıklığı çökmüş makaklardan izole edildi.<a class="kaynak-isareti" href="#k6" aria-label="Kaynak 6">6</a></p>
+        <p class="claim" data-cite="k7,k1">Asya kökenli makaklar doğada SIV taşımaz. Makak virüsü (SIVmac), is renkli mangabeylerin virüsüne çok yakındır; makakların bu virüsü esaret altında, mangabeylerden aldığı düşünülüyor.<a class="kaynak-isareti" href="#k7" aria-label="Kaynak 7">7</a><a class="kaynak-isareti" href="#k1" aria-label="Kaynak 1">1</a></p>
+        <p class="claim" data-cite="k2">Doğal konak olmadıkları için makaklar SIV ile AIDS'e ilerler. Bu yüzden HIV aşı ve tedavi araştırmalarının başlıca hayvan modelidirler.<a class="kaynak-isareti" href="#k2" aria-label="Kaynak 2">2</a></p>
+        <p class="yorum">Buradaki farkındalık iki yönlü: bu hayvanlar insan sağlığı araştırmalarının ağır yükünü taşıyor, bu yüzden refahları araştırma etiğinin merkezinde durmalı.</p>
+      </div>
+    </section>
+
+    <section class="oda" aria-labelledby="b-koken">
+      <div class="oda-bas"><div>
+        <svg class="f-delik" viewBox="0 0 22 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="15" cy="6" r="3.2" fill="currentColor" stroke="none"/><path d="M15 9 C 17 22, 4 26, 7 55"/><circle cx="7" cy="58" r="3.2" fill="currentColor" stroke="none"/><path d="M4 30 l6 2 M12 34 l6 2"/></svg>
+        <h2 id="b-koken">Ormandan şehre: HIV nasıl doğdu?</h2>
+      </div></div>
+      <div class="oda-govde">
+        <p class="claim" data-cite="k8">HIV-1'in kaynağı, Orta Afrika şempanzesi (<i>Pan troglodytes troglodytes</i>) alt türündeki SIVcpz'dir.<a class="kaynak-isareti" href="#k8" aria-label="Kaynak 8">8</a></p>
+        <p class="claim" data-cite="k4">Güney Kamerun'da dışkı örnekleriyle yapılan taramada bazı şempanze topluluklarında SIVcpz yaygınlığı %29–35'e ulaştı. Salgını başlatan HIV-1 M grubu ile nadir görülen N grubu, birbirinden ayrı şempanze topluluklarına kadar izlendi.<a class="kaynak-isareti" href="#k4" aria-label="Kaynak 4">4</a></p>
+        <p class="claim" data-cite="k1">HIV-1'in O ve P grupları gorillerle ilişkili: P grubunun goril kökenli olduğu kabul ediliyor, O grubunun doğrudan kaynağı ise kesin değil. HIV-2, Batı Afrika'daki is renkli mangabeylerin virüsünden geldi.<a class="kaynak-isareti" href="#k1" aria-label="Kaynak 1">1</a></p>
+        <p class="claim" data-cite="k1">Bu geçişlerin en olası yolu, yaban hayatı avı ve kesimi sırasında deri ya da mukozanın enfekte kan ve vücut sıvılarıyla temas etmesidir.<a class="kaynak-isareti" href="#k1" aria-label="Kaynak 1">1</a></p>
+        <p class="claim" data-cite="k5">HIV-1 M grubunun ortak atasının yaklaşık 1908 yılına (güven aralığı 1884–1924) dayandığı tahmin ediliyor. Kinşasa'da 1959 ve 1960'ta alınmış iki örnek birbirinden belirgin biçimde farklı; bu da virüsün o tarihte insanlarda onlarca yıldır çeşitlendiğini gösteriyor.<a class="kaynak-isareti" href="#k5" aria-label="Kaynak 5">5</a></p>
+      </div>
+    </section>
+
+    <section class="oda" aria-labelledby="b-zaman">
+      <div class="oda-bas"><div>
+        <svg class="f-delik" viewBox="0 0 22 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="15" cy="6" r="3.2" fill="currentColor" stroke="none"/><path d="M15 9 C 17 22, 4 26, 7 55"/><circle cx="7" cy="58" r="3.2" fill="currentColor" stroke="none"/><path d="M4 30 l6 2 M12 34 l6 2"/></svg>
+        <h2 id="b-zaman">Bir asırlık iz</h2>
+      </div></div>
+      <div class="oda-govde">
+        <ol class="yol">
+          <li class="claim" data-cite="k5"><span class="yil">~1908</span><span class="olay">HIV-1 M grubunun tahmini ortak atası (1884–1924 aralığı).<a class="kaynak-isareti" href="#k5" aria-label="Kaynak 5">5</a></span></li>
+          <li class="claim" data-cite="k5"><span class="yil">1959–60</span><span class="olay">Kinşasa'da alınan örnekler, bilinen en eski HIV-1 dizileri arasında.<a class="kaynak-isareti" href="#k5" aria-label="Kaynak 5">5</a></span></li>
+          <li class="claim" data-cite="k6"><span class="yil">1985</span><span class="olay">SIV, bağışıklığı çökmüş makaklardan izole edildi.<a class="kaynak-isareti" href="#k6" aria-label="Kaynak 6">6</a></span></li>
+          <li class="claim" data-cite="k7"><span class="yil">1989</span><span class="olay">Is renkli mangabey virüsünün HIV-2'ye çok yakın olduğu gösterildi.<a class="kaynak-isareti" href="#k7" aria-label="Kaynak 7">7</a></span></li>
+          <li class="claim" data-cite="k8"><span class="yil">1999</span><span class="olay">HIV-1'in kaynağı olarak <i>P. t. troglodytes</i> şempanzeleri gösterildi.<a class="kaynak-isareti" href="#k8" aria-label="Kaynak 8">8</a></span></li>
+          <li class="claim" data-cite="k4"><span class="yil">2006</span><span class="olay">Kamerun'daki vahşi şempanze toplulukları HIV-1'in M ve N gruplarının rezervuarı olarak belirlendi.<a class="kaynak-isareti" href="#k4" aria-label="Kaynak 4">4</a></span></li>
+          <li class="claim" data-cite="k3"><span class="yil">2009</span><span class="olay">Gombe: vahşi şempanzelerde SIVcpz'ye bağlı AIDS benzeri hastalık ve yüksek ölüm.<a class="kaynak-isareti" href="#k3" aria-label="Kaynak 3">3</a></span></li>
+          <li class="claim" data-cite="k9"><span class="yil">2016</span><span class="olay">IUCN: şempanze “Nesli Tehlikede”, batı şempanzesi “Kritik Tehlikede”.<a class="kaynak-isareti" href="#k9" aria-label="Kaynak 9">9</a></span></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="oda" aria-labelledby="b-neden">
+      <div class="oda-bas"><div>
+        <svg class="f-delik" viewBox="0 0 22 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="15" cy="6" r="3.2" fill="currentColor" stroke="none"/><path d="M15 9 C 17 22, 4 26, 7 55"/><circle cx="7" cy="58" r="3.2" fill="currentColor" stroke="none"/><path d="M4 30 l6 2 M12 34 l6 2"/></svg>
+        <h2 id="b-neden">Neden önemsemeliyiz?</h2>
+      </div></div>
+      <div class="oda-govde">
+        <p class="claim" data-cite="k9">Şempanze IUCN Kırmızı Listesi'nde “Nesli Tehlikede” (EN) sınıfında. Batı şempanzesi 2016'da “Kritik Tehlikede” (CR) kategorisine yükseltildi.<a class="kaynak-isareti" href="#k9" aria-label="Kaynak 9">9</a></p>
+        <p class="claim" data-cite="k3">Gombe bulguları, SIVcpz'nin vahşi şempanzelerin sağlığını, üremesini ve ömrünü olumsuz etkilediğini gösteriyor; bu, zaten tehdit altındaki popülasyonlar için ek bir yük demek.<a class="kaynak-isareti" href="#k3" aria-label="Kaynak 3">3</a></p>
+        <p>Ve bir şey daha: maymunlar bu hikâyenin kötüleri değil. HIV bugün insandan insana bulaşıyor. Maymunlardan korkmak ya da onlara zarar vermek hiçbir şeyi çözmez.</p>
+        <h3 class="gizli">Ne yapabilirsiniz?</h3>
+        <ul class="yapilacak">
+          <li class="claim" data-cite="k1"><strong>Yaban hayatı eti ve primat ticaretine destek vermeyin.</strong> Virüslerin türler arasında geçişinin en olası yolu, av ve kesim sırasında kanla temastı.<a class="kaynak-isareti" href="#k1" aria-label="Kaynak 1">1</a></li>
+          <li><strong>Maymunları evcil hayvan ya da fotoğraf dekoru yapan işletmelere para vermeyin.</strong> Yabani primatla yakın temas, iki taraf için de sağlık riski taşır.</li>
+          <li><strong>Uzun soluklu saha araştırmalarını ve koruma alanlarını destekleyin.</strong> Gombe'deki bulgular ancak yıllarca süren, müdahalesiz bir takiple ortaya çıkabildi.</li>
+          <li><strong>Damgalamaya karşı durun.</strong> HIV bir “maymun hastalığı” değil, bir insan hastalığı ve bugün etkili tedavisi var.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="oda" aria-labelledby="b-muzik">
+      <div class="oda-bas"><div>
+        <svg class="f-delik" viewBox="0 0 22 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="15" cy="6" r="3.2" fill="currentColor" stroke="none"/><path d="M15 9 C 17 22, 4 26, 7 55"/><circle cx="7" cy="58" r="3.2" fill="currentColor" stroke="none"/><path d="M4 30 l6 2 M12 34 l6 2"/></svg>
+        <h2 id="b-muzik">Bu keman kimin?</h2>
+      </div></div>
+      <div class="oda-govde">
+        <p>Arka plandaki üç parça bu sayfa için Claude tarafından bestelendi. Hiçbir kayıt, ses örneği ya da hazır ses dosyası kullanılmıyor: notalar sayfanın içinde duruyor ve siz dinlerken tarayıcınızda sentezleniyor.</p>
+        <p>Keman sesi; iki testere dişi dalganın keman gövdesinin rezonanslarını taklit eden filtrelerden geçmesi, yayın hışırtısı için süzülmüş gürültü, geç başlayan bir vibrato ve gürültüden üretilmiş bir salon yankısıyla oluşuyor. Gerçek bir kemancının yerini tutmaz, ama tamamen buraya ait.</p>
+        <ol class="eserler" id="eserListesi"></ol>
+      </div>
+    </section>
+
+    <section class="oda" aria-labelledby="b-kaynak" id="kaynak-listesi">
+      <div class="oda-bas"><div>
+        <svg class="f-delik" viewBox="0 0 22 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="15" cy="6" r="3.2" fill="currentColor" stroke="none"/><path d="M15 9 C 17 22, 4 26, 7 55"/><circle cx="7" cy="58" r="3.2" fill="currentColor" stroke="none"/><path d="M4 30 l6 2 M12 34 l6 2"/></svg>
+        <h2 id="b-kaynak">Kaynaklar</h2>
+      </div></div>
+      <div class="oda-govde">
+        <ol id="kaynaklar">
+          <li id="k1">Sharp PM, Hahn BH. Origins of HIV and the AIDS pandemic. <i>Cold Spring Harbor Perspectives in Medicine</i>. 2011;1(1):a006841. <a class="doi" href="https://doi.org/10.1101/cshperspect.a006841" target="_blank" rel="noopener">doi:10.1101/cshperspect.a006841</a></li>
+          <li id="k2">Chahroudi A, Bosinger SE, Vanderford TH, Paiardini M, Silvestri G. Natural SIV hosts: showing AIDS the door. <i>Science</i>. 2012;335(6073):1188–1193. <a class="doi" href="https://doi.org/10.1126/science.1217550" target="_blank" rel="noopener">doi:10.1126/science.1217550</a></li>
+          <li id="k3">Keele BF, Jones JH, Terio KA, et al. Increased mortality and AIDS-like immunopathology in wild chimpanzees infected with SIVcpz. <i>Nature</i>. 2009;460:515–519. <a class="doi" href="https://doi.org/10.1038/nature08200" target="_blank" rel="noopener">doi:10.1038/nature08200</a></li>
+          <li id="k4">Keele BF, Van Heuverswyn F, Li Y, et al. Chimpanzee reservoirs of pandemic and nonpandemic HIV-1. <i>Science</i>. 2006;313:523–526. <a class="doi" href="https://doi.org/10.1126/science.1126531" target="_blank" rel="noopener">doi:10.1126/science.1126531</a></li>
+          <li id="k5">Worobey M, Gemmel M, Teuwen DE, et al. Direct evidence of extensive diversity of HIV-1 in Kinshasa by 1960. <i>Nature</i>. 2008;455:661–664. <a class="doi" href="https://doi.org/10.1038/nature07390" target="_blank" rel="noopener">doi:10.1038/nature07390</a></li>
+          <li id="k6">Daniel MD, Letvin NL, King NW, et al. Isolation of T-cell tropic HTLV-III-like retrovirus from macaques. <i>Science</i>. 1985;228:1201–1204. <a class="doi" href="https://doi.org/10.1126/science.3159089" target="_blank" rel="noopener">doi:10.1126/science.3159089</a></li>
+          <li id="k7">Hirsch VM, Olmsted RA, Murphey-Corb M, Purcell RH, Johnson PR. An African primate lentivirus (SIVsm) closely related to HIV-2. <i>Nature</i>. 1989;339:389–392. <a class="doi" href="https://doi.org/10.1038/339389a0" target="_blank" rel="noopener">doi:10.1038/339389a0</a></li>
+          <li id="k8">Gao F, Bailes E, Robertson DL, et al. Origin of HIV-1 in the chimpanzee <i>Pan troglodytes troglodytes</i>. <i>Nature</i>. 1999;397:436–441. <a class="doi" href="https://doi.org/10.1038/17130" target="_blank" rel="noopener">doi:10.1038/17130</a></li>
+          <li id="k9">Humle T, Maisels F, Oates JF, Plumptre A, Williamson EA. <i>Pan troglodytes</i>. The IUCN Red List of Threatened Species 2016. <a class="doi" href="https://doi.org/10.2305/IUCN.UK.2016-2.RLTS.T15933A17964454.en" target="_blank" rel="noopener">doi:10.2305/IUCN.UK.2016-2.RLTS.T15933A17964454.en</a></li>
+        </ol>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="icerik">
+    <p>Bu sayfa bilgilendirme amaçlıdır; tıbbi tavsiye yerine geçmez.</p>
+    <p>Metin, görseller ve müzik Claude tarafından hazırlandı. Her sayısal iddianın bir kaynağa bağlı olduğu, sayfayla birlikte çalışan bir kabul testiyle doğrulandı.</p>
+  </div>
+</footer>
+
+<div class="calar" role="region" aria-label="Müzik çalar">
+  <div class="calar-ic">
+    <button class="yuvarlak" type="button" id="oynat" aria-label="Müziği başlat" aria-pressed="false">
+      <svg id="ikonOynat" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+      <svg id="ikonDur" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" hidden><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+    </button>
+    <div class="calar-bilgi">
+      <div class="calar-satir"><span class="calar-eser" id="eserAdi">Ağıt</span><span class="calar-alt" id="eserAlt">Re minör</span></div>
+      <div class="ilerleme"><i id="ilerleme"></i></div>
+    </div>
+    <span class="nota" id="nota" title="Kemanın şu an çaldığı nota">—</span>
+    <button class="yuvarlak ikincil" type="button" id="sonraki" aria-label="Sonraki eser">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 6l8.5 6L6 18zM16 6h2v12h-2z"/></svg>
+    </button>
+    <label class="ses"><span class="gizli">Ses düzeyi</span><input type="range" id="sesDuzeyi" min="0" max="1" step="0.01" value="0.75"></label>
+  </div>
+</div>
+
+<script type="application/json" id="partisyon">
+[
+  {
+    "ad": "Ağıt",
+    "alt": "Re minör · keman, viyola ve çello",
+    "olcuYazi": "4/4",
+    "tempo": 58,
+    "olcu": 4,
+    "olcuSayisi": 16,
+    "tekrar": 1,
+    "eslik": "uzun",
+    "melodi": "A4:1.5 D5:0.5 F5:1 E5:1 D5:1.5 C5:0.5 Bb4:1 D5:1 G4:1 Bb4:1 D5:1.5 C5:0.5 C#5:2 E5:1 A4:1 F5:1.5 E5:0.5 D5:1 A5:1 A5:1.5 G5:0.5 F5:1 C5:1 Bb4:1 D5:1 C#5:1 E5:1 D5:3 R:1 F5:1 D5:0.5 F5:0.5 Bb5:2 A5:1 G5:0.5 F5:0.5 C5:2 G5:1 F5:0.5 E5:0.5 D5:1 Bb4:1 A4:1 C#5:1 E5:1 G5:1 F5:1.5 E5:0.5 D5:1 F5:1 G5:1.5 F5:0.5 E5:1 D5:1 C#5:1 E5:1 A4:1 C#5:1 D5:4",
+    "akorlar": "D2-F3-A3:4 Bb2-F3-D4:4 G2-D3-Bb3:4 A2-E3-C#4:4 D2-F3-A3:4 F2-C3-A3:4 G2-D3-Bb3:2 A2-E3-C#4:2 D2-F3-A3:4 Bb2-F3-D4:4 F2-C3-A3:4 G2-D3-Bb3:4 A2-E3-C#4:4 D2-F3-A3:4 G2-D3-Bb3:4 A2-G3-C#4:4 D2-A2-F3-D4:4"
+  },
+  {
+    "ad": "Bulutların Menüeti",
+    "alt": "Sol majör · keman ve pizzicato",
+    "olcuYazi": "3/4",
+    "tempo": 104,
+    "olcu": 3,
+    "olcuSayisi": 16,
+    "tekrar": 2,
+    "eslik": "pizz",
+    "melodi": "B4:1 D5:1 G5:1 F#5:1.5 E5:0.5 D5:1 E5:1 G5:1 B4:1 C5:1 E5:1 G5:1 D5:1 B4:0.5 C5:0.5 D5:1 C5:1 A4:1 F#4:1 G4:1 B4:0.5 D5:0.5 A4:1 G4:2 R:1 E5:1 G5:0.5 E5:0.5 C5:1 D5:1 B4:1 G4:1 A4:1 C5:0.5 E5:0.5 A5:1 F#5:1 E5:0.5 D5:0.5 C5:1 B4:1 D5:1 G5:1 G5:1 F#5:0.5 E5:0.5 B4:1 C5:1 E5:1 F#5:1 G5:3",
+    "akorlar": "G2-D3-B3:3 D2-A2-F#3:3 E2-B2-G3:3 C3-G3-E4:3 G2-D3-B3:3 A2-E3-C4:1 D2-A2-F#3:2 G2-D3-B3:2 D2-A2-F#3:1 G2-D3-B3:3 C3-G3-E4:3 G2-D3-B3:3 A2-E3-C4:3 D2-A2-F#3-C4:3 G2-D3-B3:3 E2-B2-G3:3 A2-E3-C4:1 D2-A2-F#3:2 G2-D3-B3:3"
+  },
+  {
+    "ad": "Gece Müziği",
+    "alt": "Mi minör · keman ve arpej",
+    "olcuYazi": "4/4",
+    "tempo": 66,
+    "olcu": 4,
+    "olcuSayisi": 16,
+    "tekrar": 1,
+    "eslik": "arp",
+    "melodi": "B4:2 E5:1 G5:1 G5:1.5 F#5:0.5 E5:2 E5:1 C5:1 A4:1 C5:1 D#5:2 F#5:1 A5:1 G5:3 F#5:0.5 E5:0.5 E5:1 A5:1 C6:1 B5:0.5 A5:0.5 A5:1.5 F#5:0.5 D5:2 B4:1 D5:1 G5:2 E5:1.5 G5:0.5 C6:1 B5:1 A5:1 E5:1 C5:1 E5:1 A4:1 C5:1 F#5:1.5 E5:0.5 D#5:1 F#5:1 B5:1 A5:1 G5:1.5 F#5:0.5 E5:1 B4:1 C5:1 E5:1 G5:1 E5:1 F#5:1 D#5:1 A4:1 B4:1 E5:4",
+    "akorlar": "E2-B2-E3-G3:4 C2-G2-C3-E3:4 A2-E3-A3-C4:4 B2-D#3-F#3-A3:4 E2-B2-E3-G3:4 A2-E3-A3-C4:4 D2-A2-D3-F#3:4 G2-D3-G3-B3:4 C2-G2-C3-E3:4 A2-E3-A3-C4:4 F#2-C3-F#3-A3:4 B2-D#3-F#3-A3:4 E2-B2-E3-G3:4 C2-G2-C3-E3:4 B2-D#3-F#3-A3:4 E2-B2-E3-G3:4"
+  }
+]
+</script>
+
+<script>
+(() => {
+  "use strict";
+  const PARCALAR = JSON.parse(document.getElementById("partisyon").textContent);
+  const AZALT = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ================= Nota yardımcıları ================= */
+  const YARIM = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+  const SOLFEJ = { C: "Do", D: "Re", E: "Mi", F: "Fa", G: "Sol", A: "La", B: "Si" };
+  function midi(n) {
+    const m = /^([A-G])(#|b)?(\d)$/.exec(n);
+    return (+m[3] + 1) * 12 + YARIM[m[1]] + (m[2] === "#" ? 1 : m[2] === "b" ? -1 : 0);
+  }
+  const frekans = (n) => 440 * Math.pow(2, (midi(n) - 69) / 12);
+  function solfej(n) {
+    const m = /^([A-G])(#|b)?(\d)$/.exec(n);
+    return SOLFEJ[m[1]] + (m[2] === "#" ? "♯" : m[2] === "b" ? "♭" : "") + m[3];
+  }
+  function coz(dizi) {
+    let t = 0;
+    return dizi.trim().split(/\s+/).map((tok) => {
+      const [n, d] = tok.split(":");
+      const e = { n, t, d: +d };
+      t += +d;
+      return e;
+    });
+  }
+
+  /* Bir eserin tüm olaylarını vuruş cinsinden üretir. */
+  function olaylar(p) {
+    const tur = p.olcu * p.olcuSayisi;
+    const ev = [];
+    for (let r = 0; r < (p.tekrar || 1); r++) {
+      const k = r * tur;
+      coz(p.melodi).forEach((e, i, arr) => {
+        if (e.n === "R") return;
+        const uzun = e.d >= 1.5;
+        const son = i === arr.length - 1;
+        ev.push({ tur: "keman", t: k + e.t, d: e.d, n: e.n, vurgu: (uzun ? 1.08 : 1) * (son ? 0.9 : 1) });
+      });
+      coz(p.akorlar).forEach((c) => {
+        const notalar = c.n.split("-");
+        if (p.eslik === "uzun") {
+          notalar.forEach((n, i) => ev.push({ tur: i === 0 ? "cello" : "viyola", t: k + c.t, d: c.d, n }));
+        } else if (p.eslik === "pizz") {
+          ev.push({ tur: "pizz", t: k + c.t, d: 1, n: notalar[0], y: 1 });
+          for (let b = 1; b < c.d; b++) notalar.slice(1).forEach((n) => ev.push({ tur: "pizz", t: k + c.t + b, d: 1, n, y: 0.5 }));
+        } else {
+          ev.push({ tur: "cello", t: k + c.t, d: c.d, n: notalar[0], y: 0.8 });
+          const ust = notalar.slice(1);
+          const sira = ust.concat(ust.slice(1, -1).reverse());
+          for (let s = 0; s * 0.5 < c.d; s++) ev.push({ tur: "pizz", t: k + c.t + s * 0.5, d: 0.5, n: sira[s % sira.length], y: s === 0 ? 0.6 : 0.42 });
+        }
+      });
+    }
+    return ev.sort((a, b) => a.t - b.t);
+  }
+
+  /* ================= Ses motoru ================= */
+  let A = null;
+  function sesKur() {
+    const C = window.AudioContext || window.webkitAudioContext;
+    const ctx = new C();
+    const ana = ctx.createGain();
+    ana.gain.value = +document.getElementById("sesDuzeyi").value;
+    const sik = ctx.createDynamicsCompressor();
+    sik.threshold.value = -16; sik.ratio.value = 3; sik.attack.value = 0.01; sik.release.value = 0.25;
+    const analiz = ctx.createAnalyser();
+    analiz.fftSize = 1024;
+    const yol = ctx.createGain();
+    const kuru = ctx.createGain(); kuru.gain.value = 1.4;
+    const islak = ctx.createGain(); islak.gain.value = 0.65;
+    const yanki = ctx.createConvolver();
+    yanki.buffer = salon(ctx, 3.1);
+    yol.connect(kuru); kuru.connect(ana);
+    yol.connect(yanki); yanki.connect(islak); islak.connect(ana);
+    ana.connect(sik); sik.connect(analiz); analiz.connect(ctx.destination);
+    const gurultu = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+    const g = gurultu.getChannelData(0);
+    for (let i = 0; i < g.length; i++) g[i] = Math.random() * 2 - 1;
+    A = { ctx, ana, analiz, yol, gurultu, dalga: new Uint8Array(analiz.fftSize) };
+  }
+  /* Gürültüden üretilmiş stereo salon yankısı */
+  function salon(ctx, sn) {
+    const uz = Math.floor(ctx.sampleRate * sn);
+    const b = ctx.createBuffer(2, uz, ctx.sampleRate);
+    const on = ctx.sampleRate * 0.015;
+    for (let k = 0; k < 2; k++) {
+      const d = b.getChannelData(k);
+      for (let i = 0; i < uz; i++) {
+        const giris = i < on ? i / on : 1;
+        d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / uz, 3.4) * giris;
+      }
+    }
+    return b;
+  }
+  function kanal(c, cikis, pan) {
+    if (!c.createStereoPanner) return cikis;
+    const p = c.createStereoPanner();
+    p.pan.value = pan;
+    p.connect(cikis);
+    return p;
+  }
+  /* Yaylı ses: iki testere dişi + gövde rezonansları + yay hışırtısı + gecikmeli vibrato */
+  function yay(f, t, d, v, o) {
+    const c = A.ctx;
+    const atak = Math.min(o.atak, d * 0.4);
+    const birak = o.birak;
+    const son = t + d + birak * 7;
+    const amp = c.createGain();
+    amp.gain.setValueAtTime(0, t);
+    amp.gain.linearRampToValueAtTime(v, t + atak);
+    amp.gain.setTargetAtTime(v * 0.8, t + atak, Math.max(0.05, d * 0.45));
+    amp.gain.setTargetAtTime(0, t + d, birak);
+    const lp = c.createBiquadFilter();
+    lp.type = "lowpass"; lp.Q.value = 0.5;
+    lp.frequency.setValueAtTime(o.parlak * 0.4, t);
+    lp.frequency.linearRampToValueAtTime(o.parlak, t + atak * 1.5);
+    const kopru = c.createBiquadFilter();
+    kopru.type = "peaking"; kopru.frequency.value = 2700; kopru.Q.value = 1.1; kopru.gain.value = 5;
+    const govde = c.createBiquadFilter();
+    govde.type = "peaking"; govde.frequency.value = o.govde; govde.Q.value = 1.4; govde.gain.value = 6;
+    const hp = c.createBiquadFilter();
+    hp.type = "highpass"; hp.frequency.value = o.alt;
+    hp.connect(govde); govde.connect(kopru); kopru.connect(lp); lp.connect(amp);
+    amp.connect(kanal(c, o.cikis, o.pan));
+
+    const vib = c.createOscillator();
+    vib.frequency.value = 4.9 + Math.random() * 0.9;
+    const vg = c.createGain();
+    vg.gain.setValueAtTime(0, t);
+    vg.gain.setValueAtTime(0, t + Math.min(0.12, d * 0.3));
+    vg.gain.linearRampToValueAtTime(f * 0.0058 * o.vib, t + Math.min(0.45, d * 0.7));
+    vib.connect(vg);
+    vib.start(t); vib.stop(son);
+    [-6, 5].forEach((sap) => {
+      const s = c.createOscillator();
+      s.type = "sawtooth"; s.frequency.value = f; s.detune.value = sap;
+      vg.connect(s.frequency);
+      const sg = c.createGain(); sg.gain.value = 0.5;
+      s.connect(sg); sg.connect(hp);
+      s.start(t); s.stop(son);
+    });
+    const nz = c.createBufferSource();
+    nz.buffer = A.gurultu; nz.loop = true;
+    const bp = c.createBiquadFilter();
+    bp.type = "bandpass"; bp.frequency.value = Math.min(7500, f * 4); bp.Q.value = 0.9;
+    const ng = c.createGain(); ng.gain.value = 0.07;
+    nz.connect(bp); bp.connect(ng); ng.connect(hp);
+    nz.start(t, Math.random() * 1.5); nz.stop(son);
+  }
+  /* Pizzicato: telin parmakla çekilmesi */
+  function mizrap(f, t, v, o) {
+    const c = A.ctx;
+    const sure = o.sure;
+    const s = c.createOscillator(); s.type = "triangle"; s.frequency.value = f;
+    const s2 = c.createOscillator(); s2.type = "sawtooth"; s2.frequency.value = f * 1.001;
+    const g2 = c.createGain(); g2.gain.value = 0.22;
+    const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.Q.value = 1.2;
+    lp.frequency.setValueAtTime(Math.min(6500, f * 9), t);
+    lp.frequency.exponentialRampToValueAtTime(Math.max(180, f * 1.4), t + sure * 0.45);
+    const a = c.createGain();
+    a.gain.setValueAtTime(0.0001, t);
+    a.gain.exponentialRampToValueAtTime(v, t + 0.006);
+    a.gain.exponentialRampToValueAtTime(0.0001, t + sure);
+    s.connect(lp); s2.connect(g2); g2.connect(lp); lp.connect(a);
+    a.connect(kanal(c, o.cikis, o.pan));
+    s.start(t); s2.start(t); s.stop(t + sure + 0.05); s2.stop(t + sure + 0.05);
+  }
+
+  /* ================= Zamanlayıcı ================= */
+  const durum = { caliyor: false, no: 0, olay: [], melodi: [], ptr: 0, t0: 0, spb: 1, bitis: 0, bus: null, zaman: null };
+  function planla(e) {
+    const t = durum.t0 + e.t * durum.spb;
+    const d = e.d * durum.spb;
+    const f = frekans(e.n);
+    const cikis = durum.bus;
+    if (e.tur === "keman") {
+      const yukseklik = Math.max(0, Math.min(1, (midi(e.n) - 62) / 22));
+      yay(f, t, d + 0.05, 0.17 * (0.85 + 0.35 * yukseklik) * e.vurgu, { atak: 0.09, birak: 0.11, parlak: 5400, govde: 320, alt: 180, vib: 1, pan: 0.12, cikis });
+    } else if (e.tur === "viyola") {
+      yay(f, t, d + 0.1, 0.055, { atak: 0.3, birak: 0.28, parlak: 2400, govde: 260, alt: 110, vib: 0.55, pan: -0.28, cikis });
+    } else if (e.tur === "cello") {
+      yay(f, t, d + 0.1, 0.085 * (e.y || 1), { atak: 0.22, birak: 0.3, parlak: 1700, govde: 170, alt: 45, vib: 0.5, pan: -0.1, cikis });
+    } else {
+      mizrap(f, t, 0.16 * (e.y || 1), { sure: f < 150 ? 1.1 : 0.8, pan: (Math.random() - 0.5) * 0.5, cikis });
+    }
+  }
+  function parcaBaslat(i, ne) {
+    const p = PARCALAR[i];
+    durum.no = i;
+    durum.spb = 60 / p.tempo;
+    durum.olay = olaylar(p);
+    durum.melodi = durum.olay.filter((e) => e.tur === "keman");
+    durum.ptr = 0;
+    durum.t0 = ne;
+    durum.bitis = ne + p.olcu * p.olcuSayisi * (p.tekrar || 1) * durum.spb;
+    durum.bus = A.ctx.createGain();
+    durum.bus.connect(A.yol);
+    document.getElementById("eserAdi").textContent = p.ad;
+    document.getElementById("eserAlt").textContent = p.alt;
+    document.querySelectorAll("#eserListesi li").forEach((li, k) => li.toggleAttribute("data-simdi", k === i));
+  }
+  function tik() {
+    const simdi = A.ctx.currentTime;
+    const ileri = document.hidden ? 3 : 0.6;
+    while (durum.ptr < durum.olay.length && durum.t0 + durum.olay[durum.ptr].t * durum.spb < simdi + ileri) {
+      planla(durum.olay[durum.ptr]);
+      durum.ptr++;
+    }
+    if (simdi > durum.bitis + 2.2) parcaBaslat((durum.no + 1) % PARCALAR.length, simdi + 0.2);
+  }
+  function eserGec(i) {
+    const eski = durum.bus;
+    const simdi = A.ctx.currentTime;
+    eski.gain.setTargetAtTime(0, simdi, 0.08);
+    setTimeout(() => eski.disconnect(), 900);
+    parcaBaslat(i, simdi + 0.35);
+  }
+
+  const oynat = document.getElementById("oynat");
+  function arayuz() {
+    oynat.setAttribute("aria-pressed", String(durum.caliyor));
+    oynat.setAttribute("aria-label", durum.caliyor ? "Müziği duraklat" : "Müziği başlat");
+    document.getElementById("ikonOynat").hidden = durum.caliyor;
+    document.getElementById("ikonDur").hidden = !durum.caliyor;
+    const s = document.querySelector("#sahneOynat span");
+    s.textContent = durum.caliyor ? "Kemanı duraklat" : "Kemanı başlat";
+  }
+  async function ac(kapa) {
+    if (!A) {
+      sesKur();
+      parcaBaslat(0, A.ctx.currentTime + 0.2);
+      durum.zaman = setInterval(tik, 90);
+      durum.caliyor = true;
+    } else if (durum.caliyor && kapa !== false) {
+      A.ana.gain.setTargetAtTime(0, A.ctx.currentTime, 0.05);
+      setTimeout(() => { if (!durum.caliyor) A.ctx.suspend(); }, 250);
+      durum.caliyor = false;
+    } else if (!durum.caliyor) {
+      await A.ctx.resume();
+      A.ana.gain.setTargetAtTime(+document.getElementById("sesDuzeyi").value, A.ctx.currentTime, 0.08);
+      durum.caliyor = true;
+    }
+    if (A.ctx.state === "suspended" && durum.caliyor) await A.ctx.resume();
+    arayuz();
+  }
+  oynat.addEventListener("click", () => ac());
+  document.getElementById("sahneOynat").addEventListener("click", () => ac());
+  document.getElementById("sonraki").addEventListener("click", async () => {
+    if (!A || !durum.caliyor) { await ac(false); if (durum.no === 0 && durum.ptr < 3) return; }
+    eserGec((durum.no + 1) % PARCALAR.length);
+  });
+  document.getElementById("sesDuzeyi").addEventListener("input", (e) => {
+    if (A && durum.caliyor) A.ana.gain.setTargetAtTime(+e.target.value, A.ctx.currentTime, 0.05);
+  });
+
+  /* Eser listesi */
+  const liste = document.getElementById("eserListesi");
+  PARCALAR.forEach((p, i) => {
+    const li = document.createElement("li");
+    const sol = document.createElement("div");
+    const ad = document.createElement("div"); ad.className = "ad"; ad.textContent = p.ad;
+    const bilgi = document.createElement("div"); bilgi.className = "bilgi";
+    bilgi.textContent = p.alt + " · " + p.olcuYazi + " · ♩ = " + p.tempo;
+    sol.append(ad, bilgi);
+    const b = document.createElement("button"); b.type = "button"; b.textContent = "Bunu çal";
+    b.addEventListener("click", async () => {
+      if (!A || !durum.caliyor) await ac(false);
+      if (durum.no !== i || durum.ptr > 2) eserGec(i);
+    });
+    li.append(sol, b);
+    liste.append(li);
+  });
+
+  /* ================= Sürreal sahne ================= */
+  const tv = document.getElementById("tuval");
+  const g = tv.getContext("2d");
+  let W = 0, H = 0, yildiz = [], bulut = [], orman = [], seviye = 0;
+  function rastgele(tohum) {
+    return () => {
+      tohum |= 0; tohum = (tohum + 0x6d2b79f5) | 0;
+      let t = Math.imul(tohum ^ (tohum >>> 15), 1 | tohum);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function boyutla() {
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const r = tv.getBoundingClientRect();
+    W = r.width; H = r.height;
+    tv.width = Math.round(W * dpr); tv.height = Math.round(H * dpr);
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const R = rastgele(1908);
+    yildiz = Array.from({ length: Math.round((W * H) / 5200) }, () => ({ x: R() * W, y: R() * H * 0.7, r: R() * 1.2 + 0.2, f: R() * 6.28, h: 0.4 + R() * 1.6 }));
+    bulut = Array.from({ length: 7 }, (_, i) => ({ x: R() * W, y: H * (0.12 + R() * 0.5), s: 30 + R() * 60, v: 4 + R() * 9, a: 0.05 + R() * 0.08, k: i }));
+    orman = [0, 1].map((kat) => {
+      const tepe = [];
+      let x = -40;
+      while (x < W + 40) {
+        const r = (kat ? 18 : 12) + R() * (kat ? 26 : 18);
+        tepe.push({ x, y: H * (kat ? 0.9 : 0.84) - R() * H * (kat ? 0.05 : 0.06), r });
+        x += r * (0.9 + R() * 0.5);
+      }
+      return tepe;
+    });
+  }
+  function bulutCiz(b) {
+    g.fillStyle = "rgba(214, 202, 236," + b.a + ")";
+    for (let i = 0; i < 5; i++) {
+      g.beginPath();
+      g.ellipse(b.x + (i - 2) * b.s * 0.55, b.y + Math.sin(i * 1.7 + b.k) * b.s * 0.12, b.s * (0.55 + (i % 2) * 0.2), b.s * 0.28, 0, 0, Math.PI * 2);
+      g.fill();
+    }
+  }
+  function kapiCiz(t) {
+    const kucuk = W < 700;
+    const w = Math.min(W, H) * (kucuk ? 0.14 : 0.1);
+    const h = w * 1.9;
+    const x = W * (kucuk ? 0.12 : 0.16);
+    const y = H * 0.07 + Math.sin(t * 0.0005) * 7;
+    g.save();
+    g.fillStyle = "rgba(10, 8, 22, 0.35)";
+    g.beginPath(); g.ellipse(x + w / 2, y + h + 26, w * 0.7, w * 0.1, 0, 0, Math.PI * 2); g.fill();
+    const gun = g.createLinearGradient(0, y, 0, y + h);
+    gun.addColorStop(0, "#8fbad8"); gun.addColorStop(1, "#e8eef0");
+    g.fillStyle = gun; g.fillRect(x, y, w, h);
+    g.fillStyle = "rgba(255,255,255,0.85)";
+    const bx = x + w * 0.5 + Math.sin(t * 0.0003) * w * 0.15;
+    [[-0.18, 0, 0.16], [0, -0.03, 0.2], [0.18, 0, 0.14]].forEach(([dx, dy, r]) => {
+      g.beginPath(); g.arc(bx + dx * w, y + h * 0.3 + dy * w, r * w, 0, Math.PI * 2); g.fill();
+    });
+    g.strokeStyle = "#3a2e52"; g.lineWidth = Math.max(3, w * 0.06);
+    g.strokeRect(x, y, w, h);
+    g.fillStyle = "#4b3b66";
+    g.beginPath(); g.moveTo(x, y); g.lineTo(x - w * 0.55, y + h * 0.06); g.lineTo(x - w * 0.55, y + h * 0.94); g.lineTo(x, y + h); g.closePath(); g.fill();
+    g.fillStyle = "#e2b35e";
+    g.beginPath(); g.arc(x - w * 0.44, y + h * 0.52, Math.max(2, w * 0.035), 0, Math.PI * 2); g.fill();
+    g.restore();
+  }
+  /* Ay: yüzeyi Env protein dikenleriyle kaplı, içinde konik kapsid taşıyan bir virion */
+  function virionCiz(t) {
+    const kucuk = W < 700;
+    const cx = W * (kucuk ? 0.68 : 0.72);
+    const cy = H * (kucuk ? 0.25 : 0.33);
+    const r = Math.min(W, H) * (kucuk ? 0.19 : 0.15);
+    const don = t * 0.00004;
+    const parla = g.createRadialGradient(cx, cy, r * 0.8, cx, cy, r * (2.4 + seviye * 1.4));
+    parla.addColorStop(0, "rgba(226,179,94," + (0.2 + seviye * 0.5) + ")");
+    parla.addColorStop(1, "rgba(226,179,94,0)");
+    g.fillStyle = parla;
+    g.beginPath(); g.arc(cx, cy, r * 3.8, 0, Math.PI * 2); g.fill();
+    const N = 26;
+    for (let i = 0; i < N; i++) {
+      const a = don + (i / N) * Math.PI * 2 + Math.sin(i * 3.1) * 0.05;
+      const ca = Math.cos(a), sa = Math.sin(a);
+      g.strokeStyle = "#b98543"; g.lineWidth = Math.max(1.2, r * 0.025);
+      g.beginPath(); g.moveTo(cx + ca * r * 0.98, cy + sa * r * 0.98); g.lineTo(cx + ca * r * 1.14, cy + sa * r * 1.14); g.stroke();
+      const kx = cx + ca * r * 1.19, ky = cy + sa * r * 1.19;
+      g.fillStyle = "#ebc987";
+      for (let k = -1; k <= 1; k++) {
+        const ox = -sa * k * r * 0.045, oy = ca * k * r * 0.045;
+        g.beginPath(); g.arc(kx + ox + ca * (k === 0 ? r * 0.03 : 0), ky + oy + sa * (k === 0 ? r * 0.03 : 0), r * 0.036, 0, Math.PI * 2); g.fill();
+      }
+    }
+    const govde = g.createRadialGradient(cx - r * 0.35, cy - r * 0.4, r * 0.1, cx, cy, r);
+    govde.addColorStop(0, "#f6dc9c"); govde.addColorStop(0.55, "#dca552"); govde.addColorStop(1, "#a56b31");
+    g.fillStyle = govde;
+    g.beginPath(); g.arc(cx, cy, r, 0, Math.PI * 2); g.fill();
+    g.strokeStyle = "rgba(90, 52, 22, 0.35)"; g.lineWidth = r * 0.05;
+    g.beginPath(); g.arc(cx, cy, r * 0.93, 0, Math.PI * 2); g.stroke();
+    g.save();
+    g.translate(cx, cy); g.rotate(-0.5 + Math.sin(t * 0.00015) * 0.08);
+    g.fillStyle = "rgba(110, 62, 28, 0.28)"; g.strokeStyle = "rgba(110, 62, 28, 0.5)"; g.lineWidth = r * 0.025;
+    g.beginPath();
+    g.moveTo(-r * 0.46, -r * 0.26);
+    g.quadraticCurveTo(-r * 0.62, 0, -r * 0.46, r * 0.26);
+    g.lineTo(r * 0.4, r * 0.09);
+    g.quadraticCurveTo(r * 0.47, 0, r * 0.4, -r * 0.09);
+    g.closePath(); g.fill(); g.stroke();
+    g.restore();
+  }
+  function ormanCiz() {
+    [["#2b2149", 0], ["#0e0b1c", 1]].forEach(([renk, kat]) => {
+      g.fillStyle = renk;
+      orman[kat].forEach((c) => { g.beginPath(); g.arc(c.x, c.y, c.r, 0, Math.PI * 2); g.fill(); });
+      const alt = Math.min(...orman[kat].map((c) => c.y));
+      g.fillRect(0, alt, W, H - alt);
+    });
+  }
+  let onceki = 0;
+  function kare(t) {
+    const dt = Math.min(0.05, (t - onceki) / 1000 || 0);
+    onceki = t;
+    if (A && durum.caliyor) {
+      A.analiz.getByteTimeDomainData(A.dalga);
+      let s = 0;
+      for (let i = 0; i < A.dalga.length; i++) { const v = (A.dalga[i] - 128) / 128; s += v * v; }
+      seviye += (Math.min(1, Math.sqrt(s / A.dalga.length) * 5) - seviye) * 0.12;
+    } else {
+      seviye *= 0.95;
+    }
+    g.clearRect(0, 0, W, H);
+    yildiz.forEach((y) => {
+      g.fillStyle = "rgba(239,231,214," + (0.35 + 0.35 * Math.sin(t * 0.001 * y.h + y.f)) + ")";
+      g.beginPath(); g.arc(y.x, y.y, y.r, 0, Math.PI * 2); g.fill();
+    });
+    bulut.forEach((b) => {
+      b.x += b.v * dt;
+      if (b.x - b.s * 2 > W) b.x = -b.s * 2;
+      bulutCiz(b);
+    });
+    virionCiz(t);
+    kapiCiz(t);
+    ormanCiz();
+    if (A) {
+      const simdi = A.ctx.currentTime;
+      const oran = Math.max(0, Math.min(1, (simdi - durum.t0) / (durum.bitis - durum.t0)));
+      document.getElementById("ilerleme").style.width = (oran * 100).toFixed(2) + "%";
+      let n = "—";
+      for (let i = durum.melodi.length - 1; i >= 0; i--) {
+        const e = durum.melodi[i];
+        const bas = durum.t0 + e.t * durum.spb;
+        if (bas <= simdi) { if (simdi < bas + e.d * durum.spb + 0.05) n = solfej(e.n); break; }
+      }
+      document.getElementById("nota").textContent = durum.caliyor ? n : "—";
+    }
+    if (!AZALT || (A && durum.caliyor)) requestAnimationFrame(kare);
+  }
+  boyutla();
+  new ResizeObserver(() => { boyutla(); if (AZALT) kare(performance.now()); }).observe(tv);
+  requestAnimationFrame(kare);
+  if (AZALT) {
+    oynat.addEventListener("click", () => requestAnimationFrame(kare));
+  }
+})();
+</script>
