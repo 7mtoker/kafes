@@ -1,863 +1,1380 @@
-<title>Maymunlar ve SIV</title>
-<meta name="description" content="Maymunlarda bağışıklık yetmezliği virüsü (SIV) üzerine, her sayısı kaynaklı, sürreal bir farkındalık sayfası.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,400;1,6..96,500&family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,600;1,7..72,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<title>KAFES</title>
+<meta name="description" content="KAFES: kurgusal bir korku filmi. Fragmandaki her görüntü ve ses bu sayfanın kodunda gerçek zamanlı üretilir.">
 <style>
   :root {
     color-scheme: dark;
-    --gece: #15122a;
-    --gece-2: #1d1837;
-    --gece-3: #262046;
-    --kemik: #efe7d6;
-    --soluk: #aba3c2;
-    --okra: #e2b35e;
-    --okra-koyu: #b8843c;
-    --liken: #86bbad;
-    --cizgi: rgba(239, 231, 214, 0.14);
-    --f-gosteri: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
-    --f-metin: "Literata", "Iowan Old Style", Georgia, serif;
-    --f-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --kara: #060708;
+    --kul: #121416;
+    --kul-2: #1b1e21;
+    --kemik: #d8d2c4;
+    --soluk: #8d8a82;
+    --pas: #8e2a1c;
+    --pas-acik: #c0452f;
+    --fener: #e6c47d;
+    --cizgi: rgba(216, 210, 196, 0.13);
+    --f-baslik: Impact, Haettenschweiler, "Arial Narrow Bold", "Franklin Gothic Heavy", sans-serif;
+    --f-metin: Georgia, "Times New Roman", serif;
+    --f-mono: "Courier New", Courier, ui-monospace, monospace;
   }
   * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: var(--gece);
-    color: var(--kemik);
-    font: 300 1.0625rem/1.7 var(--f-metin);
-    -webkit-font-smoothing: antialiased;
-  }
-  a { color: var(--okra); text-underline-offset: 3px; text-decoration-thickness: 1px; }
-  a:hover { color: var(--kemik); }
-  :focus-visible { outline: 2px solid var(--okra); outline-offset: 3px; border-radius: 2px; }
+  [hidden] { display: none !important; }
+  html, body { background: var(--kara); }
+  body { margin: 0; color: var(--kemik); font: 400 1.05rem/1.7 var(--f-metin); -webkit-font-smoothing: antialiased; }
+  a { color: var(--fener); }
+  :focus-visible { outline: 2px solid var(--pas-acik); outline-offset: 3px; }
   .gizli { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  button { font: inherit; color: inherit; }
 
-  /* ---------- Sahne ---------- */
-  .sahne {
-    position: relative;
-    height: clamp(540px, 88vh, 780px);
-    overflow: hidden;
-    background: linear-gradient(180deg, #120f26 0%, #2a1f4d 48%, #5a3d66 76%, #9a6a55 100%);
+  /* ---------- Uyarı kapısı ---------- */
+  .uyari {
+    position: fixed; inset: 0; z-index: 50;
+    display: grid; place-items: center;
+    padding: calc(24px + env(safe-area-inset-top, 0px)) 18px calc(24px + env(safe-area-inset-bottom, 0px));
+    background: radial-gradient(ellipse at 50% 40%, #16100e 0%, var(--kara) 70%);
+    overflow-y: auto;
   }
-  .sahne canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-  .sahne-yazi {
-    position: absolute; left: 0; right: 0; bottom: 0;
-    padding: 96px 20px 44px;
-    background: linear-gradient(180deg, transparent, rgba(13, 10, 26, 0.72) 42%, rgba(13, 10, 26, 0.94));
-  }
-  .sahne-ic { max-width: 1080px; margin-inline: auto; }
-  .kas {
-    font: 500 0.72rem/1.4 var(--f-mono);
-    letter-spacing: 0.16em; text-transform: uppercase;
-    color: var(--liken); margin: 0 0 14px;
-  }
-  h1 {
-    font: italic 400 clamp(2.7rem, 7.4vw, 6rem)/0.98 var(--f-gosteri);
-    letter-spacing: -0.015em;
-    margin: 0 0 22px; max-width: 13ch;
-    text-wrap: balance;
-  }
-  h1 em { font-style: normal; color: var(--okra); }
-  .giris { max-width: 58ch; margin: 0 0 26px; color: #ddd4c2; font-size: 1.12rem; }
-  .eylemler { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; }
+  .uyari-ic { max-width: 560px; }
+  .uyari .etiket { font: 700 0.75rem/1 var(--f-mono); letter-spacing: 0.3em; color: var(--pas-acik); margin: 0 0 18px; }
+  .uyari h2 { font: 400 clamp(2rem, 6vw, 3rem)/1 var(--f-baslik); letter-spacing: 0.04em; margin: 0 0 18px; text-transform: uppercase; }
+  .uyari p { margin: 0 0 14px; color: #bdb7aa; }
+  .uyari ul { margin: 0 0 24px; padding-left: 1.2em; color: #bdb7aa; }
+  .secenek { display: flex; flex-wrap: wrap; gap: 12px; }
   .dugme {
-    display: inline-flex; align-items: center; gap: 10px;
-    font: 500 0.95rem/1 var(--f-metin);
-    background: var(--okra); color: #1a1326;
-    border: 0; border-radius: 999px; padding: 13px 22px 13px 18px; cursor: pointer;
+    border: 1px solid var(--kemik); background: var(--kemik); color: var(--kara);
+    padding: 13px 20px; cursor: pointer; letter-spacing: 0.04em;
+    font: 700 0.9rem/1 var(--f-mono); text-transform: uppercase;
   }
-  .dugme:hover { background: #f0c677; }
-  .dugme svg { width: 18px; height: 18px; }
-  .sessiz-baglanti { color: var(--kemik); font-size: 0.95rem; }
+  .dugme.ikincil { background: transparent; color: var(--kemik); }
+  .dugme:hover { background: var(--pas-acik); border-color: var(--pas-acik); color: var(--kemik); }
 
-  /* ---------- İçerik ---------- */
-  main { padding-bottom: 140px; }
-  .icerik { max-width: 1080px; margin-inline: auto; padding-inline: 20px; }
-  .oda {
-    display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.7fr);
-    gap: 28px 64px;
-    padding-block: 76px;
-    border-top: 1px solid var(--cizgi);
+  /* ---------- Başlık ---------- */
+  .ust { max-width: 1180px; margin-inline: auto; padding: 42px 18px 22px; }
+  .kurgu-notu { font: 700 0.7rem/1 var(--f-mono); letter-spacing: 0.28em; color: var(--soluk); margin: 0 0 16px; }
+  h1 {
+    margin: 0; font: 400 clamp(4.2rem, 17vw, 11rem)/0.82 var(--f-baslik);
+    letter-spacing: 0.02em; text-transform: uppercase; color: var(--kemik);
   }
-  .oda:first-child { border-top: 0; }
-  .oda-bas { position: relative; }
-  .oda-bas > div { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 28px); }
-  .f-delik { width: 22px; height: 64px; color: var(--okra); opacity: 0.8; margin-bottom: 16px; display: block; }
-  h2 {
-    font: italic 400 clamp(1.9rem, 3.4vw, 2.6rem)/1.08 var(--f-gosteri);
-    margin: 0; text-wrap: balance;
-  }
-  .oda-govde > * { max-width: 62ch; }
-  .oda-govde p { margin: 0 0 1.15em; }
-  .oda-govde p:last-child { margin-bottom: 0; }
-  .yorum { color: var(--soluk); font-style: italic; }
-  .kaynak-isareti {
-    font: 500 0.7rem/1 var(--f-mono);
-    vertical-align: 0.35em; margin-left: 3px;
-    text-decoration: none; color: var(--okra);
-    padding: 2px 4px; border: 1px solid rgba(226, 179, 94, 0.35); border-radius: 3px;
-  }
-  .kaynak-isareti:hover { background: rgba(226, 179, 94, 0.14); color: var(--kemik); }
-  .terim { font-style: italic; color: var(--kemik); font-weight: 400; }
+  h1 span { color: var(--pas); }
+  .slogan { margin: 16px 0 0; font: italic 400 clamp(1.1rem, 2.4vw, 1.45rem)/1.4 var(--f-metin); color: #b9b2a3; max-width: 44ch; }
 
-  .dev {
-    margin: 8px 0 30px; padding: 26px 0 26px 26px;
-    border-left: 1px solid var(--okra);
+  /* ---------- Fragman ---------- */
+  .fragman-kap { max-width: 1180px; margin-inline: auto; padding-inline: 18px; }
+  .fragman { position: relative; aspect-ratio: 16 / 9; width: 100%; max-width: 100%; background: #000; overflow: hidden; border: 1px solid var(--cizgi); }
+  .fragman canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .kamera-ust {
+    position: absolute; left: 3.2%; right: 3.2%; top: 4.5%;
+    display: flex; justify-content: space-between; gap: 10px;
+    font: 700 clamp(0.62rem, 1.5vw, 0.95rem)/1 var(--f-mono); color: rgba(235, 232, 220, 0.82);
+    text-shadow: 0 0 6px rgba(0,0,0,0.9); pointer-events: none; letter-spacing: 0.08em;
   }
-  .dev-sayi {
-    font: italic 400 clamp(3.4rem, 9vw, 6.2rem)/0.9 var(--f-gosteri);
-    color: var(--okra); display: block; margin-bottom: 12px;
-    font-variant-numeric: lining-nums;
+  .rec::before { content: ""; display: inline-block; width: 0.7em; height: 0.7em; border-radius: 50%; background: #d23b2a; margin-right: 0.5em; vertical-align: -0.05em; animation: rec 1.6s steps(2, jump-none) infinite; }
+  @keyframes rec { 50% { opacity: 0.15; } }
+  .kart {
+    position: absolute; inset: 0; display: grid; place-items: center; padding: 6%;
+    text-align: center; pointer-events: none;
+    font: italic 400 clamp(0.95rem, 2.6vw, 1.7rem)/1.35 var(--f-metin); color: #e7e1d3;
+    text-shadow: 0 0 18px #000, 0 0 4px #000;
+    opacity: 0; transition: opacity 0.35s ease;
   }
-  .dev p { margin: 0; color: #ddd4c2; }
+  .kart.gorunur { opacity: 1; }
+  .kart.buyuk { font: 400 clamp(1.8rem, 7.5vw, 5rem)/1 var(--f-baslik); font-style: normal; letter-spacing: 0.06em; transition: none; }
+  .kart.baslik { font: 400 clamp(4rem, 20vw, 13rem)/0.9 var(--f-baslik); font-style: normal; letter-spacing: 0.04em; color: var(--kemik); transition: opacity 1.2s ease; }
+  .kart.alt { align-items: end; padding-bottom: 9%; }
+  .baslat-ortu {
+    position: absolute; inset: 0; display: grid; place-items: center; cursor: pointer;
+    background: radial-gradient(ellipse, rgba(0,0,0,0.2), rgba(0,0,0,0.85)); border: 0; width: 100%;
+  }
+  .baslat-ortu span { display: inline-flex; align-items: center; gap: 12px; font: 700 clamp(0.8rem, 2vw, 1rem)/1 var(--f-mono); letter-spacing: 0.2em; text-transform: uppercase; border: 1px solid var(--kemik); padding: 16px 22px; background: rgba(6,7,8,0.7); }
+  .baslat-ortu svg { width: 16px; height: 16px; }
+  .webgl-yok { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; color: var(--soluk); }
 
-  .yol { list-style: none; margin: 0; padding: 0; position: relative; }
-  .yol::before { content: ""; position: absolute; left: 5.4rem; top: 8px; bottom: 8px; width: 1px; background: var(--cizgi); }
-  .yol li { display: grid; grid-template-columns: 5.4rem minmax(0, 1fr); gap: 0 26px; padding-block: 11px; position: relative; }
-  .yol li::after { content: ""; position: absolute; left: calc(5.4rem - 4px); top: 21px; width: 9px; height: 9px; border-radius: 50%; background: var(--gece); border: 1px solid var(--okra); }
-  .yol .yil { font: 500 0.85rem/1.9 var(--f-mono); color: var(--okra); font-variant-numeric: tabular-nums; }
-  .yol .olay { padding-left: 4px; }
+  .kontrol { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 12px 0 0; font: 400 0.8rem/1 var(--f-mono); color: var(--soluk); }
+  .kontrol button { background: none; border: 1px solid var(--cizgi); padding: 9px 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+  .kontrol button:hover { border-color: var(--kemik); color: var(--kemik); }
+  .kontrol svg { width: 14px; height: 14px; }
+  .serit { flex: 1 1 180px; height: 3px; background: var(--cizgi); min-width: 120px; }
+  .serit i { display: block; height: 100%; width: 0; background: var(--pas-acik); }
+  .sure { font-variant-numeric: tabular-nums; color: var(--kemik); }
+  .anahtar { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
+  .anahtar input { accent-color: var(--pas-acik); width: 16px; height: 16px; }
 
-  .yapilacak { list-style: none; padding: 0; margin: 0; display: grid; gap: 18px; }
-  .yapilacak li { padding-left: 30px; position: relative; }
-  .yapilacak li::before {
-    content: ""; position: absolute; left: 0; top: 0.72em; width: 14px; height: 1px; background: var(--liken);
-  }
-  .yapilacak strong { font-weight: 600; color: var(--kemik); }
+  /* ---------- Bölümler ---------- */
+  main { max-width: 1180px; margin-inline: auto; padding: 0 18px 80px; }
+  .bolum { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.9fr); gap: 20px 60px; padding-block: 72px; border-top: 1px solid var(--cizgi); }
+  .bolum:first-child { margin-top: 56px; }
+  h2.bb { margin: 0; font: 400 clamp(1.8rem, 3.6vw, 2.8rem)/1 var(--f-baslik); letter-spacing: 0.05em; text-transform: uppercase; }
+  .bolum .govde > * { max-width: 62ch; }
+  .bolum p { margin: 0 0 1.1em; }
+  .kayitlar { display: grid; gap: 34px; }
+  .kayit { font: 400 0.98rem/1.75 var(--f-mono); color: #cfc9ba; max-width: 64ch; }
+  .kayit h3 { font: 700 0.78rem/1 var(--f-mono); letter-spacing: 0.22em; color: var(--pas-acik); margin: 0 0 10px; }
+  .kayit p { margin: 0; }
+  .kayit .ciz { text-decoration: line-through; text-decoration-color: var(--pas); color: var(--soluk); }
+  footer { max-width: 1180px; margin-inline: auto; padding: 30px 18px calc(48px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--cizgi); color: var(--soluk); font-size: 0.85rem; }
+  footer p { margin: 0 0 8px; max-width: 78ch; }
 
-  .eserler { list-style: none; margin: 18px 0 0; padding: 0; border-top: 1px solid var(--cizgi); }
-  .eserler li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; padding: 14px 0; border-bottom: 1px solid var(--cizgi); }
-  .eserler .ad { font: italic 400 1.25rem/1.3 var(--f-gosteri); }
-  .eserler .bilgi { font: 400 0.8rem/1.9 var(--f-mono); color: var(--soluk); }
-  .eserler li[data-simdi] .ad { color: var(--okra); }
-  .eserler button {
-    background: none; border: 1px solid var(--cizgi); color: var(--kemik);
-    font: 400 0.8rem/1 var(--f-mono); border-radius: 999px; padding: 7px 12px; cursor: pointer;
-  }
-  .eserler button:hover { border-color: var(--okra); color: var(--okra); }
-
-  #kaynaklar { margin: 0; padding-left: 1.6em; display: grid; gap: 14px; font-size: 0.95rem; }
-  #kaynaklar li { padding-left: 6px; scroll-margin-top: 24px; }
-  #kaynaklar li::marker { font: 500 0.8rem var(--f-mono); color: var(--okra); }
-  #kaynaklar li:target { background: rgba(226, 179, 94, 0.1); outline: 1px solid rgba(226, 179, 94, 0.4); outline-offset: 6px; }
-  #kaynaklar .doi { font: 400 0.8rem var(--f-mono); word-break: break-all; }
-
-  footer {
-    border-top: 1px solid var(--cizgi);
-    color: var(--soluk); font-size: 0.85rem;
-    padding-block: 32px 150px;
-  }
-  footer p { margin: 0 0 6px; max-width: 70ch; }
-
-  /* ---------- Çalar ---------- */
-  .calar {
-    position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
-    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
-    background: rgba(18, 15, 36, 0.9);
-    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
-    border-top: 1px solid var(--cizgi);
-  }
-  .calar-ic { max-width: 1080px; margin-inline: auto; display: flex; align-items: center; gap: 14px; }
-  .calar button.yuvarlak {
-    flex: none; width: 44px; height: 44px; border-radius: 50%;
-    display: grid; place-items: center; cursor: pointer;
-    background: var(--okra); color: #1a1326; border: 0;
-  }
-  .calar button.yuvarlak.ikincil { background: transparent; color: var(--kemik); border: 1px solid var(--cizgi); width: 38px; height: 38px; }
-  .calar button.yuvarlak.ikincil:hover { border-color: var(--okra); color: var(--okra); }
-  .calar svg { width: 18px; height: 18px; }
-  .calar-bilgi { flex: 1; min-width: 0; }
-  .calar-satir { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
-  .calar-eser { font: italic 400 1.1rem/1.2 var(--f-gosteri); white-space: nowrap; }
-  .calar-alt { font: 400 0.75rem/1.2 var(--f-mono); color: var(--soluk); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .ilerleme { height: 2px; background: var(--cizgi); margin-top: 8px; border-radius: 2px; overflow: hidden; }
-  .ilerleme i { display: block; height: 100%; width: 0; background: var(--okra); }
-  .nota {
-    flex: none; min-width: 4.4rem; text-align: center;
-    font: 500 0.8rem/1 var(--f-mono); color: var(--liken);
-    border: 1px solid var(--cizgi); border-radius: 999px; padding: 8px 10px;
-  }
-  .ses { flex: none; display: flex; align-items: center; }
-  .ses input { width: 96px; accent-color: var(--okra); }
+  /* ---------- Sayfa içi korkutma ---------- */
+  .korkutma { position: fixed; inset: 0; z-index: 60; background: #000; }
+  .korkutma canvas { width: 100%; height: 100%; display: block; }
 
   @media (max-width: 760px) {
-    .oda { grid-template-columns: minmax(0, 1fr); padding-block: 56px; gap: 18px; }
-    .oda-bas > div { position: static; }
-    .f-delik { height: 44px; width: 16px; margin-bottom: 10px; }
-    .yol::before { left: 4.2rem; }
-    .yol li { grid-template-columns: 4.2rem minmax(0, 1fr); gap: 0 20px; }
-    .yol li::after { left: calc(4.2rem - 4px); }
-    .ses, .nota { display: none; }
-    .sahne-yazi { padding-bottom: 32px; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    * { scroll-behavior: auto !important; transition: none !important; }
+    .bolum { grid-template-columns: minmax(0, 1fr); padding-block: 52px; }
   }
 </style>
 
-<header class="sahne" id="ust">
-  <canvas id="tuval" aria-hidden="true"></canvas>
-  <div class="sahne-yazi">
-    <div class="sahne-ic">
-      <p class="kas">Bir farkındalık rüyası · primatlar ve bağışıklık yetmezliği virüsleri</p>
-      <h1>Maymunlar <em>AIDS</em> olur mu?</h1>
-      <p class="giris">Bazıları olur, çoğu olmaz. Aradaki farkın hikâyesi ormanda başlıyor, laboratuvardan geçiyor ve insanlığın en büyük salgınlarından birine varıyor. Bu sayfadaki her sayı, en alttaki bilimsel bir kaynağa bağlı.</p>
-      <div class="eylemler">
-        <button class="dugme" type="button" id="sahneOynat">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
-          <span>Kemanı başlat</span>
-        </button>
-        <a class="sessiz-baglanti" href="#kaynak-listesi">Önce kaynakları görmek istiyorum</a>
-      </div>
+<div class="uyari" lang="tr" id="uyari" role="dialog" aria-modal="true" aria-labelledby="uyariBaslik">
+  <div class="uyari-ic">
+    <p class="etiket">İÇERİK UYARISI</p>
+    <h2 id="uyariBaslik">Bu sayfa korkutmak için yapıldı</h2>
+    <p>KAFES bir kurgudur. Fragmanda ve sayfada şunlar var:</p>
+    <ul>
+      <li>ani, yüksek sesler ve çığlıklar,</li>
+      <li>kameraya aniden saldıran gerçekçi şempanze görüntüleri,</li>
+      <li>el feneri titremeleri (saniyede üçten seyrek, parlama yerine kararma).</li>
+    </ul>
+    <p>Kalp rahatsızlığınız, ışığa duyarlı epilepsiniz varsa ya da ani korkutmalardan hoşlanmıyorsanız korkutmasız izleyin. Ayarı sonra da değiştirebilirsiniz.</p>
+    <div class="secenek">
+      <button class="dugme" type="button" id="izleKorkulu">Korkutmalarla izle</button>
+      <button class="dugme ikincil" type="button" id="izleKorkusuz">Korkutmasız izle</button>
     </div>
-  </div>
-</header>
-
-<main>
-  <div class="icerik">
-
-    <section class="oda" aria-labelledby="b-siv">
-      <div class="oda-bas"><div>
-        <svg class="f-delik" viewBox="0 0 22 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="15" cy="6" r="3.2" fill="currentColor" stroke="none"/><path d="M15 9 C 17 22, 4 26, 7 55"/><circle cx="7" cy="58" r="3.2" fill="currentColor" stroke="none"/><path d="M4 30 l6 2 M12 34 l6 2"/></svg>
-        <h2 id="b-siv">Virüsün adı HIV değil, SIV</h2>
-      </div></div>
-      <div class="oda-govde">
-        <p>Maymunlarda bağışıklık sistemini hedef alan virüsün adı <span class="terim">SIV</span>: <span lang="en">simian immunodeficiency virus</span>, yani maymun bağışıklık yetmezliği virüsü. İnsanlardaki HIV ile aynı virüs grubundandır ve HIV'in kendisi de SIV'den türemiştir.</p>
-        <p class="claim" data-cite="k1">SIV'ler, Sahra altı Afrika'da 40'tan fazla insan dışı primat türünde doğal olarak bulunur.<a class="kaynak-isareti" href="#k1" aria-label="Kaynak 1">1</a></p>
-        <p class="yorum">Türkçede gündelik olarak “maymun” dediğimiz grup, şempanze ve goril gibi insansı maymunları da kapsıyor. Bu sayfa hepsini birlikte ele alıyor ve gerektiğinde ayırıyor.</p>
-      </div>
-    </section>
-
-    <section class="oda" aria-labelledby="b-dogal">
-      <div class="oda-bas"><div>
-        <svg class="f-delik" viewBox="0 0 22 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="15" cy="6" r="3.2" fill="currentColor" stroke="none"/><path d="M15 9 C 17 22, 4 26, 7 55"/><circle cx="7" cy="58" r="3.2" fill="currentColor" stroke="none"/><path d="M4 30 l6 2 M12 34 l6 2"/></svg>
-        <h2 id="b-dogal">Çoğu taşır, hastalanmaz</h2>
-      </div></div>
-      <div class="oda-govde">
-        <p class="claim" data-cite="k2">Afrika yeşil maymunları ve is renkli mangabeyler (<span lang="en">sooty mangabey</span>) gibi <span class="terim">doğal konak</span> türler, kanlarında yüksek miktarda virüs taşısalar da genellikle AIDS'e ilerlemez. Tedavi edilmeyen HIV'li insanlarda ve doğal konak olmayan makaklarda ise enfeksiyon AIDS'e ilerler.<a class="kaynak-isareti" href="#k2" aria-label="Kaynak 2">2</a></p>
-        <p class="claim" data-cite="k2">Araştırmacılar bu direnci üç özelliğe bağlıyor: akut enfeksiyondan sonra bağışıklık sistemindeki aşırı aktivasyonun sönmesi, virüsün daha dar bir hücre grubunu enfekte edebilmesi ve anneden yavruya bulaşın sınırlı kalması.<a class="kaynak-isareti" href="#k2" aria-label="Kaynak 2">2</a></p>
-        <p class="yorum">Yani belirleyici olan virüsün varlığı değil, konakla virüs arasındaki ilişkinin nasıl dengelendiği.</p>
-      </div>
-    </section>
-
-    <section class="oda" aria-labelledby="b-gombe">
-      <div class="oda-bas"><div>
-        <svg class="f-delik" viewBox="0 0 22 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="15" cy="6" r="3.2" fill="currentColor" stroke="none"/><path d="M15 9 C 17 22, 4 26, 7 55"/><circle cx="7" cy="58" r="3.2" fill="currentColor" stroke="none"/><path d="M4 30 l6 2 M12 34 l6 2"/></svg>
-        <h2 id="b-gombe">İstisna: Gombe'nin şempanzeleri</h2>
-      </div></div>
-      <div class="oda-govde">
-        <p class="claim" data-cite="k3">Tanzanya'daki Gombe Ulusal Parkı'nda insan varlığına alışkın iki şempanze topluluğundan 94 birey, 9 yılı aşkın süre izlendi.<a class="kaynak-isareti" href="#k3" aria-label="Kaynak 3">3</a></p>
-        <div class="dev claim" data-cite="k3">
-          <span class="dev-sayi">10–16 kat</span>
-          <p>SIVcpz taşıyan 17 şempanzenin yaşa göre düzeltilmiş ölüm riski, taşımayan 77 şempanzeye göre bu kadar yüksek bulundu.<a class="kaynak-isareti" href="#k3" aria-label="Kaynak 3">3</a></p>
-        </div>
-        <p class="claim" data-cite="k3">Enfekte dişilerin doğum yapma olasılığı daha düşük, yavrularının ölüm oranı daha yüksekti. Ölen enfekte şempanzelerde CD4+ T hücre kaybı da dahil olmak üzere AIDS'e benzeyen bağışıklık hasarı görüldü.<a class="kaynak-isareti" href="#k3" aria-label="Kaynak 3">3</a></p>
-        <p class="claim" data-cite="k1">Şempanzeler bu virüsü büyük olasılıkla avladıkları küçük maymunlardan aldı: SIVcpz, kızıl başlı mangabeylerin ve <i>Cercopithecus</i> cinsi maymunların virüslerinin birleşmesinden (rekombinasyon) oluşmuş bir melezdir.<a class="kaynak-isareti" href="#k1" aria-label="Kaynak 1">1</a></p>
-        <p class="yorum">Gombe çalışması, “SIV doğal konaklarında hep zararsızdır” varsayımını yıktı.</p>
-      </div>
-    </section>
-
-    <section class="oda" aria-labelledby="b-makak">
-      <div class="oda-bas"><div>
-        <svg class="f-delik" viewBox="0 0 22 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="15" cy="6" r="3.2" fill="currentColor" stroke="none"/><path d="M15 9 C 17 22, 4 26, 7 55"/><circle cx="7" cy="58" r="3.2" fill="currentColor" stroke="none"/><path d="M4 30 l6 2 M12 34 l6 2"/></svg>
-        <h2 id="b-makak">Laboratuvardaki makaklar</h2>
-      </div></div>
-      <div class="oda-govde">
-        <p class="claim" data-cite="k6">“Maymun AIDS'ine” yol açan virüs ilk kez 1985'te, ABD'deki New England Bölgesel Primat Araştırma Merkezi'nde bağışıklığı çökmüş makaklardan izole edildi.<a class="kaynak-isareti" href="#k6" aria-label="Kaynak 6">6</a></p>
-        <p class="claim" data-cite="k7,k1">Asya kökenli makaklar doğada SIV taşımaz. Makak virüsü (SIVmac), is renkli mangabeylerin virüsüne çok yakındır; makakların bu virüsü esaret altında, mangabeylerden aldığı düşünülüyor.<a class="kaynak-isareti" href="#k7" aria-label="Kaynak 7">7</a><a class="kaynak-isareti" href="#k1" aria-label="Kaynak 1">1</a></p>
-        <p class="claim" data-cite="k2">Doğal konak olmadıkları için makaklar SIV ile AIDS'e ilerler. Bu yüzden HIV aşı ve tedavi araştırmalarının başlıca hayvan modelidirler.<a class="kaynak-isareti" href="#k2" aria-label="Kaynak 2">2</a></p>
-        <p class="yorum">Buradaki farkındalık iki yönlü: bu hayvanlar insan sağlığı araştırmalarının ağır yükünü taşıyor, bu yüzden refahları araştırma etiğinin merkezinde durmalı.</p>
-      </div>
-    </section>
-
-    <section class="oda" aria-labelledby="b-koken">
-      <div class="oda-bas"><div>
-        <svg class="f-delik" viewBox="0 0 22 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="15" cy="6" r="3.2" fill="currentColor" stroke="none"/><path d="M15 9 C 17 22, 4 26, 7 55"/><circle cx="7" cy="58" r="3.2" fill="currentColor" stroke="none"/><path d="M4 30 l6 2 M12 34 l6 2"/></svg>
-        <h2 id="b-koken">Ormandan şehre: HIV nasıl doğdu?</h2>
-      </div></div>
-      <div class="oda-govde">
-        <p class="claim" data-cite="k8">HIV-1'in kaynağı, Orta Afrika şempanzesi (<i>Pan troglodytes troglodytes</i>) alt türündeki SIVcpz'dir.<a class="kaynak-isareti" href="#k8" aria-label="Kaynak 8">8</a></p>
-        <p class="claim" data-cite="k4">Güney Kamerun'da dışkı örnekleriyle yapılan taramada bazı şempanze topluluklarında SIVcpz yaygınlığı %29–35'e ulaştı. Salgını başlatan HIV-1 M grubu ile nadir görülen N grubu, birbirinden ayrı şempanze topluluklarına kadar izlendi.<a class="kaynak-isareti" href="#k4" aria-label="Kaynak 4">4</a></p>
-        <p class="claim" data-cite="k1">HIV-1'in O ve P grupları gorillerle ilişkili: P grubunun goril kökenli olduğu kabul ediliyor, O grubunun doğrudan kaynağı ise kesin değil. HIV-2, Batı Afrika'daki is renkli mangabeylerin virüsünden geldi.<a class="kaynak-isareti" href="#k1" aria-label="Kaynak 1">1</a></p>
-        <p class="claim" data-cite="k1">Bu geçişlerin en olası yolu, yaban hayatı avı ve kesimi sırasında deri ya da mukozanın enfekte kan ve vücut sıvılarıyla temas etmesidir.<a class="kaynak-isareti" href="#k1" aria-label="Kaynak 1">1</a></p>
-        <p class="claim" data-cite="k5">HIV-1 M grubunun ortak atasının yaklaşık 1908 yılına (güven aralığı 1884–1924) dayandığı tahmin ediliyor. Kinşasa'da 1959 ve 1960'ta alınmış iki örnek birbirinden belirgin biçimde farklı; bu da virüsün o tarihte insanlarda onlarca yıldır çeşitlendiğini gösteriyor.<a class="kaynak-isareti" href="#k5" aria-label="Kaynak 5">5</a></p>
-      </div>
-    </section>
-
-    <section class="oda" aria-labelledby="b-zaman">
-      <div class="oda-bas"><div>
-        <svg class="f-delik" viewBox="0 0 22 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="15" cy="6" r="3.2" fill="currentColor" stroke="none"/><path d="M15 9 C 17 22, 4 26, 7 55"/><circle cx="7" cy="58" r="3.2" fill="currentColor" stroke="none"/><path d="M4 30 l6 2 M12 34 l6 2"/></svg>
-        <h2 id="b-zaman">Bir asırlık iz</h2>
-      </div></div>
-      <div class="oda-govde">
-        <ol class="yol">
-          <li class="claim" data-cite="k5"><span class="yil">~1908</span><span class="olay">HIV-1 M grubunun tahmini ortak atası (1884–1924 aralığı).<a class="kaynak-isareti" href="#k5" aria-label="Kaynak 5">5</a></span></li>
-          <li class="claim" data-cite="k5"><span class="yil">1959–60</span><span class="olay">Kinşasa'da alınan örnekler, bilinen en eski HIV-1 dizileri arasında.<a class="kaynak-isareti" href="#k5" aria-label="Kaynak 5">5</a></span></li>
-          <li class="claim" data-cite="k6"><span class="yil">1985</span><span class="olay">SIV, bağışıklığı çökmüş makaklardan izole edildi.<a class="kaynak-isareti" href="#k6" aria-label="Kaynak 6">6</a></span></li>
-          <li class="claim" data-cite="k7"><span class="yil">1989</span><span class="olay">Is renkli mangabey virüsünün HIV-2'ye çok yakın olduğu gösterildi.<a class="kaynak-isareti" href="#k7" aria-label="Kaynak 7">7</a></span></li>
-          <li class="claim" data-cite="k8"><span class="yil">1999</span><span class="olay">HIV-1'in kaynağı olarak <i>P. t. troglodytes</i> şempanzeleri gösterildi.<a class="kaynak-isareti" href="#k8" aria-label="Kaynak 8">8</a></span></li>
-          <li class="claim" data-cite="k4"><span class="yil">2006</span><span class="olay">Kamerun'daki vahşi şempanze toplulukları HIV-1'in M ve N gruplarının rezervuarı olarak belirlendi.<a class="kaynak-isareti" href="#k4" aria-label="Kaynak 4">4</a></span></li>
-          <li class="claim" data-cite="k3"><span class="yil">2009</span><span class="olay">Gombe: vahşi şempanzelerde SIVcpz'ye bağlı AIDS benzeri hastalık ve yüksek ölüm.<a class="kaynak-isareti" href="#k3" aria-label="Kaynak 3">3</a></span></li>
-          <li class="claim" data-cite="k9"><span class="yil">2016</span><span class="olay">IUCN: şempanze “Nesli Tehlikede”, batı şempanzesi “Kritik Tehlikede”.<a class="kaynak-isareti" href="#k9" aria-label="Kaynak 9">9</a></span></li>
-        </ol>
-      </div>
-    </section>
-
-    <section class="oda" aria-labelledby="b-neden">
-      <div class="oda-bas"><div>
-        <svg class="f-delik" viewBox="0 0 22 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="15" cy="6" r="3.2" fill="currentColor" stroke="none"/><path d="M15 9 C 17 22, 4 26, 7 55"/><circle cx="7" cy="58" r="3.2" fill="currentColor" stroke="none"/><path d="M4 30 l6 2 M12 34 l6 2"/></svg>
-        <h2 id="b-neden">Neden önemsemeliyiz?</h2>
-      </div></div>
-      <div class="oda-govde">
-        <p class="claim" data-cite="k9">Şempanze IUCN Kırmızı Listesi'nde “Nesli Tehlikede” (EN) sınıfında. Batı şempanzesi 2016'da “Kritik Tehlikede” (CR) kategorisine yükseltildi.<a class="kaynak-isareti" href="#k9" aria-label="Kaynak 9">9</a></p>
-        <p class="claim" data-cite="k3">Gombe bulguları, SIVcpz'nin vahşi şempanzelerin sağlığını, üremesini ve ömrünü olumsuz etkilediğini gösteriyor; bu, zaten tehdit altındaki popülasyonlar için ek bir yük demek.<a class="kaynak-isareti" href="#k3" aria-label="Kaynak 3">3</a></p>
-        <p>Ve bir şey daha: maymunlar bu hikâyenin kötüleri değil. HIV bugün insandan insana bulaşıyor. Maymunlardan korkmak ya da onlara zarar vermek hiçbir şeyi çözmez.</p>
-        <h3 class="gizli">Ne yapabilirsiniz?</h3>
-        <ul class="yapilacak">
-          <li class="claim" data-cite="k1"><strong>Yaban hayatı eti ve primat ticaretine destek vermeyin.</strong> Virüslerin türler arasında geçişinin en olası yolu, av ve kesim sırasında kanla temastı.<a class="kaynak-isareti" href="#k1" aria-label="Kaynak 1">1</a></li>
-          <li><strong>Maymunları evcil hayvan ya da fotoğraf dekoru yapan işletmelere para vermeyin.</strong> Yabani primatla yakın temas, iki taraf için de sağlık riski taşır.</li>
-          <li><strong>Uzun soluklu saha araştırmalarını ve koruma alanlarını destekleyin.</strong> Gombe'deki bulgular ancak yıllarca süren, müdahalesiz bir takiple ortaya çıkabildi.</li>
-          <li><strong>Damgalamaya karşı durun.</strong> HIV bir “maymun hastalığı” değil, bir insan hastalığı ve bugün etkili tedavisi var.</li>
-        </ul>
-      </div>
-    </section>
-
-    <section class="oda" aria-labelledby="b-muzik">
-      <div class="oda-bas"><div>
-        <svg class="f-delik" viewBox="0 0 22 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="15" cy="6" r="3.2" fill="currentColor" stroke="none"/><path d="M15 9 C 17 22, 4 26, 7 55"/><circle cx="7" cy="58" r="3.2" fill="currentColor" stroke="none"/><path d="M4 30 l6 2 M12 34 l6 2"/></svg>
-        <h2 id="b-muzik">Bu keman kimin?</h2>
-      </div></div>
-      <div class="oda-govde">
-        <p>Arka plandaki üç parça bu sayfa için Claude tarafından bestelendi. Hiçbir kayıt, ses örneği ya da hazır ses dosyası kullanılmıyor: notalar sayfanın içinde duruyor ve siz dinlerken tarayıcınızda sentezleniyor.</p>
-        <p>Keman sesi; iki testere dişi dalganın keman gövdesinin rezonanslarını taklit eden filtrelerden geçmesi, yayın hışırtısı için süzülmüş gürültü, geç başlayan bir vibrato ve gürültüden üretilmiş bir salon yankısıyla oluşuyor. Gerçek bir kemancının yerini tutmaz, ama tamamen buraya ait.</p>
-        <ol class="eserler" id="eserListesi"></ol>
-      </div>
-    </section>
-
-    <section class="oda" aria-labelledby="b-kaynak" id="kaynak-listesi">
-      <div class="oda-bas"><div>
-        <svg class="f-delik" viewBox="0 0 22 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="15" cy="6" r="3.2" fill="currentColor" stroke="none"/><path d="M15 9 C 17 22, 4 26, 7 55"/><circle cx="7" cy="58" r="3.2" fill="currentColor" stroke="none"/><path d="M4 30 l6 2 M12 34 l6 2"/></svg>
-        <h2 id="b-kaynak">Kaynaklar</h2>
-      </div></div>
-      <div class="oda-govde">
-        <ol id="kaynaklar">
-          <li id="k1">Sharp PM, Hahn BH. Origins of HIV and the AIDS pandemic. <i>Cold Spring Harbor Perspectives in Medicine</i>. 2011;1(1):a006841. <a class="doi" href="https://doi.org/10.1101/cshperspect.a006841" target="_blank" rel="noopener">doi:10.1101/cshperspect.a006841</a></li>
-          <li id="k2">Chahroudi A, Bosinger SE, Vanderford TH, Paiardini M, Silvestri G. Natural SIV hosts: showing AIDS the door. <i>Science</i>. 2012;335(6073):1188–1193. <a class="doi" href="https://doi.org/10.1126/science.1217550" target="_blank" rel="noopener">doi:10.1126/science.1217550</a></li>
-          <li id="k3">Keele BF, Jones JH, Terio KA, et al. Increased mortality and AIDS-like immunopathology in wild chimpanzees infected with SIVcpz. <i>Nature</i>. 2009;460:515–519. <a class="doi" href="https://doi.org/10.1038/nature08200" target="_blank" rel="noopener">doi:10.1038/nature08200</a></li>
-          <li id="k4">Keele BF, Van Heuverswyn F, Li Y, et al. Chimpanzee reservoirs of pandemic and nonpandemic HIV-1. <i>Science</i>. 2006;313:523–526. <a class="doi" href="https://doi.org/10.1126/science.1126531" target="_blank" rel="noopener">doi:10.1126/science.1126531</a></li>
-          <li id="k5">Worobey M, Gemmel M, Teuwen DE, et al. Direct evidence of extensive diversity of HIV-1 in Kinshasa by 1960. <i>Nature</i>. 2008;455:661–664. <a class="doi" href="https://doi.org/10.1038/nature07390" target="_blank" rel="noopener">doi:10.1038/nature07390</a></li>
-          <li id="k6">Daniel MD, Letvin NL, King NW, et al. Isolation of T-cell tropic HTLV-III-like retrovirus from macaques. <i>Science</i>. 1985;228:1201–1204. <a class="doi" href="https://doi.org/10.1126/science.3159089" target="_blank" rel="noopener">doi:10.1126/science.3159089</a></li>
-          <li id="k7">Hirsch VM, Olmsted RA, Murphey-Corb M, Purcell RH, Johnson PR. An African primate lentivirus (SIVsm) closely related to HIV-2. <i>Nature</i>. 1989;339:389–392. <a class="doi" href="https://doi.org/10.1038/339389a0" target="_blank" rel="noopener">doi:10.1038/339389a0</a></li>
-          <li id="k8">Gao F, Bailes E, Robertson DL, et al. Origin of HIV-1 in the chimpanzee <i>Pan troglodytes troglodytes</i>. <i>Nature</i>. 1999;397:436–441. <a class="doi" href="https://doi.org/10.1038/17130" target="_blank" rel="noopener">doi:10.1038/17130</a></li>
-          <li id="k9">Humle T, Maisels F, Oates JF, Plumptre A, Williamson EA. <i>Pan troglodytes</i>. The IUCN Red List of Threatened Species 2016. <a class="doi" href="https://doi.org/10.2305/IUCN.UK.2016-2.RLTS.T15933A17964454.en" target="_blank" rel="noopener">doi:10.2305/IUCN.UK.2016-2.RLTS.T15933A17964454.en</a></li>
-        </ol>
-      </div>
-    </section>
-
-  </div>
-</main>
-
-<footer>
-  <div class="icerik">
-    <p>Bu sayfa bilgilendirme amaçlıdır; tıbbi tavsiye yerine geçmez.</p>
-    <p>Metin, görseller ve müzik Claude tarafından hazırlandı. Her sayısal iddianın bir kaynağa bağlı olduğu, sayfayla birlikte çalışan bir kabul testiyle doğrulandı.</p>
-  </div>
-</footer>
-
-<div class="calar" role="region" aria-label="Müzik çalar">
-  <div class="calar-ic">
-    <button class="yuvarlak" type="button" id="oynat" aria-label="Müziği başlat" aria-pressed="false">
-      <svg id="ikonOynat" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
-      <svg id="ikonDur" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" hidden><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
-    </button>
-    <div class="calar-bilgi">
-      <div class="calar-satir"><span class="calar-eser" id="eserAdi">Ağıt</span><span class="calar-alt" id="eserAlt">Re minör</span></div>
-      <div class="ilerleme"><i id="ilerleme"></i></div>
-    </div>
-    <span class="nota" id="nota" title="Kemanın şu an çaldığı nota">—</span>
-    <button class="yuvarlak ikincil" type="button" id="sonraki" aria-label="Sonraki eser">
-      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 6l8.5 6L6 18zM16 6h2v12h-2z"/></svg>
-    </button>
-    <label class="ses"><span class="gizli">Ses düzeyi</span><input type="range" id="sesDuzeyi" min="0" max="1" step="0.01" value="0.75"></label>
   </div>
 </div>
 
-<script type="application/json" id="partisyon">
-[
-  {
-    "ad": "Ağıt",
-    "alt": "Re minör · keman, viyola ve çello",
-    "olcuYazi": "4/4",
-    "tempo": 58,
-    "olcu": 4,
-    "olcuSayisi": 16,
-    "tekrar": 1,
-    "eslik": "uzun",
-    "melodi": "A4:1.5 D5:0.5 F5:1 E5:1 D5:1.5 C5:0.5 Bb4:1 D5:1 G4:1 Bb4:1 D5:1.5 C5:0.5 C#5:2 E5:1 A4:1 F5:1.5 E5:0.5 D5:1 A5:1 A5:1.5 G5:0.5 F5:1 C5:1 Bb4:1 D5:1 C#5:1 E5:1 D5:3 R:1 F5:1 D5:0.5 F5:0.5 Bb5:2 A5:1 G5:0.5 F5:0.5 C5:2 G5:1 F5:0.5 E5:0.5 D5:1 Bb4:1 A4:1 C#5:1 E5:1 G5:1 F5:1.5 E5:0.5 D5:1 F5:1 G5:1.5 F5:0.5 E5:1 D5:1 C#5:1 E5:1 A4:1 C#5:1 D5:4",
-    "akorlar": "D2-F3-A3:4 Bb2-F3-D4:4 G2-D3-Bb3:4 A2-E3-C#4:4 D2-F3-A3:4 F2-C3-A3:4 G2-D3-Bb3:2 A2-E3-C#4:2 D2-F3-A3:4 Bb2-F3-D4:4 F2-C3-A3:4 G2-D3-Bb3:4 A2-E3-C#4:4 D2-F3-A3:4 G2-D3-Bb3:4 A2-G3-C#4:4 D2-A2-F3-D4:4"
-  },
-  {
-    "ad": "Bulutların Menüeti",
-    "alt": "Sol majör · keman ve pizzicato",
-    "olcuYazi": "3/4",
-    "tempo": 104,
-    "olcu": 3,
-    "olcuSayisi": 16,
-    "tekrar": 2,
-    "eslik": "pizz",
-    "melodi": "B4:1 D5:1 G5:1 F#5:1.5 E5:0.5 D5:1 E5:1 G5:1 B4:1 C5:1 E5:1 G5:1 D5:1 B4:0.5 C5:0.5 D5:1 C5:1 A4:1 F#4:1 G4:1 B4:0.5 D5:0.5 A4:1 G4:2 R:1 E5:1 G5:0.5 E5:0.5 C5:1 D5:1 B4:1 G4:1 A4:1 C5:0.5 E5:0.5 A5:1 F#5:1 E5:0.5 D5:0.5 C5:1 B4:1 D5:1 G5:1 G5:1 F#5:0.5 E5:0.5 B4:1 C5:1 E5:1 F#5:1 G5:3",
-    "akorlar": "G2-D3-B3:3 D2-A2-F#3:3 E2-B2-G3:3 C3-G3-E4:3 G2-D3-B3:3 A2-E3-C4:1 D2-A2-F#3:2 G2-D3-B3:2 D2-A2-F#3:1 G2-D3-B3:3 C3-G3-E4:3 G2-D3-B3:3 A2-E3-C4:3 D2-A2-F#3-C4:3 G2-D3-B3:3 E2-B2-G3:3 A2-E3-C4:1 D2-A2-F#3:2 G2-D3-B3:3"
-  },
-  {
-    "ad": "Gece Müziği",
-    "alt": "Mi minör · keman ve arpej",
-    "olcuYazi": "4/4",
-    "tempo": 66,
-    "olcu": 4,
-    "olcuSayisi": 16,
-    "tekrar": 1,
-    "eslik": "arp",
-    "melodi": "B4:2 E5:1 G5:1 G5:1.5 F#5:0.5 E5:2 E5:1 C5:1 A4:1 C5:1 D#5:2 F#5:1 A5:1 G5:3 F#5:0.5 E5:0.5 E5:1 A5:1 C6:1 B5:0.5 A5:0.5 A5:1.5 F#5:0.5 D5:2 B4:1 D5:1 G5:2 E5:1.5 G5:0.5 C6:1 B5:1 A5:1 E5:1 C5:1 E5:1 A4:1 C5:1 F#5:1.5 E5:0.5 D#5:1 F#5:1 B5:1 A5:1 G5:1.5 F#5:0.5 E5:1 B4:1 C5:1 E5:1 G5:1 E5:1 F#5:1 D#5:1 A4:1 B4:1 E5:4",
-    "akorlar": "E2-B2-E3-G3:4 C2-G2-C3-E3:4 A2-E3-A3-C4:4 B2-D#3-F#3-A3:4 E2-B2-E3-G3:4 A2-E3-A3-C4:4 D2-A2-D3-F#3:4 G2-D3-G3-B3:4 C2-G2-C3-E3:4 A2-E3-A3-C4:4 F#2-C3-F#3-A3:4 B2-D#3-F#3-A3:4 E2-B2-E3-G3:4 C2-G2-C3-E3:4 B2-D#3-F#3-A3:4 E2-B2-E3-G3:4"
-  }
-]
+<header class="ust" lang="tr">
+  <p class="kurgu-notu">BİR KURGU · FRAGMAN · 01:18</p>
+  <h1>Ka<span>f</span>es</h1>
+  <p class="slogan">Kırk bir şempanze. Tek bir gece. Hiç ses yok.</p>
+</header>
+
+<section class="fragman-kap" lang="tr" aria-label="Fragman">
+  <div class="fragman" id="fragman">
+    <canvas id="tuval" aria-label="KAFES fragmanı: gece ormanında el feneriyle çekilmiş kamera görüntüsü"></canvas>
+    <div class="kamera-ust" aria-hidden="true"><span class="rec">KAYIT · KAMERA 03</span><span id="saat">23.09.1994 02:14:00</span></div>
+    <div class="kart" id="kart" aria-live="polite"></div>
+    <button class="baslat-ortu" type="button" id="baslatOrtu"><span><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>Fragmanı oynat</span></button>
+  </div>
+  <div class="kontrol">
+    <button type="button" id="oynat" aria-label="Oynat"><svg id="ikOynat" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg><svg id="ikDur" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" hidden><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg><span id="oynatYazi">Oynat</span></button>
+    <button type="button" id="basaDon"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 5V2L7 6l5 4V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z"/></svg>Baştan</button>
+    <div class="serit" aria-hidden="true"><i id="serit"></i></div>
+    <span class="sure" id="sure">00:00 / 01:18</span>
+    <label class="anahtar"><input type="checkbox" id="korkutmaAcik" checked> Korkutmalar açık</label>
+  </div>
+</section>
+
+<main lang="tr">
+  <section class="bolum" aria-labelledby="h-hikaye">
+    <h2 class="bb" id="h-hikaye">Hikâye</h2>
+    <div class="govde">
+      <p>1994 sonbaharında, ormanın ortasındaki bir primat araştırma istasyonu tek bir gecede sessizliğe gömüldü. Ertesi sabah gelen ekip kırk bir kafesin kırk birini de boş buldu. Kilitler kırılmamıştı. İçeriden açılmışlardı.</p>
+      <p>İstasyonun tek bekçisinden geriye yalnızca Kamera 03'ün kaseti kaldı: yetmiş sekiz saniyelik bir kayıt ve bir soru. Onları yıllarca kafeste tutanlar, onların unutacağını mı sanmıştı?</p>
+    </div>
+  </section>
+
+  <section class="bolum" aria-labelledby="h-kayit">
+    <h2 class="bb" id="h-kayit">Kurtarılan kayıtlar</h2>
+    <div class="kayitlar">
+      <article class="kayit">
+        <h3>KAYIT 01 · 14 EYLÜL · 21:40</h3>
+        <p>Kafes 7'nin sürgüsü açık. Kırılmamış, zorlanmamış. Sürgüyü açmak için bileği dışarı uzatıp ters çevirmek gerekir. Bunu ona kimse öğretmedi. Bizi izleyerek öğrendi.</p>
+      </article>
+      <article class="kayit">
+        <h3>KAYIT 02 · 17 EYLÜL · 03:05</h3>
+        <p>Gece boyunca ağaçlardan çağrı zinciri geldi. Önce tek bir ses, alçak ve kesik. Sonra ikincisi, üçüncüsü; giderek hızlandı ve hepsi birden çığlığa döndü. Sonra birden kesildi. Orman hiç böyle susmaz.</p>
+      </article>
+      <article class="kayit">
+        <h3>KAYIT 03 · 19 EYLÜL · 23:52</h3>
+        <p>Kamera 03'ün koruma camında avuç izleri var. Kamera yerden <span class="ciz">iki</span> iki buçuk metre yüksekte. İzler dışarıdan değil. Cam, içeriden buğulanmış.</p>
+      </article>
+      <article class="kayit" id="sonKayit">
+        <h3>KAYIT 04 · 23 EYLÜL · 02:13</h3>
+        <p>Jeneratör sustu. Fenerim var. Kapıyı kilitledim. Çatıda bir şey yürüyor, dört ayak üstünde, ağır. Durdu. Nefesini duyuyorum. Pencerenin hemen önünde. Bakmayacağım. Bakmayacağım. Bakmayac</p>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer lang="tr">
+  <p><strong>KAFES bir kurgudur.</strong> Kişiler, yerler, tarihler ve kayıtlar hayal ürünüdür.</p>
+  <p>Fragmandaki her görüntü ve ses bu sayfanın kodunda, gerçek zamanlı üretilir: hazır görsel, 3D model, doku, ses kaydı ya da yazı tipi dosyası kullanılmaz. Şempanzeler ekran kartında matematiksel yüzeylerle çizilir; hareketleri yerçekimi, sarkaç ve balistik yörünge denklemleriyle hesaplanır. Keman, çığlıklar ve orman sesleri tarayıcıda sentezlenir.</p>
+  <p>Gerçek şempanzeler nesli tehlikede olan, korunması gereken hayvanlardır.</p>
+</footer>
+
+<div class="korkutma" id="korkutma" hidden><canvas id="korkuTuval" aria-hidden="true"></canvas></div>
+
+<script type="application/json" id="zaman">
+{
+  "sure": 78,
+  "sahneler": [
+    {"ad": "acilis", "bas": 0, "son": 6},
+    {"ad": "orman", "bas": 6, "son": 17},
+    {"ad": "dal", "bas": 17, "son": 29},
+    {"ad": "kart1", "bas": 29, "son": 30.5},
+    {"ad": "oturan", "bas": 30.5, "son": 42},
+    {"ad": "atilma", "bas": 42, "son": 43.3},
+    {"ad": "gosteri", "bas": 43.3, "son": 46.2},
+    {"ad": "kart2", "bas": 46.2, "son": 47.4},
+    {"ad": "hucum", "bas": 47.4, "son": 50.6},
+    {"ad": "kart3", "bas": 50.6, "son": 51.8},
+    {"ad": "yaklasan", "bas": 51.8, "son": 56},
+    {"ad": "donus", "bas": 56, "son": 68},
+    {"ad": "yuz", "bas": 68, "son": 69.2},
+    {"ad": "baslik", "bas": 69.2, "son": 78}
+  ],
+  "kartlar": [
+    {"bas": 0.8, "son": 3.1, "metin": "Bu görüntüler, kapatılan bir primat araştırma istasyonunun kamerasından kurtarıldı."},
+    {"bas": 3.4, "son": 5.7, "metin": "İstasyonda kırk bir şempanze vardı."},
+    {"bas": 12.4, "son": 15.4, "metin": "Kafesler boştu.", "alt": true},
+    {"bas": 29.05, "son": 30.45, "metin": "ONLAR BİZİ HATIRLIYOR", "tur": "buyuk"},
+    {"bas": 46.25, "son": 47.35, "metin": "KAÇACAK YER YOK", "tur": "buyuk"},
+    {"bas": 50.65, "son": 51.75, "metin": "SESİNİ ÇIKARMA", "tur": "buyuk"},
+    {"bas": 59.5, "son": 62.8, "metin": "Onlar hep oradaydı.", "alt": true},
+    {"bas": 70.2, "son": 75.8, "metin": "KAFES", "tur": "baslik"},
+    {"bas": 76.0, "son": 78.0, "metin": "YAKINDA · BU BİR KURGUDUR", "alt": true}
+  ],
+  "titremeler": [45.1, 48.9, 53.2, 54.0, 66.5, 68.05],
+  "korkutmalar": [
+    {"bas": 42.0, "ad": "atilma"},
+    {"bas": 68.0, "ad": "yuz"}
+  ]
+}
 </script>
 
 <script>
 (() => {
   "use strict";
-  const PARCALAR = JSON.parse(document.getElementById("partisyon").textContent);
-  const AZALT = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const ZAMAN = JSON.parse(document.getElementById("zaman").textContent);
+  const G = 9.81; // yerçekimi ivmesi, m/s²
 
-  /* ================= Nota yardımcıları ================= */
-  const YARIM = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
-  const SOLFEJ = { C: "Do", D: "Re", E: "Mi", F: "Fa", G: "Sol", A: "La", B: "Si" };
-  function midi(n) {
-    const m = /^([A-G])(#|b)?(\d)$/.exec(n);
-    return (+m[3] + 1) * 12 + YARIM[m[1]] + (m[2] === "#" ? 1 : m[2] === "b" ? -1 : 0);
-  }
-  const frekans = (n) => 440 * Math.pow(2, (midi(n) - 69) / 12);
-  function solfej(n) {
-    const m = /^([A-G])(#|b)?(\d)$/.exec(n);
-    return SOLFEJ[m[1]] + (m[2] === "#" ? "♯" : m[2] === "b" ? "♭" : "") + m[3];
-  }
-  function coz(dizi) {
-    let t = 0;
-    return dizi.trim().split(/\s+/).map((tok) => {
-      const [n, d] = tok.split(":");
-      const e = { n, t, d: +d };
-      t += +d;
-      return e;
-    });
+  /* ======================= Vektör yardımcıları ======================= */
+  const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+  const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+  const mul = (a, s) => [a[0] * s, a[1] * s, a[2] * s];
+  const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const len = (a) => Math.hypot(a[0], a[1], a[2]);
+  const nrm = (a) => { const l = len(a) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const lerp3 = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
+  const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+  const yumusak = (x) => { x = clamp(x, 0, 1); return x * x * (3 - 2 * x); };
+  const rotY = (v, a) => { const c = Math.cos(a), s = Math.sin(a); return [v[0] * c + v[2] * s, v[1], -v[0] * s + v[2] * c]; };
+
+  /* İki kemikli ters kinematik: dirsek ve diz konumu */
+  function ik2(A, T, l1, l2, kutup) {
+    const d0 = sub(T, A);
+    const d = clamp(len(d0), 0.01, l1 + l2 - 1e-4);
+    const yon = nrm(d0);
+    const a = (l1 * l1 + d * d - l2 * l2) / (2 * d);
+    const h = Math.sqrt(Math.max(l1 * l1 - a * a, 0));
+    const pp = nrm(sub(kutup, mul(yon, dot(kutup, yon))));
+    return add(add(A, mul(yon, a)), mul(pp, h));
   }
 
-  /* Bir eserin tüm olaylarını vuruş cinsinden üretir. */
-  function olaylar(p) {
-    const tur = p.olcu * p.olcuSayisi;
-    const ev = [];
-    for (let r = 0; r < (p.tekrar || 1); r++) {
-      const k = r * tur;
-      coz(p.melodi).forEach((e, i, arr) => {
-        if (e.n === "R") return;
-        const uzun = e.d >= 1.5;
-        const son = i === arr.length - 1;
-        ev.push({ tur: "keman", t: k + e.t, d: e.d, n: e.n, vurgu: (uzun ? 1.08 : 1) * (son ? 0.9 : 1) });
-      });
-      coz(p.akorlar).forEach((c) => {
-        const notalar = c.n.split("-");
-        if (p.eslik === "uzun") {
-          notalar.forEach((n, i) => ev.push({ tur: i === 0 ? "cello" : "viyola", t: k + c.t, d: c.d, n }));
-        } else if (p.eslik === "pizz") {
-          ev.push({ tur: "pizz", t: k + c.t, d: 1, n: notalar[0], y: 1 });
-          for (let b = 1; b < c.d; b++) notalar.slice(1).forEach((n) => ev.push({ tur: "pizz", t: k + c.t + b, d: 1, n, y: 0.5 }));
-        } else {
-          ev.push({ tur: "cello", t: k + c.t, d: c.d, n: notalar[0], y: 0.8 });
-          const ust = notalar.slice(1);
-          const sira = ust.concat(ust.slice(1, -1).reverse());
-          for (let s = 0; s * 0.5 < c.d; s++) ev.push({ tur: "pizz", t: k + c.t + s * 0.5, d: 0.5, n: sira[s % sira.length], y: s === 0 ? 0.6 : 0.42 });
-        }
-      });
+  /* ======================= Şempanze iskeleti =======================
+     Eklemler: 0 leğen, 1 göğüs, 2 boyun, 3 baş, 4-6 sol omuz/dirsek/el,
+     7-9 sağ omuz/dirsek/el, 10-12 sol kalça/diz/bilek, 13-15 sağ kalça/diz/bilek.
+     Ölçüler yetişkin bir şempanzeye göre metre cinsindendir: kol (0.37+0.47) bacaktan (0.28+0.28) uzundur. */
+  const KOL1 = 0.37, KOL2 = 0.47, BAC1 = 0.28, BAC2 = 0.28;
+
+  function yerlestir(kok, yaw, L) {
+    return L.map((p) => add(kok, rotY(p, yaw)));
+  }
+  function govdeYon(yaw, basYaw, egim) {
+    const hf = nrm(rotY(rotY([0, egim || 0, 1], basYaw || 0), yaw));
+    return { hf, hu: [0, 1, 0], fwd: rotY([0, 0, 1], yaw) };
+  }
+
+  /* Parmak eklemleri üstünde dört ayaklı yürüyüş (knuckle-walking), çapraz ayak sırası */
+  function yuru(kok, yaw, faz, o = {}) {
+    const S = o.S || 0.5, du = o.du || 0.6, kalk = o.kalk || 0.09, c = o.comel || 0;
+    const zip = 0.012 * Math.cos(faz * Math.PI * 4) - c;
+    const L = [];
+    L[0] = [0, 0.55 + zip, 0]; L[1] = [0, 0.78 + zip, 0.3]; L[2] = [0, 0.86 + zip, 0.42]; L[3] = [0, 0.9 + zip, 0.5];
+    L[4] = [0.17, 0.8 + zip, 0.32]; L[7] = [-0.17, 0.8 + zip, 0.32];
+    L[10] = [0.1, 0.55 + zip, -0.02]; L[13] = [-0.1, 0.55 + zip, -0.02];
+    const uzuv = (ofs) => {
+      const cc = (((faz + ofs) % 1) + 1) % 1;
+      if (cc < du) { const u = cc / du; return [S / 2 - S * u, 0]; }
+      const u = (cc - du) / (1 - du);
+      return [-S / 2 + S * yumusak(u), Math.sin(Math.PI * u) * kalk];
+    };
+    let a = uzuv(0); L[6] = [0.2, 0.03 + a[1], 0.4 + a[0]];
+    a = uzuv(0.5); L[9] = [-0.2, 0.03 + a[1], 0.4 + a[0]];
+    a = uzuv(0.75); L[12] = [0.13, 0.08 + a[1], 0.02 + a[0]];
+    a = uzuv(0.25); L[15] = [-0.13, 0.08 + a[1], 0.02 + a[0]];
+    L[5] = ik2(L[4], L[6], KOL1, KOL2, [0.35, 0, -1]); L[8] = ik2(L[7], L[9], KOL1, KOL2, [-0.35, 0, -1]);
+    L[11] = ik2(L[10], L[12], BAC1, BAC2, [0.25, 0, 1]); L[14] = ik2(L[13], L[15], BAC1, BAC2, [-0.25, 0, 1]);
+    return Object.assign({ J: yerlestir(kok, yaw, L) }, govdeYon(yaw, o.basYaw, o.egim === undefined ? 0.1 : o.egim));
+  }
+
+  /* Oturuş; başı omzunun üstünden geriye çevirebilir */
+  function otur(kok, yaw, basYaw, o = {}) {
+    const bur = basYaw * 0.3;
+    const L = [];
+    L[0] = [0, 0.2, 0];
+    const ust = [[0, 0.6, 0.03], [0, 0.7, 0.05], [0, 0.78, 0.08], [0.17, 0.6, 0.02], null, null, [-0.17, 0.6, 0.02]];
+    L[1] = rotY(ust[0], bur); L[2] = rotY(ust[1], bur); L[3] = rotY(ust[2], bur * 1.6);
+    L[4] = rotY(ust[3], bur); L[7] = rotY(ust[6], bur);
+    L[6] = o.eller || [0.15, 0.3, 0.33]; L[9] = [-0.15, 0.3, 0.33];
+    L[10] = [0.1, 0.2, 0.02]; L[13] = [-0.1, 0.2, 0.02];
+    L[12] = [0.13, 0.07, 0.34]; L[15] = [-0.13, 0.07, 0.34];
+    L[5] = ik2(L[4], L[6], KOL1, KOL2, [0.6, -0.3, -0.2]); L[8] = ik2(L[7], L[9], KOL1, KOL2, [-0.6, -0.3, -0.2]);
+    L[11] = ik2(L[10], L[12], BAC1, BAC2, [0.3, 0.5, 0.6]); L[14] = ik2(L[13], L[15], BAC1, BAC2, [-0.3, 0.5, 0.6]);
+    return Object.assign({ J: yerlestir(kok, yaw, L) }, govdeYon(yaw, basYaw, o.egim || 0));
+  }
+
+  /* İki ayak üstünde tehdit gösterisi: tüyler kabarık, kollar havada, ayak vuruşu */
+  function dikil(kok, yaw, faz, o = {}) {
+    const b = 0.025 * Math.abs(Math.sin(faz * Math.PI * 2));
+    const sal = 0.03 * Math.sin(faz * Math.PI * 2);
+    const L = [];
+    L[0] = [sal, 0.56 + b, 0]; L[1] = [sal * 1.4, 0.93 + b, 0.06]; L[2] = [sal * 1.5, 1.03 + b, 0.07]; L[3] = [sal * 1.5, 1.11 + b, 0.1];
+    L[4] = [0.19 + sal, 0.95 + b, 0.04]; L[7] = [-0.19 + sal, 0.95 + b, 0.04];
+    L[10] = [0.1 + sal, 0.56 + b, 0]; L[13] = [-0.1 + sal, 0.56 + b, 0];
+    if (o.kollarYukari) {
+      L[6] = [0.44, 1.28 + 0.1 * Math.sin(faz * 6.283), 0.18]; L[9] = [-0.44, 1.28 + 0.1 * Math.sin(faz * 6.283 + 2), 0.18];
+    } else {
+      L[6] = [0.25, 0.33, 0.12]; L[9] = [-0.25, 0.33, 0.12];
     }
-    return ev.sort((a, b) => a.t - b.t);
+    L[12] = [0.15, 0.08 + (faz % 1 < 0.25 ? 0.06 * Math.sin((faz % 1) * 4 * Math.PI) : 0), 0.04]; L[15] = [-0.15, 0.08, 0.04];
+    L[5] = ik2(L[4], L[6], KOL1, KOL2, [1, -0.5, -0.3]); L[8] = ik2(L[7], L[9], KOL1, KOL2, [-1, -0.5, -0.3]);
+    L[11] = ik2(L[10], L[12], BAC1, BAC2, [0.2, 0, 1]); L[14] = ik2(L[13], L[15], BAC1, BAC2, [-0.2, 0, 1]);
+    return Object.assign({ J: yerlestir(kok, yaw, L) }, govdeYon(yaw, o.basYaw, o.egim || 0));
   }
 
-  /* ================= Ses motoru ================= */
-  let A = null;
-  function sesKur() {
-    const C = window.AudioContext || window.webkitAudioContext;
-    const ctx = new C();
-    const ana = ctx.createGain();
-    ana.gain.value = +document.getElementById("sesDuzeyi").value;
-    const sik = ctx.createDynamicsCompressor();
-    sik.threshold.value = -16; sik.ratio.value = 3; sik.attack.value = 0.01; sik.release.value = 0.25;
-    const analiz = ctx.createAnalyser();
-    analiz.fftSize = 1024;
-    const yol = ctx.createGain();
-    const kuru = ctx.createGain(); kuru.gain.value = 1.4;
-    const islak = ctx.createGain(); islak.gain.value = 0.65;
-    const yanki = ctx.createConvolver();
-    yanki.buffer = salon(ctx, 3.1);
-    yol.connect(kuru); kuru.connect(ana);
-    yol.connect(yanki); yanki.connect(islak); islak.connect(ana);
-    ana.connect(sik); sik.connect(analiz); analiz.connect(ctx.destination);
-    const gurultu = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
-    const g = gurultu.getChannelData(0);
-    for (let i = 0; i < g.length; i++) g[i] = Math.random() * 2 - 1;
-    A = { ctx, ana, analiz, yol, gurultu, dalga: new Uint8Array(analiz.fftSize) };
+  /* Daldan asılı sarkaç: eller dalda, gövde θ açısıyla sallanır */
+  function asili(H, yaw, th) {
+    const fw = rotY([0, 0, 1], yaw), yan = rotY([1, 0, 0], yaw);
+    const dn = add(mul(fw, Math.sin(th)), [0, -Math.cos(th), 0]);
+    const ileri = add(mul(fw, Math.cos(th)), [0, Math.sin(th), 0]);
+    const J = [];
+    J[6] = add(H, mul(yan, 0.12)); J[9] = add(H, mul(yan, -0.12));
+    J[4] = add(add(H, mul(yan, 0.17)), mul(dn, 0.8)); J[7] = add(add(H, mul(yan, -0.17)), mul(dn, 0.8));
+    J[1] = add(H, mul(dn, 0.82));
+    J[2] = add(add(J[1], mul(dn, -0.08)), mul(ileri, 0.07));
+    J[3] = add(add(J[1], mul(dn, -0.12)), mul(ileri, 0.12));
+    J[0] = add(J[1], mul(dn, 0.3));
+    J[10] = add(J[0], mul(yan, 0.1)); J[13] = add(J[0], mul(yan, -0.1));
+    J[12] = add(add(J[10], mul(dn, 0.48)), mul(ileri, 0.14)); J[15] = add(add(J[13], mul(dn, 0.48)), mul(ileri, 0.1));
+    J[5] = ik2(J[4], J[6], KOL1, KOL2, mul(ileri, -1)); J[8] = ik2(J[7], J[9], KOL1, KOL2, mul(ileri, -1));
+    J[11] = ik2(J[10], J[12], BAC1, BAC2, ileri); J[14] = ik2(J[13], J[15], BAC1, BAC2, ileri);
+    return { J, hf: nrm(add(ileri, mul(dn, 0.15))), hu: mul(dn, -1), fwd: fw };
   }
-  /* Gürültüden üretilmiş stereo salon yankısı */
-  function salon(ctx, sn) {
-    const uz = Math.floor(ctx.sampleRate * sn);
-    const b = ctx.createBuffer(2, uz, ctx.sampleRate);
-    const on = ctx.sampleRate * 0.015;
-    for (let k = 0; k < 2; k++) {
-      const d = b.getChannelData(k);
-      for (let i = 0; i < uz; i++) {
-        const giris = i < on ? i / on : 1;
-        d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / uz, 3.4) * giris;
+
+  /* Sıçrayış: kütle merkezi (com) etrafında, kollar ileri uzanmış, bacaklar geride */
+  function sicra(com, yon, egim, uzan) {
+    const yaw = Math.atan2(yon[0], yon[2]);
+    const L = [];
+    L[0] = [0, -0.02, -0.2]; L[1] = [0, 0.05, 0.13]; L[2] = [0, 0.1, 0.23]; L[3] = [0, 0.14, 0.31];
+    L[4] = [0.18, 0.06, 0.14]; L[7] = [-0.18, 0.06, 0.14];
+    L[6] = [0.3, 0.12 + 0.25 * uzan, 0.35 + 0.4 * uzan]; L[9] = [-0.3, 0.12 + 0.25 * uzan, 0.35 + 0.4 * uzan];
+    L[10] = [0.1, -0.02, -0.2]; L[13] = [-0.1, -0.02, -0.2];
+    L[12] = [0.16, -0.2, -0.6]; L[15] = [-0.16, -0.16, -0.64];
+    L[5] = ik2(L[4], L[6], KOL1, KOL2, [0.7, -0.4, -0.2]); L[8] = ik2(L[7], L[9], KOL1, KOL2, [-0.7, -0.4, -0.2]);
+    L[11] = ik2(L[10], L[12], BAC1, BAC2, [0.2, -0.6, 0.3]); L[14] = ik2(L[13], L[15], BAC1, BAC2, [-0.2, -0.6, 0.3]);
+    const ce = Math.cos(egim), se = Math.sin(egim);
+    const J = L.map((p) => add(com, rotY([p[0], p[1] * ce + p[2] * se, -p[1] * se + p[2] * ce], yaw)));
+    return { J, hf: nrm(yon), hu: [0, 1, 0], fwd: rotY([0, 0, 1], yaw) };
+  }
+
+  function karistir(A, B, t) {
+    t = yumusak(t);
+    return {
+      J: A.J.map((p, i) => lerp3(p, B.J[i], t)),
+      hf: nrm(lerp3(A.hf, B.hf, t)), hu: nrm(lerp3(A.hu, B.hu, t)), fwd: nrm(lerp3(A.fwd, B.fwd, t)),
+    };
+  }
+  const merkez = (m) => mul(add(m.J[0], m.J[1]), 0.5);
+
+  /* ======================= Dal sahnesi fiziği =======================
+     Sarkaç: θ'' = -(g/L)·sin θ - c·θ' + pompalama. Bırakınca kütle merkezi
+     teğet hızla balistik uçar: v.y -= g·dt. Zemine değdiği an iniş sesi çalar. */
+  function dalFizik() {
+    const H = [1.3, 3.3, 10.75], yaw = Math.PI, L = 0.95, dt = 1 / 240;
+    const fw = rotY([0, 0, 1], yaw);
+    let th = 0.12, w = 0, t = 0, mod = "asili", com = null, v = null, egim = 0;
+    let birak = null, inis = null, inisP = null, oncekiW = 0;
+    const kayit = [], gicirti = [];
+    while (t < 12.2) {
+      if (mod === "asili") {
+        const pompa = t < 4.6 && Math.abs(th) < 0.3 ? 0.35 * Math.sign(w || 1) : 0;
+        const ivme = -(G / L) * Math.sin(th) - 0.08 * w + pompa;
+        w += ivme * dt; th += w * dt;
+        if (t > 0.25 && Math.sign(w) !== Math.sign(oncekiW)) gicirti.push(t);
+        oncekiW = w;
+        const hazir = (t > 4.8 && th > 0.36 && w > 0) || (t > 7 && th > 0.1 && w > 0);
+        if (hazir) {
+          mod = "ucus"; birak = t;
+          const dn = add(mul(fw, Math.sin(th)), [0, -Math.cos(th), 0]);
+          com = add(H, mul(dn, L * 0.8));
+          v = mul(add(mul(fw, Math.cos(th)), [0, Math.sin(th), 0]), L * w);
+        }
+        kayit.push({ mod: "asili", th });
+      } else if (mod === "ucus") {
+        v[1] -= G * dt;
+        com = add(com, mul(v, dt));
+        egim = Math.min(0.9, egim + dt * 1.6);
+        if (com[1] <= 0.6) { mod = "yer"; inis = t; inisP = [com[0], 0, com[2]]; }
+        kayit.push({ mod: "ucus", com: com.slice(), v: v.slice(), egim });
+      } else {
+        kayit.push({ mod: "yer" });
+      }
+      t += dt;
+    }
+    return { H, yaw, dt, kayit, gicirti, birak, inis, inisP };
+  }
+  const DAL = dalFizik();
+
+  /* Hamle: kamera önüne balistik atlayış. p(t) = p0 + v0·t + ½·g·t² */
+  function hamleHizi(p0, hedef, T) {
+    const d = sub(hedef, p0);
+    return [d[0] / T, (d[1] + 0.5 * G * T * T) / T, d[2] / T];
+  }
+
+  /* ======================= Kamera ======================= */
+  function elTitresimi(t, g) {
+    return [
+      g * (Math.sin(t * 1.31) + 0.5 * Math.sin(t * 3.07 + 1) + 0.25 * Math.sin(t * 7.3 + 2)),
+      g * (Math.sin(t * 1.73 + 4) + 0.5 * Math.sin(t * 4.31) + 0.2 * Math.sin(t * 9.1 + 1)),
+      0,
+    ];
+  }
+  function titreme(t) {
+    let m = 1;
+    for (const tf of ZAMAN.titremeler) {
+      const u = (t - tf) / 0.13;
+      if (u > -1 && u < 1) m = Math.min(m, 1 - 0.93 * (1 - Math.abs(u)) ** 0.5);
+    }
+    return m;
+  }
+
+  /* ======================= Sahneler ======================= */
+  const bosSahne = () => ({ siyah: true });
+  const temel = (o) => Object.assign({ sis: 0.1, amb: 0.35, pozlama: 1.0, agac: 1, maymun: [null, null], dal: null, govdeA: null, sarsinti: 0.01 }, o);
+  const hareket = (x) => x;
+
+  function sOrman(lt) {
+    const z = 0.45 * lt;
+    const zip = 0.025 * Math.abs(Math.sin(Math.PI * 1.8 * lt));
+    const p = [0.1 * Math.sin(lt * 0.7), 1.55 + zip, z];
+    const pan = 0.55 * Math.sin(lt * 0.5) + 0.15 * Math.sin(lt * 1.3);
+    const hedef = add(p, [Math.sin(pan) * 3, -0.45, Math.cos(pan) * 3]);
+    let m0 = null;
+    if (lt > 8.4 && lt < 11) {
+      const s = lt - 8.4;
+      m0 = yuru([5 - 3.2 * s, 0, 13.5], -Math.PI / 2, (s * 3.2) / 0.8, { S: 0.8, kalk: 0.14, egim: 0 });
+      m0.kurk = 1.2;
+    }
+    return temel({ kam: { p, hedef }, nisan: hedef, maymun: [m0, null], sis: 0.11, sarsinti: 0.012 });
+  }
+
+  function sDal(lt) {
+    const p = [0, 1.55, 5.5];
+    const i = Math.min(DAL.kayit.length - 1, Math.max(0, Math.floor(lt / DAL.dt)));
+    const k = DAL.kayit[i];
+    let m;
+    if (k.mod === "asili") {
+      m = asili(DAL.H, DAL.yaw, k.th);
+    } else if (k.mod === "ucus") {
+      m = sicra(k.com, nrm([k.v[0], 0, k.v[2]]), 0.35 - k.egim * 0.5, 0.2);
+    } else {
+      const s = lt - DAL.inis;
+      const P = DAL.inisP;
+      if (s < 0.35) {
+        const son = DAL.kayit[Math.floor(DAL.inis / DAL.dt) - 1];
+        m = karistir(sicra(son.com, nrm([son.v[0], 0, son.v[2]]), 0.35 - son.egim * 0.5, 0.2), yuru(P, Math.PI, 0, { comel: 0.14 }), s / 0.35);
+      } else if (s < 1.0) {
+        const u = (s - 0.35) / 0.65;
+        m = yuru(P, lerp(Math.PI, Math.PI / 2, yumusak(u)), u * 0.5, { comel: 0.14 * (1 - u) });
+      } else {
+        const d = (s - 1.0) * 1.2;
+        m = yuru(add(P, [d, 0, d * 0.25]), Math.PI / 2 - 0.24, 0.5 + d / 0.5, {});
       }
     }
-    return b;
+    m.kurk = 1.1;
+    const hedefM = add(merkez(m), [0, 0.1, 0]);
+    const tara = [0.8 + Math.sin(lt * 0.9) * 1.5, 0.3 + lt * 0.9, 10];
+    const nisan = lerp3(tara, hedefM, yumusak((lt - 0.4) / 2.2));
+    const bak = lerp3([0.2, 1.8, 10], hedefM, 0.6);
+    return temel({ kam: { p, hedef: bak }, nisan, maymun: [m, null], dal: { a: [3.4, 3.42, 11.2], b: [0.0, 3.22, 10.55], r: 0.07 }, govdeA: [3.55, 11.25, 0.32], sis: 0.1 });
   }
-  function kanal(c, cikis, pan) {
-    if (!c.createStereoPanner) return cikis;
-    const p = c.createStereoPanner();
-    p.pan.value = pan;
-    p.connect(cikis);
-    return p;
+
+  function sOturan(lt) {
+    const u = lt / 11.5;
+    const p = [0.05 * Math.sin(lt * 0.4), 1.5, lerp(1.0, 2.2, yumusak(u))];
+    const kok = [0.2, 0, 4.3];
+    const basYaw = lt < 6.5 ? 0.15 * Math.sin(lt * 0.6) : lerp(0, 2.55, yumusak((lt - 6.5) / 4.6));
+    const m = otur(kok, 0, basYaw, { egim: lt > 6.5 ? 0.12 : -0.1 });
+    m.kurk = 1.0 + 0.5 * yumusak((lt - 6) / 5);
+    m.cene = lt > 10 ? 0.08 : 0;
+    const bakis = add(m.J[3], [0, -0.15, 0]);
+    return temel({ kam: { p, hedef: bakis }, nisan: add(bakis, [0.05 * Math.sin(lt * 2.1), 0.03 * Math.sin(lt * 3.3), 0]), maymun: [m, null], sis: 0.09, agac: 1, sarsinti: 0.008 + lt * 0.0012 });
   }
-  /* Yaylı ses: iki testere dişi + gövde rezonansları + yay hışırtısı + gecikmeli vibrato */
-  function yay(f, t, d, v, o) {
+
+  const HAMLE = (() => {
+    const kam = [0, 1.5, 2.2];
+    const p0 = [0.2, 0.42, 4.3];
+    const hedef = [0.02, 1.38, 2.55];
+    const T = 0.42;
+    return { kam, p0, hedef, T, v0: hamleHizi(p0, hedef, T), kalkis: 0.12 };
+  })();
+  function sAtilma(lt) {
+    const H = HAMLE;
+    if (lt > H.kalkis + H.T + 0.02) return bosSahne();
+    let m;
+    const yon = nrm(sub(H.kam, H.p0));
+    if (lt < H.kalkis) {
+      m = karistir(otur([0.2, 0, 4.3], 0, 2.55, {}), sicra(H.p0, yon, 0.3, 0), lt / H.kalkis);
+      m.cene = 0.15 + lt;
+    } else {
+      const s = lt - H.kalkis;
+      const com = [H.p0[0] + H.v0[0] * s, H.p0[1] + H.v0[1] * s - 0.5 * G * s * s, H.p0[2] + H.v0[2] * s];
+      m = sicra(com, nrm(sub(H.kam, com)), -0.2, yumusak(s / 0.3));
+      m.cene = 0.3 + 0.35 * yumusak(s / 0.2);
+    }
+    m.kurk = 1.7;
+    const geri = lt > 0.45 ? (lt - 0.45) * 1.6 : 0;
+    const p = [0, 1.5 + geri * 0.2, 2.2 - geri];
+    return temel({ kam: { p, hedef: add(merkez(m), [0, 0.2, 0]) }, nisan: merkez(m), maymun: [m, null], sis: 0.09, sarsinti: 0.02 + lt * 0.05 });
+  }
+
+  function sGosteri(lt) {
+    const p = [0, 1.5, 0];
+    const a = dikil([-1.2, 0, 6.5], Math.PI + 0.15, lt * 1.9, { kollarYukari: true });
+    const b = dikil([1.4, 0, 7.4], Math.PI - 0.2, lt * 2.2 + 0.4, { kollarYukari: lt > 1.2 });
+    a.kurk = 1.7; b.kurk = 1.6; a.cene = 0.25 + 0.2 * Math.sin(lt * 7); b.cene = 0.15;
+    const x = 1.3 * Math.sin(lt * 1.2);
+    return temel({ kam: { p, hedef: [x * 0.4, 1.1, 6] }, nisan: [x, 1.0, 6.8], maymun: [a, b], sis: 0.13, sarsinti: 0.03 });
+  }
+
+  function sHucum(lt) {
+    const p = [0, 1.3, 0];
+    const x = -5 + 3.2 * lt;
+    const a = yuru([x, 0, 4.2], Math.PI / 2, (lt * 3.2) / 0.8, { S: 0.8, kalk: 0.15, egim: -0.1, basYaw: -0.9 });
+    a.kurk = 1.7; a.cene = 0.35;
+    const b = dikil([2.6, 0, 8.5], Math.PI, lt * 2.4, { kollarYukari: true });
+    b.kurk = 1.6; b.cene = 0.3;
+    const hedef = [x * 0.7, 0.8, 4.2];
+    return temel({ kam: { p, hedef }, nisan: add(merkez(a), [0, 0.1, 0]), maymun: [a, b], sis: 0.12, sarsinti: 0.025 });
+  }
+
+  function sYaklasan(t) {
+    const p = [0, 1.5, 0];
+    const z = t < 53.2 ? 3.6 : t < 54.0 ? 2.6 : 1.7;
+    const m = otur([0.1, 0, z], Math.PI, 0, { egim: 0.05 });
+    m.kurk = 1.4; m.cene = 0.06 + 0.04 * Math.sin(t * 3);
+    return temel({ kam: { p, hedef: add(m.J[3], [0, -0.15, 0]) }, nisan: add(m.J[3], [0, -0.1, 0]), maymun: [m, null], sis: 0.12, sarsinti: 0.009 });
+  }
+
+  function sDonus(lt) {
+    const p = [0, 1.55, 0];
+    let yaw;
+    if (lt < 1.5) yaw = 0;
+    else if (lt < 7.5) yaw = Math.PI * yumusak((lt - 1.5) / 6);
+    else if (lt < 9) yaw = Math.PI;
+    else yaw = Math.PI * (1 - yumusak((lt - 9) / 2.9));
+    const hedef = add(p, [Math.sin(yaw) * 3, -0.3, Math.cos(yaw) * 3]);
+    return temel({ kam: { p, hedef }, nisan: hedef, sis: 0.11, sarsinti: 0.01 });
+  }
+
+  function sYuz(lt) {
+    const p = [0, 1.55, 0];
+    if (lt > 0.9) return bosSahne();
+    let m = null;
+    if (lt > 0.13) {
+      const bas = [0.04, 1.47, 0.62];
+      const kok = sub(bas, rotY([0, 1.11, 0.1], Math.PI));
+      m = dikil(kok, Math.PI, 0, { egim: -0.25 });
+      m.kurk = 1.8;
+      m.cene = 0.62 * yumusak((lt - 0.14) / 0.13);
+    }
+    const geri = lt > 0.2 ? (lt - 0.2) * 0.5 : 0;
+    return temel({ kam: { p: [0, 1.55 + geri * 0.1, -geri], hedef: [0.03, 1.4, 1.2] }, nisan: [0.04, 1.45, 0.62], maymun: [m, null], sis: 0.11, agac: 1, sarsinti: lt > 0.15 ? 0.03 : 0.008 });
+  }
+
+  const SAHNE = {
+    acilis: bosSahne, kart1: bosSahne, kart2: bosSahne, kart3: bosSahne, baslik: bosSahne,
+    orman: sOrman, dal: sDal, oturan: sOturan, atilma: sAtilma, gosteri: sGosteri,
+    hucum: sHucum, donus: sDonus, yuz: sYuz,
+    yaklasan: (lt) => sYaklasan(51.8 + lt),
+  };
+  function durumAl(t) {
+    const sh = ZAMAN.sahneler.find((s) => t >= s.bas && t < s.son) || ZAMAN.sahneler[ZAMAN.sahneler.length - 1];
+    const d = SAHNE[sh.ad](t - sh.bas);
+    d.t = t; d.sahne = sh.ad;
+    return d;
+  }
+
+  /* ======================= GPU çizici (ışın yürütme) ======================= */
+  const VS = `#version 300 es
+  in vec2 k; void main(){ gl_Position = vec4(k, 0.0, 1.0); }`;
+
+  const FS = `#version 300 es
+  precision highp float;
+  out vec4 cikti;
+  uniform vec2 uRes; uniform float uZaman; uniform float uTohum;
+  uniform vec3 uKamP; uniform mat3 uKamR;
+  uniform vec3 uIsikP; uniform vec3 uIsikY; uniform float uIsik;
+  uniform vec3 uJ[32]; uniform vec3 uHF[2]; uniform vec3 uHU[2]; uniform vec3 uFW[2];
+  uniform float uCene[2]; uniform float uKurk[2]; uniform vec4 uSinir[2];
+  uniform vec3 uDalA; uniform vec3 uDalB; uniform float uDalR; uniform vec3 uGovde;
+  uniform float uSis; uniform float uAmb; uniform float uPoz; uniform float uAgac; uniform float uGren;
+
+  const float KURK = 0.032;
+
+  float h13(vec3 p){ p = fract(p*0.1031); p += dot(p, p.zyx + 31.32); return fract((p.x + p.y) * p.z); }
+  float h12(vec2 p){ vec3 q = fract(vec3(p.xyx)*0.1031); q += dot(q, q.yzx + 33.33); return fract((q.x + q.y) * q.z); }
+  float gur(vec3 x){
+    vec3 i = floor(x); vec3 f = fract(x); f = f*f*(3.0-2.0*f);
+    return mix(mix(mix(h13(i), h13(i+vec3(1,0,0)), f.x), mix(h13(i+vec3(0,1,0)), h13(i+vec3(1,1,0)), f.x), f.y),
+               mix(mix(h13(i+vec3(0,0,1)), h13(i+vec3(1,0,1)), f.x), mix(h13(i+vec3(0,1,1)), h13(i+vec3(1,1,1)), f.x), f.y), f.z);
+  }
+  float fbm(vec3 p){ float a = 0.5, s = 0.0; for(int i=0;i<3;i++){ s += a*gur(p); p *= 2.03; a *= 0.5; } return s; }
+
+  float kapsul(vec3 p, vec3 a, vec3 b, float r){ vec3 pa=p-a, ba=b-a; float h=clamp(dot(pa,ba)/dot(ba,ba),0.0,1.0); return length(pa-ba*h)-r; }
+  float konik(vec3 p, vec3 a, vec3 b, float ra, float rb){ vec3 pa=p-a, ba=b-a; float h=clamp(dot(pa,ba)/dot(ba,ba),0.0,1.0); return length(pa-ba*h)-mix(ra,rb,h); }
+  float elips(vec3 p, vec3 r){ float k0=length(p/r); float k1=length(p/(r*r)); return k0*(k0-1.0)/k1; }
+  float smin(float a, float b, float k){ float h=clamp(0.5+0.5*(b-a)/k,0.0,1.0); return mix(b,a,h)-k*h*(1.0-h); }
+  float smax(float a, float b, float k){ return -smin(-a,-b,k); }
+
+  // Şempanze: x = uzaklık, y = bölge (0 kürk, 1 çıplak deri, 2 göz, 3 diş, 4 ağız içi)
+  vec2 sempanze(int k, vec3 p){
+    int o = k*16;
+    vec3 pel=uJ[o], gog=uJ[o+1], boy=uJ[o+2], bas=uJ[o+3];
+    float d = konik(p, pel, gog, 0.15, 0.185);
+    d = smin(d, kapsul(p, gog, boy, 0.085), 0.06);
+    d = smin(d, kapsul(p, boy, bas, 0.07), 0.04);
+    d = smin(d, kapsul(p, uJ[o+4], uJ[o+7], 0.09), 0.07);
+    d = smin(d, kapsul(p, uJ[o+10], uJ[o+13], 0.1), 0.07);
+    float kol = smin(konik(p, uJ[o+4], uJ[o+5], 0.07, 0.052), konik(p, uJ[o+5], uJ[o+6], 0.055, 0.04), 0.03);
+    kol = min(kol, smin(konik(p, uJ[o+7], uJ[o+8], 0.07, 0.052), konik(p, uJ[o+8], uJ[o+9], 0.055, 0.04), 0.03));
+    float bac = smin(konik(p, uJ[o+10], uJ[o+11], 0.085, 0.06), konik(p, uJ[o+11], uJ[o+12], 0.06, 0.042), 0.03);
+    bac = min(bac, smin(konik(p, uJ[o+13], uJ[o+14], 0.085, 0.06), konik(p, uJ[o+14], uJ[o+15], 0.06, 0.042), 0.03));
+    d = smin(d, min(kol, bac), 0.05);
+    // eller (önkolun son 12 cm'i) ve ayaklar: çıplak deri
+    vec3 e1 = uJ[o+6] - normalize(uJ[o+6]-uJ[o+5])*0.12;
+    vec3 e2 = uJ[o+9] - normalize(uJ[o+9]-uJ[o+8])*0.12;
+    vec3 fw = uFW[k];
+    float el = min(konik(p, e1, uJ[o+6], 0.043, 0.034), konik(p, e2, uJ[o+9], 0.043, 0.034));
+    float ayak = min(konik(p, uJ[o+12], uJ[o+12]+fw*0.16+vec3(0.0,-0.04,0.0), 0.04, 0.03), konik(p, uJ[o+15], uJ[o+15]+fw*0.16+vec3(0.0,-0.04,0.0), 0.04, 0.03));
+    float ciplak = min(el, ayak);
+    d = smin(d, ciplak, 0.02);
+
+    // Baş: yerel eksenler
+    vec3 f = uHF[k]; vec3 r = normalize(cross(uHU[k], f)); vec3 u = cross(f, r);
+    vec3 q = p - bas; q = vec3(dot(q,r), dot(q,u), dot(q,f));
+    vec3 qa = vec3(abs(q.x), q.y, q.z);
+    float cene = uCene[k];
+    float kafa = elips(q-vec3(0.0,0.02,-0.01), vec3(0.083,0.085,0.098));
+    float kas = kapsul(q, vec3(-0.056,0.042,0.074), vec3(0.056,0.042,0.074), 0.021);   // belirgin kaş çıkıntısı
+    float agiz = elips(q-vec3(0.0,-0.03,0.085), vec3(0.058,0.04,0.056));             // öne çıkık ağız
+    vec3 qj = q - vec3(0.0,-0.03,0.0); float ca=cos(cene), sa=sin(cene);
+    qj = vec3(qj.x, ca*qj.y + sa*qj.z, -sa*qj.y + ca*qj.z);
+    float alt = elips(qj-vec3(0.0,-0.055,0.075), vec3(0.049,0.027,0.054));           // alt çene
+    float h = smin(kafa, kas, 0.03);
+    h = smin(h, agiz, 0.035);
+    h = smin(h, alt, 0.018);
+    vec3 bc = vec3(0.0,-0.075-cene*0.04,0.1); vec3 br = vec3(0.041, 0.006+cene*0.05, 0.052);
+    if(cene > 0.02){ h = smax(h, -elips(q-bc, br), 0.008); }
+    float cukur = length(qa-vec3(0.032,0.018,0.086))-0.019;
+    h = smax(h, -cukur, 0.007);
+    float kulak = elips(qa-vec3(0.094,0.012,-0.006), vec3(0.011,0.041,0.034));        // iri, yana açık kulaklar
+    h = smin(h, kulak, 0.012);
+    float goz = length(qa-vec3(0.03,0.017,0.075))-0.0125;
+    float dis = 1e3;
+    if(cene > 0.05){
+      dis = konik(qa-vec3(0.026,-0.062,0.113), vec3(0.0), vec3(0.0,-0.03,0.004), 0.008, 0.0015);  // üst köpek dişleri
+      dis = min(dis, kapsul(q, vec3(-0.015,-0.066,0.126), vec3(0.015,-0.066,0.126), 0.0068));
+      vec3 qja = vec3(abs(qj.x), qj.y, qj.z);
+      dis = min(dis, konik(qja-vec3(0.024,-0.031,0.1), vec3(0.0), vec3(0.0,0.026,0.003), 0.007, 0.0015)); // alt köpek dişleri
+    }
+    float dg = smin(d, h, 0.04);
+    float tum = min(dg, min(goz, dis));
+    float bolge = 0.0;
+    if(tum == goz) bolge = 2.0;
+    else if(tum == dis) bolge = 3.0;
+    else {
+      bool yuz = (h < d + 0.01) && ((q.z > 0.035 && q.y < 0.062) || kulak < h + 0.004);
+      if(yuz || ciplak < dg + 0.004) bolge = 1.0;
+      if(cene > 0.05 && length((q-bc)/(br+0.02)) < 1.2) bolge = 4.0;
+    }
+    return vec2(tum, bolge);
+  }
+
+  vec2 dunya(vec3 p){
+    float zem = p.y - 0.05*fbm(vec3(p.xz*2.5, 0.0)) - 0.02*gur(vec3(p.xz*14.0, 1.0));
+    vec2 r = vec2(zem, 5.0);
+    if(uAgac > 0.5){
+      vec2 c = floor(p.xz/3.2); vec2 lc = p.xz - c*3.2;
+      float kenar = min(min(lc.x, 3.2-lc.x), min(lc.y, 3.2-lc.y));
+      float hc = h12(c*1.7+3.1);
+      vec2 mz = c*3.2 + vec2(0.8,0.8) + vec2(h12(c+1.3), h12(c+7.9))*1.6;
+      bool bos = hc < 0.38 || (abs(mz.x) < 2.2 && mz.y > -6.0 && mz.y < 20.0);
+      float ag = 1e3;
+      if(!bos){
+        float rr = 0.14 + 0.2*h12(c+5.5);
+        ag = length(p.xz - mz) - rr - 0.03*gur(vec3(p.xz*9.0, p.y*1.6)) - 0.05*exp(-p.y*3.0);
+      }
+      ag = min(ag, kenar + 0.06);
+      if(ag < r.x) r = vec2(ag, 6.0);
+    }
+    if(uGovde.z > 0.0){
+      float gv = length(p.xz - uGovde.xy) - uGovde.z - 0.03*gur(vec3(p.xz*9.0, p.y*1.6)) - 0.08*exp(-p.y*2.5);
+      if(gv < r.x) r = vec2(gv, 6.0);
+    }
+    if(uDalR > 0.0){
+      float dl = konik(p, uDalA, uDalB, uDalR, uDalR*0.55) - 0.01*gur(p*22.0);
+      if(dl < r.x) r = vec2(dl, 6.0);
+    }
+    return r;
+  }
+
+  // Dış kabuk: kürklü bölgelerde kürk ucu, çıplak bölgelerde deri
+  vec3 disKabuk(vec3 p){
+    vec2 w = dunya(p);
+    vec3 r = vec3(w, 0.0);
+    for(int k=0;k<2;k++){
+      vec4 s = uSinir[k];
+      if(s.w <= 0.0) continue;
+      float ds = length(p - s.xyz) - s.w;
+      if(ds > r.x) continue;
+      if(ds > 0.25){ r = vec3(ds, -1.0, 0.0); continue; }
+      vec2 c = sempanze(k, p);
+      float d = c.x - (c.y < 0.5 ? KURK*uKurk[k] : 0.0);
+      if(d < r.x) r = vec3(d, 10.0 + float(k), c.y);
+    }
+    return r;
+  }
+
+  vec3 normalD(vec3 p){ vec2 e=vec2(0.0015,-0.0015); return normalize(e.xyy*dunya(p+e.xyy).x + e.yyx*dunya(p+e.yyx).x + e.yxy*dunya(p+e.yxy).x + e.xxx*dunya(p+e.xxx).x); }
+  vec3 normalS(int k, vec3 p){ vec2 e=vec2(0.001,-0.001); return normalize(e.xyy*sempanze(k,p+e.xyy).x + e.yyx*sempanze(k,p+e.yyx).x + e.yxy*sempanze(k,p+e.yxy).x + e.xxx*sempanze(k,p+e.xxx).x); }
+
+  const vec3 ISIKRENK = vec3(1.0, 0.84, 0.62);
+
+  float fener(vec3 p, out vec3 L, out float dl){
+    vec3 v = uIsikP - p; dl = length(v); L = v/dl;
+    float koni = smoothstep(0.80, 0.965, dot(-L, uIsikY));
+    float halka = 0.85 + 0.15*smoothstep(0.93, 0.96, dot(-L, uIsikY));
+    return uIsik*koni*halka/(dl*dl + 0.25);
+  }
+  float golge(vec3 p, vec3 L, float mx){
+    float g = 1.0, t = 0.03;
+    for(int i=0;i<14;i++){
+      float h = disKabuk(p + L*t).x;
+      g = min(g, 10.0*h/t);
+      t += clamp(h, 0.03, 0.5);
+      if(g < 0.02 || t > mx) break;
+    }
+    return clamp(g, 0.0, 1.0);
+  }
+  float ao(vec3 p, vec3 n){
+    float o = 0.0, w = 1.0;
+    for(int i=1;i<=3;i++){ float hh = 0.05*float(i); o += (hh - disKabuk(p+n*hh).x)*w; w *= 0.6; }
+    return clamp(1.0 - 2.2*o, 0.0, 1.0);
+  }
+
+  vec3 kilRenk(vec3 p, vec3 n, vec3 rd, float x, float gl){
+    vec3 L; float dl; float I = fener(p, L, dl);
+    vec3 T = normalize(vec3(0.0,-1.0,0.0) - n*dot(vec3(0.0,-1.0,0.0), n) + vec3(0.0,0.0,1e-3));
+    float TL = dot(T, L), TV = dot(T, -rd);
+    float sL = sqrt(max(0.0, 1.0-TL*TL)), sV = sqrt(max(0.0, 1.0-TV*TV));
+    float dif = mix(0.25, 1.0, sL) * max(0.0, dot(n, L)*0.6 + 0.4);
+    float par = pow(max(0.0, TL*TV + sL*sV), 38.0);
+    float par2 = pow(max(0.0, TL*TV + sL*sV), 9.0);
+    float kok = mix(0.3, 1.0, x);
+    vec3 taban = mix(vec3(0.028,0.022,0.019), vec3(0.075,0.058,0.046), x);
+    vec3 c = taban*I*dif*kok*gl*1.6*ISIKRENK;
+    c += (vec3(0.55,0.47,0.38)*par*0.35 + vec3(0.22,0.13,0.07)*par2*0.25)*I*gl*kok*ISIKRENK;
+    c += taban*uAmb*vec3(0.22,0.27,0.38)*kok*0.6;
+    return c;
+  }
+
+  vec3 yuzeyRenk(vec3 p, vec3 n, vec3 rd, float mat, float bolge){
+    vec3 L; float dl; float I = fener(p, L, dl);
+    float gl = I > 0.002 ? golge(p + n*0.01, L, dl) : 1.0;
+    float a = ao(p, n);
+    vec3 H = normalize(L - rd);
+    vec3 alb; float parlak = 0.0, sert = 16.0, sar = 0.0;
+    if(mat < 5.5){
+      float y = fbm(vec3(p.xz*6.0, 3.0));
+      alb = mix(vec3(0.07,0.05,0.032), vec3(0.12,0.085,0.05), y);
+      alb = mix(alb, vec3(0.045,0.05,0.03), smoothstep(0.55,0.75,gur(vec3(p.xz*2.0,7.0))));
+      parlak = 0.04; sert = 10.0;
+    } else if(mat < 6.5){
+      float b = fbm(vec3(p.xz*14.0, p.y*2.2));
+      alb = mix(vec3(0.05,0.045,0.04), vec3(0.11,0.1,0.085), b);
+      alb = mix(alb, vec3(0.06,0.075,0.045), smoothstep(0.6,0.8,gur(p*3.0))*0.6);
+      parlak = 0.03;
+    } else {
+      if(bolge < 1.5){ alb = vec3(0.085,0.062,0.052); parlak = 0.22; sert = 26.0; sar = 0.45; }       // yüz derisi: koyu, yağlı
+      else if(bolge < 2.5){ alb = vec3(0.045,0.022,0.012); parlak = 1.6; sert = 140.0; }               // ıslak, koyu kahve göz
+      else if(bolge < 3.5){ alb = vec3(0.5,0.44,0.31); parlak = 0.5; sert = 60.0; sar = 0.2; }          // sarımsı dişler
+      else { alb = vec3(0.16,0.035,0.04); parlak = 0.5; sert = 40.0; sar = 0.5; }                      // ağız içi
+    }
+    float nl = dot(n, L);
+    float dif = max(0.0, (nl + sar)/(1.0 + sar));
+    vec3 c = alb*I*dif*gl*ISIKRENK;
+    if(sar > 0.0) c += alb*vec3(0.35,0.08,0.05)*I*max(0.0, 1.0 - abs(nl))*sar*gl;                    // yüzey altı saçılma
+    c += ISIKRENK*I*parlak*pow(max(0.0, dot(n, H)), sert)*gl*(sert/40.0 + 0.3)*0.25;
+    c += alb*uAmb*vec3(0.22,0.27,0.38)*(0.5+0.5*n.y)*a;
+    return c*mix(0.55, 1.0, a);
+  }
+
+  vec3 sacilma(vec3 ro, vec3 rd, float tmax, float j){
+    float tm = max(0.0, min(tmax, 16.0) - 0.7);
+    float dt = tm/10.0;
+    vec3 s = vec3(0.0);
+    for(int i=0;i<10;i++){
+      float tt = 0.7 + (float(i) + j)*dt;
+      vec3 p = ro + rd*tt;
+      vec3 L; float dl; float I = fener(p, L, dl);
+      float yog = 0.45 + 0.9*gur(p*0.55 + vec3(uZaman*0.07, 0.0, uZaman*0.04));
+      s += I*yog*exp(-uSis*tt)*dt;
+    }
+    return s*uSis*ISIKRENK*0.06;
+  }
+
+  vec3 aces(vec3 x){ return clamp((x*(2.51*x + 0.03))/(x*(2.43*x + 0.59) + 0.14), 0.0, 1.0); }
+
+  void main(){
+    vec2 uv = (gl_FragCoord.xy - 0.5*uRes)/uRes.y;
+    vec2 uvb = uv*(1.0 + 0.07*dot(uv,uv));
+    vec3 ro = uKamP;
+    vec3 rd = normalize(uKamR*vec3(uvb, 1.05));
+    float j = h12(gl_FragCoord.xy + uTohum*17.0);
+
+    vec3 renk = vec3(0.0); float alfa = 0.0; float t = 0.02; float tSon = 40.0;
+    for(int gecis=0; gecis<3; gecis++){
+      vec3 m = vec3(1e3, -1.0, 0.0);
+      bool vur = false;
+      for(int i=0;i<110;i++){
+        vec3 p = ro + rd*t;
+        m = disKabuk(p);
+        if(m.y > -0.5 && m.x < 0.0012*t + 0.0006){ vur = true; break; }
+        t += m.x*0.92;
+        if(t > 40.0) break;
+      }
+      if(!vur){ tSon = 40.0; break; }
+      tSon = t;
+      vec3 p = ro + rd*t;
+      float sis = exp(-uSis*t);
+      if(m.y > 9.5){
+        int k = m.y > 10.5 ? 1 : 0;
+        if(m.z > 0.5){
+          vec3 n = normalS(k, p);
+          vec3 c = yuzeyRenk(p, n, rd, 7.0, m.z)*sis;
+          renk += (1.0-alfa)*c; alfa = 1.0; break;
+        }
+        // Kürk: kabuğun içinde küçük adımlarla hacimli kıl yoğunluğu biriktir
+        vec3 n0 = normalS(k, p);
+        vec3 T = normalize(vec3(0.0,-1.0,0.0) - n0*dot(vec3(0.0,-1.0,0.0), n0) + vec3(0.0,0.0,1e-3));
+        vec3 hk = normalize(T*0.75 + n0*0.65);
+        vec3 B = normalize(cross(n0, hk)); vec3 C = cross(hk, B);
+        vec3 L; float dl; float I = fener(p, L, dl);
+        float gl = I > 0.002 ? golge(p + n0*0.05, L, dl) : 1.0;
+        float fl = KURK*uKurk[k];
+        float adim = fl/9.0;
+        bool deri = false;
+        for(int s=0; s<16; s++){
+          vec3 q = ro + rd*t;
+          vec2 c = sempanze(k, q);
+          if(c.x < 0.0015){ deri = true; break; }
+          float x = clamp(c.x/fl, 0.0, 1.0);
+          if(x >= 0.999 && s > 1) break;
+          float tel = gur(vec3(dot(q,B)*240.0, dot(q,C)*240.0, dot(q,hk)*22.0));
+          float yog = smoothstep(0.52, 0.8, tel)*(1.0-x)*2.4 + (1.0-x)*(1.0-x)*0.7;
+          float a = 1.0 - exp(-yog*adim*150.0);
+          vec3 kc = kilRenk(q, n0, rd, x, gl)*exp(-uSis*t);
+          renk += (1.0-alfa)*a*kc; alfa += (1.0-alfa)*a;
+          if(alfa > 0.97) break;
+          t += adim;
+        }
+        if(deri && alfa < 0.97){
+          vec3 q = ro + rd*t;
+          vec3 c = vec3(0.05,0.04,0.036)*fener(q, L, dl)*gl*max(0.0, dot(n0, L))*exp(-uSis*t);
+          renk += (1.0-alfa)*c; alfa = 1.0;
+        }
+        if(alfa > 0.97) break;
+        t += 0.002;
+        continue;
+      }
+      vec3 n = normalD(p);
+      vec3 c = yuzeyRenk(p, n, rd, m.y, 0.0)*sis;
+      renk += (1.0-alfa)*c; alfa = 1.0;
+      break;
+    }
+    vec3 sisRenk = vec3(0.010,0.013,0.018)*uAmb;
+    renk += (1.0-alfa)*sisRenk;
+    renk = mix(sisRenk, renk, 1.0) + sacilma(ro, rd, tSon, j) ;
+
+    renk *= uPoz;
+    renk = aces(renk*2.2);
+    renk = pow(renk, vec3(0.4545));
+    renk = mix(renk, renk*vec3(0.93,1.02,0.96), 0.6);                    // yeşilimsi gece kamerası
+    vec2 q = gl_FragCoord.xy/uRes;
+    renk *= 0.35 + 0.65*pow(16.0*q.x*q.y*(1.0-q.x)*(1.0-q.y), 0.35);     // vinyet
+    renk += (h12(gl_FragCoord.xy*1.3 + uTohum*91.0) - 0.5)*uGren;       // film greni
+    renk *= 0.96 + 0.04*sin(gl_FragCoord.y*3.14159);                     // tarama çizgisi
+    cikti = vec4(renk, 1.0);
+  }`;
+
+  class Cizici {
+    constructor(tuval) {
+      this.tuval = tuval;
+      const gl = tuval.getContext("webgl2", { antialias: false, alpha: false, powerPreference: "high-performance" });
+      if (!gl) throw new Error("webgl2 yok");
+      this.gl = gl;
+      const sh = (tur, kaynak) => {
+        const s = gl.createShader(tur);
+        gl.shaderSource(s, kaynak); gl.compileShader(s);
+        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+        return s;
+      };
+      const pr = gl.createProgram();
+      gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS));
+      gl.linkProgram(pr);
+      if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(pr));
+      this.pr = pr;
+      const b = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, b);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+      this.vao = gl.createVertexArray();
+      gl.bindVertexArray(this.vao);
+      const k = gl.getAttribLocation(pr, "k");
+      gl.enableVertexAttribArray(k); gl.vertexAttribPointer(k, 2, gl.FLOAT, false, 0, 0);
+      this.u = {};
+      ["uRes", "uZaman", "uTohum", "uKamP", "uKamR", "uIsikP", "uIsikY", "uIsik", "uJ", "uHF", "uHU", "uFW", "uCene", "uKurk", "uSinir",
+        "uDalA", "uDalB", "uDalR", "uGovde", "uSis", "uAmb", "uPoz", "uAgac", "uGren"].forEach((n) => { this.u[n] = gl.getUniformLocation(pr, n); });
+      this.J = new Float32Array(96); this.HF = new Float32Array(6); this.HU = new Float32Array(6); this.FW = new Float32Array(6);
+      this.S = new Float32Array(8);
+    }
+    ciz(d, olcek) {
+      const gl = this.gl, u = this.u, tv = this.tuval;
+      const w = Math.max(64, Math.round(tv.clientWidth * olcek)), h = Math.max(36, Math.round(tv.clientHeight * olcek));
+      if (tv.width !== w || tv.height !== h) { tv.width = w; tv.height = h; }
+      gl.viewport(0, 0, w, h);
+      if (d.siyah) { gl.clearColor(0, 0, 0, 1); gl.clear(gl.COLOR_BUFFER_BIT); return; }
+      gl.useProgram(this.pr); gl.bindVertexArray(this.vao);
+      const kam = d.kam;
+      const titr = elTitresimi(d.t * 1.0, d.sarsinti);
+      const f0 = nrm(sub(kam.hedef, kam.p));
+      const r0 = nrm(cross([0, 1, 0], f0));
+      const u0 = cross(f0, r0);
+      const f = nrm(add(add(f0, mul(r0, titr[0])), mul(u0, titr[1])));
+      const r = nrm(cross([0, 1, 0], f)); const up = cross(f, r);
+      gl.uniform2f(u.uRes, w, h);
+      gl.uniform1f(u.uZaman, d.t); gl.uniform1f(u.uTohum, Math.random());
+      gl.uniform3fv(u.uKamP, kam.p);
+      gl.uniformMatrix3fv(u.uKamR, false, [...r, ...up, ...f]);
+      const isikP = add(add(kam.p, mul(r, 0.18)), mul(up, -0.12));
+      const gecik = elTitresimi(d.t - 0.12, d.sarsinti * 1.3);
+      const nis = add(d.nisan, mul(r, gecik[0] * 2)).map((x, i) => x + (i === 1 ? gecik[1] * 2 : 0));
+      gl.uniform3fv(u.uIsikP, isikP);
+      gl.uniform3fv(u.uIsikY, nrm(sub(nis, isikP)));
+      gl.uniform1f(u.uIsik, (d.isik === undefined ? 16 : d.isik) * titreme(d.t) * (0.97 + 0.03 * Math.sin(d.t * 37.0)));
+      for (let k = 0; k < 2; k++) {
+        const m = d.maymun[k];
+        if (!m) { this.S.set([0, 0, 0, -1], k * 4); continue; }
+        m.J.forEach((p, i) => this.J.set(p, k * 48 + i * 3));
+        this.HF.set(m.hf, k * 3); this.HU.set(m.hu, k * 3); this.FW.set(m.fwd, k * 3);
+        let c = [0, 0, 0];
+        m.J.forEach((p) => { c = add(c, p); });
+        c = mul(c, 1 / 16);
+        let rr = 0;
+        m.J.forEach((p) => { rr = Math.max(rr, len(sub(p, c))); });
+        this.S.set([...c, rr + 0.35], k * 4);
+      }
+      gl.uniform3fv(u.uJ, this.J); gl.uniform3fv(u.uHF, this.HF); gl.uniform3fv(u.uHU, this.HU); gl.uniform3fv(u.uFW, this.FW);
+      gl.uniform4fv(u.uSinir, this.S);
+      gl.uniform1fv(u.uCene, [d.maymun[0] ? d.maymun[0].cene || 0 : 0, d.maymun[1] ? d.maymun[1].cene || 0 : 0]);
+      gl.uniform1fv(u.uKurk, [d.maymun[0] ? d.maymun[0].kurk || 1 : 1, d.maymun[1] ? d.maymun[1].kurk || 1 : 1]);
+      gl.uniform3fv(u.uDalA, d.dal ? d.dal.a : [0, 0, 0]); gl.uniform3fv(u.uDalB, d.dal ? d.dal.b : [0, 1, 0]); gl.uniform1f(u.uDalR, d.dal ? d.dal.r : 0);
+      gl.uniform3fv(u.uGovde, d.govdeA || [0, 0, 0]);
+      gl.uniform1f(u.uSis, d.sis); gl.uniform1f(u.uAmb, d.amb); gl.uniform1f(u.uPoz, d.pozlama);
+      gl.uniform1f(u.uAgac, d.agac); gl.uniform1f(u.uGren, 0.07);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+  }
+
+  /* ======================= Ses: korku kemanı ve orman ======================= */
+  let A = null;
+  function sesKur() {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const son = ctx.createDynamicsCompressor();
+    son.threshold.value = -10; son.knee.value = 4; son.ratio.value = 12; son.attack.value = 0.003; son.release.value = 0.2;
+    const ana = ctx.createGain(); ana.gain.value = 0.9;
+    const yanki = ctx.createConvolver();
+    const uz = Math.floor(ctx.sampleRate * 3.4);
+    const ir = ctx.createBuffer(2, uz, ctx.sampleRate);
+    for (let c = 0; c < 2; c++) { const d = ir.getChannelData(c); for (let i = 0; i < uz; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / uz, 2.6); }
+    yanki.buffer = ir;
+    const islak = ctx.createGain(); islak.gain.value = 0.3;
+    yanki.connect(islak); islak.connect(ana);
+    ana.connect(son); son.connect(ctx.destination);
+    const gb = ctx.createBuffer(1, ctx.sampleRate * 3, ctx.sampleRate);
+    const g = gb.getChannelData(0); for (let i = 0; i < g.length; i++) g[i] = Math.random() * 2 - 1;
+    A = { ctx, ana, yanki, gurultu: gb, bus: null };
+  }
+  function yeniBus() {
+    if (A.bus) { const eski = A.bus; eski.gain.setTargetAtTime(0, A.ctx.currentTime, 0.03); setTimeout(() => eski.disconnect(), 400); }
+    const b = A.ctx.createGain(); b.connect(A.ana); b.connect(A.yanki); A.bus = b; return b;
+  }
+  function kanal(cikis, pan) { const p = A.ctx.createStereoPanner(); p.pan.value = pan; p.connect(cikis); return p; }
+  function gurultuKaynak(t, sure) {
+    const n = A.ctx.createBufferSource(); n.buffer = A.gurultu; n.loop = true;
+    n.start(t, Math.random() * 2); n.stop(t + sure); return n;
+  }
+  function filtre(tur, f, Q) { const b = A.ctx.createBiquadFilter(); b.type = tur; b.frequency.value = f; b.Q.value = Q || 0.7; return b; }
+
+  /* Yaylı ses: köprüye yakın çalma (sul ponticello), tremolo, glissando ve sforzando seçenekleri */
+  function yay(f, t, d, v, o, cikis) {
     const c = A.ctx;
-    const atak = Math.min(o.atak, d * 0.4);
-    const birak = o.birak;
-    const son = t + d + birak * 7;
+    const atak = o.atak || 0.08, birak = o.birak || 0.15, son = t + d + birak * 6;
     const amp = c.createGain();
     amp.gain.setValueAtTime(0, t);
     amp.gain.linearRampToValueAtTime(v, t + atak);
-    amp.gain.setTargetAtTime(v * 0.8, t + atak, Math.max(0.05, d * 0.45));
+    if (o.sfz) amp.gain.setTargetAtTime(v * 0.3, t + atak, 0.06);
     amp.gain.setTargetAtTime(0, t + d, birak);
-    const lp = c.createBiquadFilter();
-    lp.type = "lowpass"; lp.Q.value = 0.5;
-    lp.frequency.setValueAtTime(o.parlak * 0.4, t);
-    lp.frequency.linearRampToValueAtTime(o.parlak, t + atak * 1.5);
-    const kopru = c.createBiquadFilter();
-    kopru.type = "peaking"; kopru.frequency.value = 2700; kopru.Q.value = 1.1; kopru.gain.value = 5;
-    const govde = c.createBiquadFilter();
-    govde.type = "peaking"; govde.frequency.value = o.govde; govde.Q.value = 1.4; govde.gain.value = 6;
-    const hp = c.createBiquadFilter();
-    hp.type = "highpass"; hp.frequency.value = o.alt;
-    hp.connect(govde); govde.connect(kopru); kopru.connect(lp); lp.connect(amp);
-    amp.connect(kanal(c, o.cikis, o.pan));
-
-    const vib = c.createOscillator();
-    vib.frequency.value = 4.9 + Math.random() * 0.9;
-    const vg = c.createGain();
-    vg.gain.setValueAtTime(0, t);
-    vg.gain.setValueAtTime(0, t + Math.min(0.12, d * 0.3));
-    vg.gain.linearRampToValueAtTime(f * 0.0058 * o.vib, t + Math.min(0.45, d * 0.7));
-    vib.connect(vg);
-    vib.start(t); vib.stop(son);
-    [-6, 5].forEach((sap) => {
-      const s = c.createOscillator();
-      s.type = "sawtooth"; s.frequency.value = f; s.detune.value = sap;
-      vg.connect(s.frequency);
-      const sg = c.createGain(); sg.gain.value = 0.5;
-      s.connect(sg); sg.connect(hp);
+    let hedef = amp;
+    if (o.tremolo) {
+      const tg = c.createGain(); tg.gain.value = 0.55;
+      const lfo = c.createOscillator(); lfo.frequency.value = o.tremolo + Math.random();
+      const lg = c.createGain(); lg.gain.value = 0.45; lfo.connect(lg); lg.connect(tg.gain);
+      lfo.start(t); lfo.stop(son); amp.connect(tg); hedef = tg;
+    }
+    hedef.connect(kanal(cikis, o.pan || 0));
+    const hp = filtre("highpass", o.pont ? 900 : 160, 0.7);
+    const gov = filtre("peaking", o.govde || 300, 1.3); gov.gain.value = 5;
+    const kop = filtre("peaking", o.pont ? 3600 : 2700, 1.1); kop.gain.value = o.pont ? 11 : 5;
+    const lp = filtre("lowpass", o.parlak || 6000, 0.5);
+    hp.connect(gov); gov.connect(kop); kop.connect(lp); lp.connect(amp);
+    const vib = c.createOscillator(); vib.frequency.value = 5 + Math.random();
+    const vg = c.createGain(); vg.gain.setValueAtTime(0, t); vg.gain.linearRampToValueAtTime(f * 0.006 * (o.vib === undefined ? 1 : o.vib), t + Math.min(0.5, d));
+    vib.connect(vg); vib.start(t); vib.stop(son);
+    [-7, 6].forEach((sap) => {
+      const s = c.createOscillator(); s.type = "sawtooth";
+      s.frequency.setValueAtTime(f, t);
+      if (o.gliss) s.frequency.exponentialRampToValueAtTime(o.gliss, t + d);
+      s.detune.value = sap; vg.connect(s.frequency);
+      const sg = c.createGain(); sg.gain.value = 0.5; s.connect(sg); sg.connect(hp);
       s.start(t); s.stop(son);
     });
-    const nz = c.createBufferSource();
-    nz.buffer = A.gurultu; nz.loop = true;
-    const bp = c.createBiquadFilter();
-    bp.type = "bandpass"; bp.frequency.value = Math.min(7500, f * 4); bp.Q.value = 0.9;
-    const ng = c.createGain(); ng.gain.value = 0.07;
+    const nz = gurultuKaynak(t, son - t);
+    const bp = filtre("bandpass", Math.min(8000, f * 4), 0.8);
+    const ng = c.createGain(); ng.gain.value = o.pont ? 0.22 : 0.07;
     nz.connect(bp); bp.connect(ng); ng.connect(hp);
-    nz.start(t, Math.random() * 1.5); nz.stop(son);
   }
-  /* Pizzicato: telin parmakla çekilmesi */
-  function mizrap(f, t, v, o) {
+
+  /* Şempanze çığlığı: sert, titrek perdeli, formantlı ses + nefes gürültüsü */
+  function cigilk(t, sure, f0, v, pan, cikis) {
     const c = A.ctx;
-    const sure = o.sure;
-    const s = c.createOscillator(); s.type = "triangle"; s.frequency.value = f;
-    const s2 = c.createOscillator(); s2.type = "sawtooth"; s2.frequency.value = f * 1.001;
-    const g2 = c.createGain(); g2.gain.value = 0.22;
-    const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.Q.value = 1.2;
-    lp.frequency.setValueAtTime(Math.min(6500, f * 9), t);
-    lp.frequency.exponentialRampToValueAtTime(Math.max(180, f * 1.4), t + sure * 0.45);
-    const a = c.createGain();
-    a.gain.setValueAtTime(0.0001, t);
-    a.gain.exponentialRampToValueAtTime(v, t + 0.006);
-    a.gain.exponentialRampToValueAtTime(0.0001, t + sure);
-    s.connect(lp); s2.connect(g2); g2.connect(lp); lp.connect(a);
-    a.connect(kanal(c, o.cikis, o.pan));
-    s.start(t); s2.start(t); s.stop(t + sure + 0.05); s2.stop(t + sure + 0.05);
+    const o = c.createOscillator(); o.type = "sawtooth";
+    o.frequency.setValueAtTime(f0 * 0.7, t);
+    o.frequency.exponentialRampToValueAtTime(f0 * 1.15, t + sure * 0.22);
+    o.frequency.exponentialRampToValueAtTime(f0 * 0.95, t + sure * 0.75);
+    o.frequency.exponentialRampToValueAtTime(f0 * 0.6, t + sure);
+    const jit = gurultuKaynak(t, sure + 0.1); const jf = filtre("lowpass", 35, 0.7); const jg = c.createGain(); jg.gain.value = f0 * 0.08;
+    jit.connect(jf); jf.connect(jg); jg.connect(o.frequency);
+    const amp = c.createGain();
+    amp.gain.setValueAtTime(0, t); amp.gain.linearRampToValueAtTime(v, t + 0.035);
+    amp.gain.setTargetAtTime(v * 0.75, t + 0.05, sure * 0.4); amp.gain.setTargetAtTime(0, t + sure * 0.9, 0.06);
+    const pur = c.createOscillator(); pur.frequency.value = 70 + Math.random() * 25;
+    const pg = c.createGain(); pg.gain.value = v * 0.35; pur.connect(pg); pg.connect(amp.gain);
+    const dist = c.createWaveShaper();
+    const e = new Float32Array(1024); for (let i = 0; i < 1024; i++) { const x = i / 511.5 - 1; e[i] = Math.tanh(x * 3); }
+    dist.curve = e;
+    const f1 = filtre("bandpass", 1150, 3), f2 = filtre("bandpass", 2500, 4), f3 = filtre("lowpass", 5200, 0.7);
+    const g1 = c.createGain(), g2 = c.createGain(), g3 = c.createGain(); g1.gain.value = 1.2; g2.gain.value = 0.9; g3.gain.value = 0.18;
+    o.connect(dist); dist.connect(f1); dist.connect(f2); dist.connect(f3);
+    f1.connect(g1); f2.connect(g2); f3.connect(g3); g1.connect(amp); g2.connect(amp); g3.connect(amp);
+    const nf = gurultuKaynak(t, sure + 0.1); const nb = filtre("bandpass", 3200, 1.2); const ng = c.createGain(); ng.gain.value = 0.35;
+    nf.connect(nb); nb.connect(ng); ng.connect(amp);
+    amp.connect(kanal(cikis, pan));
+    o.start(t); o.stop(t + sure + 0.4); pur.start(t); pur.stop(t + sure + 0.4);
   }
-
-  /* ================= Zamanlayıcı ================= */
-  const durum = { caliyor: false, no: 0, olay: [], melodi: [], ptr: 0, t0: 0, spb: 1, bitis: 0, bus: null, zaman: null };
-  function planla(e) {
-    const t = durum.t0 + e.t * durum.spb;
-    const d = e.d * durum.spb;
-    const f = frekans(e.n);
-    const cikis = durum.bus;
-    if (e.tur === "keman") {
-      const yukseklik = Math.max(0, Math.min(1, (midi(e.n) - 62) / 22));
-      yay(f, t, d + 0.05, 0.17 * (0.85 + 0.35 * yukseklik) * e.vurgu, { atak: 0.09, birak: 0.11, parlak: 5400, govde: 320, alt: 180, vib: 1, pan: 0.12, cikis });
-    } else if (e.tur === "viyola") {
-      yay(f, t, d + 0.1, 0.055, { atak: 0.3, birak: 0.28, parlak: 2400, govde: 260, alt: 110, vib: 0.55, pan: -0.28, cikis });
-    } else if (e.tur === "cello") {
-      yay(f, t, d + 0.1, 0.085 * (e.y || 1), { atak: 0.22, birak: 0.3, parlak: 1700, govde: 170, alt: 45, vib: 0.5, pan: -0.1, cikis });
-    } else {
-      mizrap(f, t, 0.16 * (e.y || 1), { sure: f < 150 ? 1.1 : 0.8, pan: (Math.random() - 0.5) * 0.5, cikis });
+  /* "Pant-hoot": alçak, nefes alıp veren "hu" sesleri hızlanarak çığlığa varır */
+  function huZinciri(t, v, pan, cikis, zirve) {
+    let tt = t, ara = 0.5, f = 260;
+    for (let i = 0; i < 14; i++) {
+      const nefes = i % 2 === 1;
+      const c = A.ctx;
+      const o = c.createOscillator(); o.type = "triangle";
+      const ff = nefes ? f * 1.35 : f;
+      o.frequency.setValueAtTime(ff * 0.9, tt); o.frequency.linearRampToValueAtTime(ff * 1.1, tt + 0.12);
+      const bp = filtre("bandpass", ff * 1.8, 1.4);
+      const a = c.createGain();
+      a.gain.setValueAtTime(0, tt); a.gain.linearRampToValueAtTime(v * (nefes ? 0.45 : 1), tt + 0.03); a.gain.setTargetAtTime(0, tt + 0.1, 0.05);
+      o.connect(bp); bp.connect(a);
+      const nz = gurultuKaynak(tt, 0.3); const nb = filtre("bandpass", 1400, 1); const ng = c.createGain(); ng.gain.value = nefes ? 0.5 : 0.18;
+      nz.connect(nb); nb.connect(ng); ng.connect(a);
+      a.connect(kanal(cikis, pan));
+      o.start(tt); o.stop(tt + 0.4);
+      tt += ara; ara = Math.max(0.16, ara * 0.84); f *= 1.06;
+    }
+    if (zirve) { cigilk(tt, 0.7, 1050, v * 1.3, pan, cikis); cigilk(tt + 0.55, 0.9, 1250, v * 1.5, pan * 0.5, cikis); }
+    return tt;
+  }
+  function darbe(t, v, f, cikis) {
+    const c = A.ctx;
+    const o = c.createOscillator(); o.frequency.setValueAtTime(f * 1.6, t); o.frequency.exponentialRampToValueAtTime(f * 0.6, t + 0.3);
+    const a = c.createGain(); a.gain.setValueAtTime(v, t); a.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+    o.connect(a); a.connect(cikis); o.start(t); o.stop(t + 0.5);
+    const n = gurultuKaynak(t, 0.2); const lp = filtre("lowpass", 900, 0.7); const ng = c.createGain();
+    ng.gain.setValueAtTime(v * 0.7, t); ng.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    n.connect(lp); lp.connect(ng); ng.connect(cikis);
+  }
+  function hisirti(t, v, merkezF, sure, pan, cikis) {
+    const n = gurultuKaynak(t, sure + 0.05); const bp = filtre("bandpass", merkezF, 1.1); const g = A.ctx.createGain();
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + 0.005); g.gain.exponentialRampToValueAtTime(0.001, t + sure);
+    n.connect(bp); bp.connect(g); g.connect(kanal(cikis, pan));
+  }
+  function adim(t, v, cikis) {
+    for (let i = 0; i < 6; i++) hisirti(t + Math.random() * 0.08, v * (0.5 + Math.random() * 0.5), 2200 + Math.random() * 3000, 0.02 + Math.random() * 0.03, (Math.random() - 0.5) * 0.3, cikis);
+    darbe(t, v * 0.25, 70, cikis);
+  }
+  function gicirti(t, v, cikis) {
+    const c = A.ctx;
+    const o = c.createOscillator(); o.type = "sawtooth";
+    o.frequency.setValueAtTime(38, t); o.frequency.linearRampToValueAtTime(62, t + 0.35);
+    const bp = filtre("bandpass", 850, 7); const bp2 = filtre("bandpass", 1900, 9);
+    const a = c.createGain(); a.gain.setValueAtTime(0, t); a.gain.linearRampToValueAtTime(v, t + 0.08); a.gain.linearRampToValueAtTime(0, t + 0.42);
+    o.connect(bp); o.connect(bp2); bp.connect(a); bp2.connect(a); a.connect(kanal(cikis, 0.35)); o.start(t); o.stop(t + 0.5);
+  }
+  function nefesAl(t, v, sure, cikis) {
+    const n = gurultuKaynak(t, sure + 0.1); const bp = filtre("bandpass", 1100, 0.6); const g = A.ctx.createGain();
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + sure * 0.45); g.gain.linearRampToValueAtTime(0, t + sure);
+    n.connect(bp); bp.connect(g); g.connect(cikis);
+  }
+  function bocekler(t0, t1, v, cikis) {
+    for (let t = t0; t < t1; t += 0.28 + Math.random() * 0.35) {
+      const f = 4200 + Math.random() * 1400, pan = (Math.random() - 0.5) * 1.6;
+      for (let k = 0; k < 3; k++) {
+        const o = A.ctx.createOscillator(); o.frequency.value = f;
+        const g = A.ctx.createGain(); const tt = t + k * 0.035;
+        g.gain.setValueAtTime(0, tt); g.gain.linearRampToValueAtTime(v, tt + 0.004); g.gain.linearRampToValueAtTime(0, tt + 0.022);
+        o.connect(g); g.connect(kanal(cikis, pan)); o.start(tt); o.stop(tt + 0.03);
+      }
     }
   }
-  function parcaBaslat(i, ne) {
-    const p = PARCALAR[i];
-    durum.no = i;
-    durum.spb = 60 / p.tempo;
-    durum.olay = olaylar(p);
-    durum.melodi = durum.olay.filter((e) => e.tur === "keman");
-    durum.ptr = 0;
-    durum.t0 = ne;
-    durum.bitis = ne + p.olcu * p.olcuSayisi * (p.tekrar || 1) * durum.spb;
-    durum.bus = A.ctx.createGain();
-    durum.bus.connect(A.yol);
-    document.getElementById("eserAdi").textContent = p.ad;
-    document.getElementById("eserAlt").textContent = p.alt;
-    document.querySelectorAll("#eserListesi li").forEach((li, k) => li.toggleAttribute("data-simdi", k === i));
+  function ruzgar(t0, t1, v, cikis) {
+    const n = gurultuKaynak(t0, t1 - t0); const lp = filtre("lowpass", 380, 0.6);
+    const lfo = A.ctx.createOscillator(); lfo.frequency.value = 0.13; const lg = A.ctx.createGain(); lg.gain.value = 180; lfo.connect(lg); lg.connect(lp.frequency);
+    const g = A.ctx.createGain(); g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(v, t0 + 1.5); g.gain.setValueAtTime(v, t1 - 1); g.gain.linearRampToValueAtTime(0, t1);
+    n.connect(lp); lp.connect(g); g.connect(cikis); lfo.start(t0); lfo.stop(t1);
   }
-  function tik() {
-    const simdi = A.ctx.currentTime;
-    const ileri = document.hidden ? 3 : 0.6;
-    while (durum.ptr < durum.olay.length && durum.t0 + durum.olay[durum.ptr].t * durum.spb < simdi + ileri) {
-      planla(durum.olay[durum.ptr]);
-      durum.ptr++;
+  /* Korku akoru: küme halinde, köprüye yakın, sforzando keman vuruşu */
+  function iginelik(t, v, cikis) {
+    [1244, 1318, 1397, 1480, 1568, 1661, 1760].forEach((f, i) => yay(f, t, 0.9, v * 0.16, { atak: 0.008, sfz: true, pont: true, tremolo: 13, pan: (i / 6 - 0.5) * 1.2, vib: 0.3 }, cikis));
+    [73.4, 77.8, 82.4].forEach((f) => yay(f, t, 1.4, v * 0.3, { atak: 0.01, parlak: 1400, govde: 150, vib: 0.2 }, cikis));
+    darbe(t, v * 0.9, 45, cikis);
+    hisirti(t, v * 0.5, 3000, 0.25, 0, cikis);
+  }
+  function bicak(t0, sayi, ara, v, cikis) {
+    for (let i = 0; i < sayi; i++) {
+      const t = t0 + i * ara;
+      [1318, 1397].forEach((f, k) => yay(f * (i % 2 ? 1.06 : 1), t, 0.14, v * 0.2, { atak: 0.006, sfz: true, pont: true, gliss: f * 0.93, pan: k ? 0.3 : -0.3, vib: 0 }, cikis));
     }
-    if (simdi > durum.bitis + 2.2) parcaBaslat((durum.no + 1) % PARCALAR.length, simdi + 0.2);
   }
-  function eserGec(i) {
-    const eski = durum.bus;
-    const simdi = A.ctx.currentTime;
-    eski.gain.setTargetAtTime(0, simdi, 0.08);
-    setTimeout(() => eski.disconnect(), 900);
-    parcaBaslat(i, simdi + 0.35);
+  function yukselen(t, d, v, cikis) {
+    for (let i = 0; i < 6; i++) {
+      const f = 330 + i * 37 + Math.random() * 20;
+      yay(f, t, d, v * 0.09, { atak: d * 0.6, birak: 0.3, pont: true, tremolo: 11 + i, gliss: f * 4.2, pan: (i / 5 - 0.5) * 1.4, vib: 0.4 }, cikis);
+    }
+  }
+  function dron(t, d, v, cikis) {
+    [73.4, 77.8].forEach((f, i) => yay(f, t, d, v, { atak: 2.5, birak: 1.2, parlak: 1200, govde: 150, vib: 0.3, pan: i ? 0.3 : -0.3, tremolo: 0 }, cikis));
   }
 
-  const oynat = document.getElementById("oynat");
+  function sesleriPlanla(T0, korku) {
+    const b = yeniBus();
+    const K = korku ? 1 : 0.18;       // korkutmalar kapalıyken ani sesler kısılır
+    const at = (s) => T0 + s;
+    // açılış
+    dron(at(0.3), 5.5, 0.1, b);
+    yay(659, at(1.2), 3.5, 0.05, { atak: 1.2, pont: true, tremolo: 9, vib: 0.2 }, b);
+    // orman yürüyüşü
+    ruzgar(at(6), at(29), 0.05, b);
+    bocekler(at(6), at(28.5), 0.012, b);
+    for (let s = 6.1; s < 16.9; s += 1 / 1.8) adim(at(s), 0.07, b);
+    for (let s = 6.5; s < 16.5; s += 3.1) { nefesAl(at(s), 0.035, 1.2, b); nefesAl(at(s + 1.4), 0.03, 1.5, b); }
+    hisirti(at(14.4), 0.05, 1800, 1.6, -0.6, b);
+    dron(at(9), 8, 0.08, b);
+    // dal
+    DAL.gicirti.forEach((g) => { if (g < DAL.birak) gicirti(at(17 + g), 0.12, b); });
+    hisirti(at(17 + DAL.birak), 0.08, 2600, 0.6, 0.3, b);
+    darbe(at(17 + DAL.inis), 0.55, 62, b);
+    hisirti(at(17 + DAL.inis), 0.12, 2000, 0.3, 0.2, b);
+    for (let s = DAL.inis + 1.05; s < 11.8; s += 0.42) hisirti(at(17 + s), 0.03, 2500, 0.05, 0.4, b);
+    huZinciri(at(25.4), 0.07, 0.7, b, true);
+    yukselen(at(22), 6.8, 0.8, b);
+    // kart 1
+    yay(155.6, at(29), 1.6, 0.25 * Math.max(K, 0.5), { atak: 0.01, sfz: true, parlak: 2000 }, b);
+    // oturan
+    dron(at(30.5), 11.5, 0.1, b);
+    for (let s = 31; s < 41.5; s += 2.6) nefesAl(at(s), 0.03, 1.4, b);
+    yukselen(at(34.5), 7.5, 0.9, b);
+    for (let s = 37; s < 41.8; s += 0.9) hisirti(at(s), 0.02, 900, 0.3, 0.1, b);
+    // atılma (korkutma 1)
+    cigilk(at(42.02), 0.95, 1150, 0.55 * K, 0, b);
+    iginelik(at(42 + HAMLE.kalkis), 0.9 * K, b);
+    darbe(at(42 + HAMLE.kalkis + HAMLE.T), 0.9 * K, 55, b);
+    // montaj
+    huZinciri(at(43.4), 0.08, -0.5, b, true);
+    for (let s = 43.4; s < 46.2; s += 0.38) darbe(at(s), 0.2, 80, b);
+    bicak(at(44.2), 8, 0.22, 0.7, b);
+    yay(146.8, at(46.2), 1.2, 0.25 * Math.max(K, 0.5), { atak: 0.01, sfz: true, parlak: 2000 }, b);
+    for (let s = 47.45; s < 50.6; s += 0.25) darbe(at(s), 0.28, 70, b);
+    cigilk(at(47.9), 0.8, 1200, 0.3 * K, -0.4, b);
+    cigilk(at(49.1), 1.0, 980, 0.3 * K, 0.4, b);
+    bicak(at(48.2), 10, 0.2, 0.8, b);
+    yay(138.6, at(50.6), 1.2, 0.25 * Math.max(K, 0.5), { atak: 0.01, sfz: true, parlak: 2000 }, b);
+    dron(at(51.8), 4.2, 0.12, b);
+    [53.2, 54.0].forEach((s) => yay(1480, at(s), 0.3, 0.12 * Math.max(K, 0.4), { atak: 0.005, sfz: true, pont: true }, b));
+    // dönüş: sessizlik, nefes, uzak çağrı
+    ruzgar(at(56), at(68), 0.05, b);
+    bocekler(at(56), at(64), 0.01, b);
+    for (let s = 56.3; s < 67.8; s += 2.2) { nefesAl(at(s), 0.045, 0.9, b); nefesAl(at(s + 1.0), 0.04, 1.1, b); }
+    for (let s = 58; s < 67.9; s += 0.95) yay(73.4, at(s), 0.25, 0.08, { atak: 0.02, sfz: true, parlak: 800, govde: 140, vib: 0 }, b);
+    huZinciri(at(60.5), 0.03, -0.9, b, false);
+    // yüz (korkutma 2)
+    cigilk(at(68.15), 1.1, 1300, 0.6 * K, 0, b);
+    iginelik(at(68.14), 1.0 * K, b);
+    // başlık
+    darbe(at(70.2), 0.6, 40, b);
+    [659, 698, 659, 622, 587].forEach((f, i) => yay(f, at(71 + i * 1.1), 1.3, 0.09, { atak: 0.25, pont: i > 2, vib: 1 }, b));
+    dron(at(70.2), 7.5, 0.1, b);
+    hisirti(at(76.8), 0.08, 2400, 1.1, 0, b);
+  }
+
+  /* ======================= Oynatıcı ======================= */
+  const tuval = document.getElementById("tuval");
+  let cizici = null;
+  try { cizici = new Cizici(tuval); } catch (e) {
+    const div = document.createElement("div"); div.className = "webgl-yok";
+    div.textContent = "Bu tarayıcı WebGL2 desteklemiyor; fragman çizilemiyor. (" + String(e.message).slice(0, 120) + ")";
+    document.getElementById("fragman").append(div);
+    console.error(e);
+  }
+  const korkuKutusu = document.getElementById("korkutmaAcik");
+  const kartEl = document.getElementById("kart");
+  const oy = { calis: false, T0: 0, durdu: 0, bitti: false };
+  let olcek = 0.5, sonKare = performance.now(), ortalama = 16;
+
+  function suan() {
+    if (!A) return 0;
+    if (!oy.calis) return oy.durdu;
+    return Math.min(ZAMAN.sure, A.ctx.currentTime - oy.T0);
+  }
+  function kartGuncelle(t) {
+    const k = ZAMAN.kartlar.find((c) => t >= c.bas && t < c.son);
+    const cls = "kart" + (k ? " gorunur" : "") + (k && k.tur ? " " + k.tur : "") + (k && k.alt ? " alt" : "");
+    if (kartEl.className !== cls) kartEl.className = cls;
+    const m = k ? k.metin : "";
+    if (kartEl.textContent !== m && k) kartEl.textContent = m;
+  }
+  const iki = (n) => String(Math.floor(n)).padStart(2, "0");
   function arayuz() {
-    oynat.setAttribute("aria-pressed", String(durum.caliyor));
-    oynat.setAttribute("aria-label", durum.caliyor ? "Müziği duraklat" : "Müziği başlat");
-    document.getElementById("ikonOynat").hidden = durum.caliyor;
-    document.getElementById("ikonDur").hidden = !durum.caliyor;
-    const s = document.querySelector("#sahneOynat span");
-    s.textContent = durum.caliyor ? "Kemanı duraklat" : "Kemanı başlat";
+    document.getElementById("ikOynat").hidden = oy.calis;
+    document.getElementById("ikDur").hidden = !oy.calis;
+    document.getElementById("oynatYazi").textContent = oy.calis ? "Duraklat" : "Oynat";
+    document.getElementById("oynat").setAttribute("aria-label", oy.calis ? "Duraklat" : "Oynat");
+    document.getElementById("baslatOrtu").hidden = oy.calis || (A && oy.durdu > 0 && !oy.bitti);
   }
-  async function ac(kapa) {
-    if (!A) {
-      sesKur();
-      parcaBaslat(0, A.ctx.currentTime + 0.2);
-      durum.zaman = setInterval(tik, 90);
-      durum.caliyor = true;
-    } else if (durum.caliyor && kapa !== false) {
-      A.ana.gain.setTargetAtTime(0, A.ctx.currentTime, 0.05);
-      setTimeout(() => { if (!durum.caliyor) A.ctx.suspend(); }, 250);
-      durum.caliyor = false;
-    } else if (!durum.caliyor) {
-      await A.ctx.resume();
-      A.ana.gain.setTargetAtTime(+document.getElementById("sesDuzeyi").value, A.ctx.currentTime, 0.08);
-      durum.caliyor = true;
+  async function baslat(bastan) {
+    if (!A) sesKur();
+    if (A.ctx.state === "suspended") await A.ctx.resume();
+    if (bastan || oy.bitti || !oy.T0) {
+      oy.T0 = A.ctx.currentTime + 0.1; oy.bitti = false;
+      sesleriPlanla(oy.T0, korkuKutusu.checked);
     }
-    if (A.ctx.state === "suspended" && durum.caliyor) await A.ctx.resume();
+    oy.calis = true;
     arayuz();
   }
-  oynat.addEventListener("click", () => ac());
-  document.getElementById("sahneOynat").addEventListener("click", () => ac());
-  document.getElementById("sonraki").addEventListener("click", async () => {
-    if (!A || !durum.caliyor) { await ac(false); if (durum.no === 0 && durum.ptr < 3) return; }
-    eserGec((durum.no + 1) % PARCALAR.length);
+  async function duraklat() {
+    oy.durdu = suan(); oy.calis = false;
+    await A.ctx.suspend();
+    arayuz();
+  }
+  async function devam() {
+    await A.ctx.resume();
+    oy.calis = true; arayuz();
+  }
+  document.getElementById("oynat").addEventListener("click", () => {
+    if (!A || oy.bitti || !oy.T0) return baslat(true);
+    return oy.calis ? duraklat() : devam();
   });
-  document.getElementById("sesDuzeyi").addEventListener("input", (e) => {
-    if (A && durum.caliyor) A.ana.gain.setTargetAtTime(+e.target.value, A.ctx.currentTime, 0.05);
-  });
+  document.getElementById("baslatOrtu").addEventListener("click", () => (A && oy.T0 && !oy.bitti ? devam() : baslat(true)));
+  document.getElementById("basaDon").addEventListener("click", async () => { if (A && A.ctx.state === "suspended") await A.ctx.resume(); baslat(true); });
+  korkuKutusu.addEventListener("change", () => { if (A && oy.T0 && !oy.bitti) { const t = suan(); oy.T0 = A.ctx.currentTime - t; } });
 
-  /* Eser listesi */
-  const liste = document.getElementById("eserListesi");
-  PARCALAR.forEach((p, i) => {
-    const li = document.createElement("li");
-    const sol = document.createElement("div");
-    const ad = document.createElement("div"); ad.className = "ad"; ad.textContent = p.ad;
-    const bilgi = document.createElement("div"); bilgi.className = "bilgi";
-    bilgi.textContent = p.alt + " · " + p.olcuYazi + " · ♩ = " + p.tempo;
-    sol.append(ad, bilgi);
-    const b = document.createElement("button"); b.type = "button"; b.textContent = "Bunu çal";
-    b.addEventListener("click", async () => {
-      if (!A || !durum.caliyor) await ac(false);
-      if (durum.no !== i || durum.ptr > 2) eserGec(i);
-    });
-    li.append(sol, b);
-    liste.append(li);
-  });
+  function dongu(now) {
+    const dt = now - sonKare; sonKare = now;
+    ortalama = ortalama * 0.92 + dt * 0.08;
+    if (ortalama > 40 && olcek > 0.3) olcek -= 0.01;
+    else if (ortalama < 22 && olcek < 0.62) olcek += 0.004;
+    const t = suan();
+    if (oy.calis && t >= ZAMAN.sure) { oy.calis = false; oy.bitti = true; oy.durdu = ZAMAN.sure; arayuz(); }
+    if (cizici && A && oy.T0) {
+      const d = durumAl(Math.min(t, ZAMAN.sure - 0.001));
+      cizici.ciz(d, olcek);
+    } else if (cizici && !A) {
+      const d = durumAl(8.5 + (now / 1000) % 6);
+      d.isik = 11;
+      cizici.ciz(d, 0.35);
+    }
+    kartGuncelle(A && oy.T0 ? t : -1);
+    document.getElementById("serit").style.width = ((t / ZAMAN.sure) * 100).toFixed(2) + "%";
+    document.getElementById("sure").textContent = iki(t / 60) + ":" + iki(t % 60) + " / 01:18";
+    document.getElementById("saat").textContent = "23.09.1994 02:14:" + iki(t % 60);
+    requestAnimationFrame(dongu);
+  }
+  requestAnimationFrame(dongu);
 
-  /* ================= Sürreal sahne ================= */
-  const tv = document.getElementById("tuval");
-  const g = tv.getContext("2d");
-  let W = 0, H = 0, yildiz = [], bulut = [], orman = [], seviye = 0;
-  function rastgele(tohum) {
-    return () => {
-      tohum |= 0; tohum = (tohum + 0x6d2b79f5) | 0;
-      let t = Math.imul(tohum ^ (tohum >>> 15), 1 | tohum);
-      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
+  /* ======================= Uyarı kapısı ======================= */
+  const uyari = document.getElementById("uyari");
+  function kapiKapat(korku) {
+    korkuKutusu.checked = korku;
+    uyari.hidden = true;
+    document.getElementById("baslatOrtu").focus();
+    baslat(true);
   }
-  function boyutla() {
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
-    const r = tv.getBoundingClientRect();
-    W = r.width; H = r.height;
-    tv.width = Math.round(W * dpr); tv.height = Math.round(H * dpr);
-    g.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const R = rastgele(1908);
-    yildiz = Array.from({ length: Math.round((W * H) / 5200) }, () => ({ x: R() * W, y: R() * H * 0.7, r: R() * 1.2 + 0.2, f: R() * 6.28, h: 0.4 + R() * 1.6 }));
-    bulut = Array.from({ length: 7 }, (_, i) => ({ x: R() * W, y: H * (0.12 + R() * 0.5), s: 30 + R() * 60, v: 4 + R() * 9, a: 0.05 + R() * 0.08, k: i }));
-    orman = [0, 1].map((kat) => {
-      const tepe = [];
-      let x = -40;
-      while (x < W + 40) {
-        const r = (kat ? 18 : 12) + R() * (kat ? 26 : 18);
-        tepe.push({ x, y: H * (kat ? 0.9 : 0.84) - R() * H * (kat ? 0.05 : 0.06), r });
-        x += r * (0.9 + R() * 0.5);
-      }
-      return tepe;
+  document.getElementById("izleKorkulu").addEventListener("click", () => kapiKapat(true));
+  document.getElementById("izleKorkusuz").addEventListener("click", () => kapiKapat(false));
+  document.getElementById("izleKorkulu").focus();
+
+  /* ======================= Sayfa içi korkutma: son kayıt okunurken ======================= */
+  const sonKayit = document.getElementById("sonKayit");
+  let korkuOldu = false, korkuSayac = null, korkuCizici = null;
+  function sayfaKorkusu() {
+    if (korkuOldu || !korkuKutusu.checked || !A) return;
+    korkuOldu = true;
+    const kap = document.getElementById("korkutma");
+    kap.hidden = false;
+    try { korkuCizici = korkuCizici || new Cizici(document.getElementById("korkuTuval")); } catch (e) { kap.hidden = true; return; }
+    if (oy.calis) duraklat();
+    A.ctx.resume().then(() => {
+      const b = yeniBus();
+      const t0 = A.ctx.currentTime + 0.02;
+      cigilk(t0 + 0.05, 1.0, 1300, 0.6, 0, b);
+      iginelik(t0 + 0.04, 1.0, b);
+      const bas = performance.now();
+      const kare = (now) => {
+        const lt = (now - bas) / 1000;
+        if (lt > 0.95) { kap.hidden = true; return; }
+        const d = sYuz(Math.min(0.85, lt + 0.14));
+        d.t = 68 + lt; d.sahne = "yuz";
+        korkuCizici.ciz(d, 0.4);
+        requestAnimationFrame(kare);
+      };
+      requestAnimationFrame(kare);
     });
   }
-  function bulutCiz(b) {
-    g.fillStyle = "rgba(214, 202, 236," + b.a + ")";
-    for (let i = 0; i < 5; i++) {
-      g.beginPath();
-      g.ellipse(b.x + (i - 2) * b.s * 0.55, b.y + Math.sin(i * 1.7 + b.k) * b.s * 0.12, b.s * (0.55 + (i % 2) * 0.2), b.s * 0.28, 0, 0, Math.PI * 2);
-      g.fill();
-    }
-  }
-  function kapiCiz(t) {
-    const kucuk = W < 700;
-    const w = Math.min(W, H) * (kucuk ? 0.14 : 0.1);
-    const h = w * 1.9;
-    const x = W * (kucuk ? 0.12 : 0.16);
-    const y = H * 0.07 + Math.sin(t * 0.0005) * 7;
-    g.save();
-    g.fillStyle = "rgba(10, 8, 22, 0.35)";
-    g.beginPath(); g.ellipse(x + w / 2, y + h + 26, w * 0.7, w * 0.1, 0, 0, Math.PI * 2); g.fill();
-    const gun = g.createLinearGradient(0, y, 0, y + h);
-    gun.addColorStop(0, "#8fbad8"); gun.addColorStop(1, "#e8eef0");
-    g.fillStyle = gun; g.fillRect(x, y, w, h);
-    g.fillStyle = "rgba(255,255,255,0.85)";
-    const bx = x + w * 0.5 + Math.sin(t * 0.0003) * w * 0.15;
-    [[-0.18, 0, 0.16], [0, -0.03, 0.2], [0.18, 0, 0.14]].forEach(([dx, dy, r]) => {
-      g.beginPath(); g.arc(bx + dx * w, y + h * 0.3 + dy * w, r * w, 0, Math.PI * 2); g.fill();
+  new IntersectionObserver((girdi) => {
+    girdi.forEach((g) => {
+      if (g.isIntersecting && g.intersectionRatio > 0.6) { clearTimeout(korkuSayac); korkuSayac = setTimeout(sayfaKorkusu, 3200); }
+      else clearTimeout(korkuSayac);
     });
-    g.strokeStyle = "#3a2e52"; g.lineWidth = Math.max(3, w * 0.06);
-    g.strokeRect(x, y, w, h);
-    g.fillStyle = "#4b3b66";
-    g.beginPath(); g.moveTo(x, y); g.lineTo(x - w * 0.55, y + h * 0.06); g.lineTo(x - w * 0.55, y + h * 0.94); g.lineTo(x, y + h); g.closePath(); g.fill();
-    g.fillStyle = "#e2b35e";
-    g.beginPath(); g.arc(x - w * 0.44, y + h * 0.52, Math.max(2, w * 0.035), 0, Math.PI * 2); g.fill();
-    g.restore();
-  }
-  /* Ay: yüzeyi Env protein dikenleriyle kaplı, içinde konik kapsid taşıyan bir virion */
-  function virionCiz(t) {
-    const kucuk = W < 700;
-    const cx = W * (kucuk ? 0.68 : 0.72);
-    const cy = H * (kucuk ? 0.25 : 0.33);
-    const r = Math.min(W, H) * (kucuk ? 0.19 : 0.15);
-    const don = t * 0.00004;
-    const parla = g.createRadialGradient(cx, cy, r * 0.8, cx, cy, r * (2.4 + seviye * 1.4));
-    parla.addColorStop(0, "rgba(226,179,94," + (0.2 + seviye * 0.5) + ")");
-    parla.addColorStop(1, "rgba(226,179,94,0)");
-    g.fillStyle = parla;
-    g.beginPath(); g.arc(cx, cy, r * 3.8, 0, Math.PI * 2); g.fill();
-    const N = 26;
-    for (let i = 0; i < N; i++) {
-      const a = don + (i / N) * Math.PI * 2 + Math.sin(i * 3.1) * 0.05;
-      const ca = Math.cos(a), sa = Math.sin(a);
-      g.strokeStyle = "#b98543"; g.lineWidth = Math.max(1.2, r * 0.025);
-      g.beginPath(); g.moveTo(cx + ca * r * 0.98, cy + sa * r * 0.98); g.lineTo(cx + ca * r * 1.14, cy + sa * r * 1.14); g.stroke();
-      const kx = cx + ca * r * 1.19, ky = cy + sa * r * 1.19;
-      g.fillStyle = "#ebc987";
-      for (let k = -1; k <= 1; k++) {
-        const ox = -sa * k * r * 0.045, oy = ca * k * r * 0.045;
-        g.beginPath(); g.arc(kx + ox + ca * (k === 0 ? r * 0.03 : 0), ky + oy + sa * (k === 0 ? r * 0.03 : 0), r * 0.036, 0, Math.PI * 2); g.fill();
-      }
-    }
-    const govde = g.createRadialGradient(cx - r * 0.35, cy - r * 0.4, r * 0.1, cx, cy, r);
-    govde.addColorStop(0, "#f6dc9c"); govde.addColorStop(0.55, "#dca552"); govde.addColorStop(1, "#a56b31");
-    g.fillStyle = govde;
-    g.beginPath(); g.arc(cx, cy, r, 0, Math.PI * 2); g.fill();
-    g.strokeStyle = "rgba(90, 52, 22, 0.35)"; g.lineWidth = r * 0.05;
-    g.beginPath(); g.arc(cx, cy, r * 0.93, 0, Math.PI * 2); g.stroke();
-    g.save();
-    g.translate(cx, cy); g.rotate(-0.5 + Math.sin(t * 0.00015) * 0.08);
-    g.fillStyle = "rgba(110, 62, 28, 0.28)"; g.strokeStyle = "rgba(110, 62, 28, 0.5)"; g.lineWidth = r * 0.025;
-    g.beginPath();
-    g.moveTo(-r * 0.46, -r * 0.26);
-    g.quadraticCurveTo(-r * 0.62, 0, -r * 0.46, r * 0.26);
-    g.lineTo(r * 0.4, r * 0.09);
-    g.quadraticCurveTo(r * 0.47, 0, r * 0.4, -r * 0.09);
-    g.closePath(); g.fill(); g.stroke();
-    g.restore();
-  }
-  function ormanCiz() {
-    [["#2b2149", 0], ["#0e0b1c", 1]].forEach(([renk, kat]) => {
-      g.fillStyle = renk;
-      orman[kat].forEach((c) => { g.beginPath(); g.arc(c.x, c.y, c.r, 0, Math.PI * 2); g.fill(); });
-      const alt = Math.min(...orman[kat].map((c) => c.y));
-      g.fillRect(0, alt, W, H - alt);
-    });
-  }
-  let onceki = 0;
-  function kare(t) {
-    const dt = Math.min(0.05, (t - onceki) / 1000 || 0);
-    onceki = t;
-    if (A && durum.caliyor) {
-      A.analiz.getByteTimeDomainData(A.dalga);
-      let s = 0;
-      for (let i = 0; i < A.dalga.length; i++) { const v = (A.dalga[i] - 128) / 128; s += v * v; }
-      seviye += (Math.min(1, Math.sqrt(s / A.dalga.length) * 5) - seviye) * 0.12;
-    } else {
-      seviye *= 0.95;
-    }
-    g.clearRect(0, 0, W, H);
-    yildiz.forEach((y) => {
-      g.fillStyle = "rgba(239,231,214," + (0.35 + 0.35 * Math.sin(t * 0.001 * y.h + y.f)) + ")";
-      g.beginPath(); g.arc(y.x, y.y, y.r, 0, Math.PI * 2); g.fill();
-    });
-    bulut.forEach((b) => {
-      b.x += b.v * dt;
-      if (b.x - b.s * 2 > W) b.x = -b.s * 2;
-      bulutCiz(b);
-    });
-    virionCiz(t);
-    kapiCiz(t);
-    ormanCiz();
-    if (A) {
-      const simdi = A.ctx.currentTime;
-      const oran = Math.max(0, Math.min(1, (simdi - durum.t0) / (durum.bitis - durum.t0)));
-      document.getElementById("ilerleme").style.width = (oran * 100).toFixed(2) + "%";
-      let n = "—";
-      for (let i = durum.melodi.length - 1; i >= 0; i--) {
-        const e = durum.melodi[i];
-        const bas = durum.t0 + e.t * durum.spb;
-        if (bas <= simdi) { if (simdi < bas + e.d * durum.spb + 0.05) n = solfej(e.n); break; }
-      }
-      document.getElementById("nota").textContent = durum.caliyor ? n : "—";
-    }
-    if (!AZALT || (A && durum.caliyor)) requestAnimationFrame(kare);
-  }
-  boyutla();
-  new ResizeObserver(() => { boyutla(); if (AZALT) kare(performance.now()); }).observe(tv);
-  requestAnimationFrame(kare);
-  if (AZALT) {
-    oynat.addEventListener("click", () => requestAnimationFrame(kare));
-  }
+  }, { threshold: [0, 0.6, 1] }).observe(sonKayit);
 })();
 </script>
