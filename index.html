@@ -621,6 +621,9 @@
   uniform float uCene[2]; uniform float uKurk[2]; uniform vec4 uSinir[2];
   uniform vec3 uDalA; uniform vec3 uDalB; uniform float uDalR; uniform vec3 uGovde;
   uniform float uSis; uniform float uAmb; uniform float uPoz; uniform float uAgac; uniform float uGren;
+  // Her zaman 0. Döngü sınırını derleyiciye bilinmez kılar; böylece döngüler açılmaz (unroll)
+  // ve şempanze fonksiyonu yüzlerce kez kopyalanmaz. Windows'ta derleme süresini dakikalardan saniyelere indirir.
+  uniform int S0;
 
   const float KURK = 0.032;
 
@@ -631,7 +634,7 @@
     return mix(mix(mix(h13(i), h13(i+vec3(1,0,0)), f.x), mix(h13(i+vec3(0,1,0)), h13(i+vec3(1,1,0)), f.x), f.y),
                mix(mix(h13(i+vec3(0,0,1)), h13(i+vec3(1,0,1)), f.x), mix(h13(i+vec3(0,1,1)), h13(i+vec3(1,1,1)), f.x), f.y), f.z);
   }
-  float fbm(vec3 p){ float a = 0.5, s = 0.0; for(int i=0;i<3;i++){ s += a*gur(p); p *= 2.03; a *= 0.5; } return s; }
+  float fbm(vec3 p){ float a = 0.5, s = 0.0; for(int i=S0;i<3;i++){ s += a*gur(p); p *= 2.03; a *= 0.5; } return s; }
 
   float kapsul(vec3 p, vec3 a, vec3 b, float r){ vec3 pa=p-a, ba=b-a; float h=clamp(dot(pa,ba)/dot(ba,ba),0.0,1.0); return length(pa-ba*h)-r; }
   float konik(vec3 p, vec3 a, vec3 b, float ra, float rb){ vec3 pa=p-a, ba=b-a; float h=clamp(dot(pa,ba)/dot(ba,ba),0.0,1.0); return length(pa-ba*h)-mix(ra,rb,h); }
@@ -735,7 +738,7 @@
   vec3 disKabuk(vec3 p){
     vec2 w = dunya(p);
     vec3 r = vec3(w, 0.0);
-    for(int k=0;k<2;k++){
+    for(int k=S0;k<2;k++){
       vec4 s = uSinir[k];
       if(s.w <= 0.0) continue;
       float ds = length(p - s.xyz) - s.w;
@@ -748,8 +751,17 @@
     return r;
   }
 
-  vec3 normalD(vec3 p){ vec2 e=vec2(0.0015,-0.0015); return normalize(e.xyy*dunya(p+e.xyy).x + e.yyx*dunya(p+e.yyx).x + e.yxy*dunya(p+e.yxy).x + e.xxx*dunya(p+e.xxx).x); }
-  vec3 normalS(int k, vec3 p){ vec2 e=vec2(0.001,-0.001); return normalize(e.xyy*sempanze(k,p+e.xyy).x + e.yyx*sempanze(k,p+e.yyx).x + e.yxy*sempanze(k,p+e.yxy).x + e.xxx*sempanze(k,p+e.xxx).x); }
+  // Dört yüzlü normal: tek çağrı noktası, döngü içinde (derleyici kopyalamaz)
+  vec3 normalD(vec3 p){
+    vec3 n = vec3(0.0);
+    for(int i=S0;i<4;i++){ vec3 e = 0.5773*(2.0*vec3(float(((i+3)>>1)&1), float((i>>1)&1), float(i&1)) - 1.0); n += e*dunya(p + e*0.0015).x; }
+    return normalize(n);
+  }
+  vec3 normalS(int k, vec3 p){
+    vec3 n = vec3(0.0);
+    for(int i=S0;i<4;i++){ vec3 e = 0.5773*(2.0*vec3(float(((i+3)>>1)&1), float((i>>1)&1), float(i&1)) - 1.0); n += e*sempanze(k, p + e*0.001).x; }
+    return normalize(n);
+  }
 
   const vec3 ISIKRENK = vec3(1.0, 0.84, 0.62);
 
@@ -759,19 +771,31 @@
     float halka = 0.85 + 0.15*smoothstep(0.93, 0.96, dot(-L, uIsikY));
     return uIsik*koni*halka/(dl*dl + 0.25);
   }
+  // Gölge: çevre (zemin, ağaç, dal) ışın yürütmeyle; şempanzeler analitik yumuşak küreyle.
+  // Şempanze şekli burada çağrılmaz: programın derleme süresini birkaç kat kısaltır.
   float golge(vec3 p, vec3 L, float mx){
     float g = 1.0, t = 0.03;
-    for(int i=0;i<8;i++){
-      float h = disKabuk(p + L*t).x;
+    for(int i=S0;i<8;i++){
+      float h = dunya(p + L*t).x;
       g = min(g, 10.0*h/t);
       t += clamp(h, 0.03, 0.5);
       if(g < 0.02 || t > mx) break;
+    }
+    for(int k=S0;k<2;k++){
+      vec4 s = uSinir[k];
+      if(s.w <= 0.0) continue;
+      vec3 oc = s.xyz - p;
+      if(dot(oc, oc) < s.w*s.w) continue;          // şempanzenin kendi yüzeyi
+      float b = dot(oc, L);
+      if(b <= 0.0 || b > mx) continue;
+      float d = sqrt(max(0.0, dot(oc, oc) - b*b));
+      g = min(g, smoothstep(0.12, 0.34 + 0.08*b, d));
     }
     return clamp(g, 0.0, 1.0);
   }
   float ao(vec3 p, vec3 n){
     float o = 0.0, w = 1.0;
-    for(int i=1;i<=2;i++){ float hh = 0.06*float(i); o += (hh - disKabuk(p+n*hh).x)*w; w *= 0.6; }
+    for(int i=S0+1;i<=2;i++){ float hh = 0.06*float(i); o += (hh - dunya(p+n*hh).x)*w; w *= 0.6; }
     return clamp(1.0 - 2.2*o, 0.0, 1.0);
   }
 
@@ -826,7 +850,7 @@
     float tm = max(0.0, min(tmax, 16.0) - 0.7);
     float dt = tm/5.0;
     vec3 s = vec3(0.0);
-    for(int i=0;i<5;i++){
+    for(int i=S0;i<5;i++){
       float tt = 0.7 + (float(i) + j)*dt;
       vec3 p = ro + rd*tt;
       vec3 L; float dl; float I = fener(p, L, dl);
@@ -846,10 +870,12 @@
     float j = h12(gl_FragCoord.xy + uTohum*17.0);
 
     vec3 renk = vec3(0.0); float alfa = 0.0; float t = 0.02; float tSon = 40.0;
-    for(int gecis=0; gecis<3; gecis++){
+    // Katı yüzey vuruşu burada kaydedilir; renklendirme döngüden sonra tek noktadan yapılır
+    bool kati = false; vec3 kP = vec3(0.0); vec3 kN = vec3(0.0, 1.0, 0.0); float kMat = 0.0; float kBolge = 0.0; float kT = 0.0;
+    for(int gecis=S0; gecis<2; gecis++){
       vec3 m = vec3(1e3, -1.0, 0.0);
       bool vur = false;
-      for(int i=0;i<72;i++){
+      for(int i=S0;i<72;i++){
         vec3 p = ro + rd*t;
         m = disKabuk(p);
         if(m.y > -0.5 && m.x < 0.0015*t + 0.0008){ vur = true; break; }
@@ -859,16 +885,11 @@
       if(!vur){ tSon = 40.0; break; }
       tSon = t;
       vec3 p = ro + rd*t;
-      float sis = exp(-uSis*t);
       if(m.y > 9.5){
         int k = m.y > 10.5 ? 1 : 0;
-        if(m.z > 0.5){
-          vec3 n = normalS(k, p);
-          vec3 c = yuzeyRenk(p, n, rd, 7.0, m.z)*sis;
-          renk += (1.0-alfa)*c; alfa = 1.0; break;
-        }
-        // Kürk: kabuğun içinde küçük adımlarla hacimli kıl yoğunluğu biriktir
         vec3 n0 = normalS(k, p);
+        if(m.z > 0.5){ kati = true; kP = p; kN = n0; kMat = 7.0; kBolge = m.z; kT = t; break; }
+        // Kürk: kabuğun içinde küçük adımlarla hacimli kıl yoğunluğu biriktir
         vec3 T = normalize(vec3(0.0,-1.0,0.0) - n0*dot(vec3(0.0,-1.0,0.0), n0) + vec3(0.0,0.0,1e-3));
         vec3 hk = normalize(T*0.75 + n0*0.65);
         vec3 B = normalize(cross(n0, hk)); vec3 C = cross(hk, B);
@@ -877,7 +898,7 @@
         float fl = KURK*uKurk[k];
         float adim = fl/5.0;
         bool deri = false;
-        for(int s=0; s<8; s++){
+        for(int s=S0; s<8; s++){
           vec3 q = ro + rd*t;
           vec2 c = sempanze(k, q);
           if(c.x < 0.0015){ deri = true; break; }
@@ -900,10 +921,12 @@
         t += 0.002;
         continue;
       }
-      vec3 n = normalD(p);
-      vec3 c = yuzeyRenk(p, n, rd, m.y, 0.0)*sis;
-      renk += (1.0-alfa)*c; alfa = 1.0;
+      kati = true; kP = p; kN = normalD(p); kMat = m.y; kBolge = 0.0; kT = t;
       break;
+    }
+    if(kati && alfa < 0.999){
+      vec3 c = yuzeyRenk(kP, kN, rd, kMat, kBolge)*exp(-uSis*kT);
+      renk += (1.0-alfa)*c; alfa = 1.0;
     }
     vec3 sisRenk = vec3(0.010,0.013,0.018)*uAmb;
     renk += (1.0-alfa)*sisRenk;
@@ -926,17 +949,26 @@
       const gl = tuval.getContext("webgl2", { antialias: false, alpha: false, powerPreference: "high-performance" });
       if (!gl) throw new Error("webgl2 yok");
       this.gl = gl;
-      const sh = (tur, kaynak) => {
-        const s = gl.createShader(tur);
-        gl.shaderSource(s, kaynak); gl.compileShader(s);
-        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
-        return s;
-      };
+      /* Derleme ekran kartı sürücüsünde, sayfayı dondurmadan arka planda yürür
+         (KHR_parallel_shader_compile). Durum yalnızca hazir() ile, bitince sorgulanır. */
+      this.paralel = gl.getExtension("KHR_parallel_shader_compile");
+      this.hazirMi = false;
+      const sh = (tur, kaynak) => { const s = gl.createShader(tur); gl.shaderSource(s, kaynak); gl.compileShader(s); return s; };
+      this.vs = sh(gl.VERTEX_SHADER, VS); this.fs = sh(gl.FRAGMENT_SHADER, FS);
       const pr = gl.createProgram();
-      gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS));
+      gl.attachShader(pr, this.vs); gl.attachShader(pr, this.fs);
       gl.linkProgram(pr);
-      if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(pr));
       this.pr = pr;
+    }
+    /* true: çizmeye hazır. false: derleme sürüyor. Hata varsa fırlatır.
+       Paralel derleme desteklenmiyorsa ilk çağrı derleme bitene kadar bekler. */
+    hazir() {
+      if (this.hazirMi) return true;
+      const gl = this.gl, pr = this.pr;
+      if (this.paralel && !gl.getProgramParameter(pr, this.paralel.COMPLETION_STATUS_KHR)) return false;
+      if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) {
+        throw new Error((gl.getShaderInfoLog(this.fs) || "") + (gl.getProgramInfoLog(pr) || ""));
+      }
       const b = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, b);
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
@@ -946,20 +978,23 @@
       gl.enableVertexAttribArray(k); gl.vertexAttribPointer(k, 2, gl.FLOAT, false, 0, 0);
       this.u = {};
       ["uRes", "uZaman", "uTohum", "uKamP", "uKamR", "uIsikP", "uIsikY", "uIsik", "uJ", "uHF", "uHU", "uFW", "uCene", "uKurk", "uSinir",
-        "uDalA", "uDalB", "uDalR", "uGovde", "uSis", "uAmb", "uPoz", "uAgac", "uGren"].forEach((n) => { this.u[n] = gl.getUniformLocation(pr, n); });
+        "uDalA", "uDalB", "uDalR", "uGovde", "uSis", "uAmb", "uPoz", "uAgac", "uGren", "S0"].forEach((n) => { this.u[n] = gl.getUniformLocation(pr, n); });
       this.J = new Float32Array(96); this.HF = new Float32Array(6); this.HU = new Float32Array(6); this.FW = new Float32Array(6);
       this.S = new Float32Array(8);
+      this.hazirMi = true;
+      return true;
     }
     /* piksel: çizilecek toplam piksel sayısı (bütçe). Ekran ne kadar büyük olursa olsun GPU yükü sabit kalır. */
     ciz(d, piksel) {
       const gl = this.gl, u = this.u, tv = this.tuval;
-      if (gl.isContextLost()) return;
+      if (gl.isContextLost() || !this.hazirMi) return;
       const oran = (tv.clientWidth || 16) / (tv.clientHeight || 9);
       const w = Math.max(96, Math.round(Math.sqrt(piksel * oran))), h = Math.max(54, Math.round(w / oran));
       if (tv.width !== w || tv.height !== h) { tv.width = w; tv.height = h; }
       gl.viewport(0, 0, w, h);
       if (d.siyah) { gl.clearColor(0, 0, 0, 1); gl.clear(gl.COLOR_BUFFER_BIT); return; }
       gl.useProgram(this.pr); gl.bindVertexArray(this.vao);
+      gl.uniform1i(this.u.S0, 0);
       const kam = d.kam;
       const titr = elTitresimi(d.t * 1.0, d.sarsinti);
       const f0 = nrm(sub(kam.hedef, kam.p));
@@ -1301,16 +1336,65 @@
     document.getElementById("oynat").setAttribute("aria-label", oy.calis ? "Duraklat" : "Oynat");
     document.getElementById("baslatOrtu").hidden = oy.calis || (A && oy.durdu > 0 && !oy.bitti);
   }
+  /* Başlat: önce görüntü programının hazır olmasını bekler (sayfa donmadan),
+     sonra sesi ve zamanı birlikte başlatır; görüntü ile ses hep eşzamanlı kalır. */
+  const hazirlik = { bekle: false, kare: 0, bas: 0 };
+  function hazirlikYazisi(goster) {
+    kartEl.className = goster ? "kart gorunur" : "kart";
+    kartEl.textContent = goster ? "Görüntü hazırlanıyor…" : "";
+  }
   async function baslat(bastan) {
     if (!A) sesKur();
     if (A.ctx.state === "suspended") await A.ctx.resume();
     if (bastan || oy.bitti || !oy.T0) {
-      oy.T0 = A.ctx.currentTime + 0.1; oy.bitti = false;
-      sesleriPlanla(oy.T0, korkuKutusu.checked);
+      if (A.bus) A.bus.gain.setTargetAtTime(0, A.ctx.currentTime, 0.03);
+      oy.calis = false; oy.T0 = 0; oy.durdu = 0; oy.bitti = false;
+      hazirlik.bekle = true; hazirlik.kare = 0; hazirlik.bas = performance.now();
+      hazirlikYazisi(true);
+      document.getElementById("baslatOrtu").hidden = true;
+      return;
     }
     oy.calis = true;
     arayuz();
   }
+  function gercektenBaslat() {
+    hazirlik.bekle = false;
+    hazirlikYazisi(false);
+    oy.T0 = A.ctx.currentTime + 0.15; oy.bitti = false;
+    sesleriPlanla(oy.T0, korkuKutusu.checked);
+    oy.calis = true;
+    arayuz();
+  }
+  /* Her karede bir kez çağrılır; hazırsa fragmanı başlatır. */
+  function hazirlikKontrol() {
+    hazirlik.kare++;
+    const c = ciziciAl();
+    if (!c || cizimKapali) return gercektenBaslat();          // görüntü yok: yalnızca ses
+    if (!c.paralel && hazirlik.kare < 3) return;              // önce "hazırlanıyor" yazısı ekrana çizilsin
+    try {
+      if (c.hazir()) return gercektenBaslat();
+    } catch (e) {
+      console.error(e);
+      cizimiDurdur("Görüntü programı bu ekran kartında derlenemedi; ses devam ediyor.");
+      return gercektenBaslat();
+    }
+    if (performance.now() - hazirlik.bas > 30000) {
+      cizimiDurdur("Görüntü 30 saniyede hazırlanamadı. Bilgisayarınızı yormamak için yalnızca ses çalıyor.");
+      gercektenBaslat();
+    }
+  }
+  // Ekran yenilemesi yavaşlasa da hazırlık kontrolü sürsün
+  setInterval(() => { if (hazirlik.bekle) hazirlikKontrol(); }, 250);
+  // Görüntü programını, sayfa açıldıktan kısa süre sonra arka planda derlemeye başla.
+  // Yalnızca paralel derleme destekleniyorsa: yoksa derleme, oynat düğmesine basılınca yapılır.
+  setTimeout(() => {
+    try {
+      const gl = document.createElement("canvas").getContext("webgl2");
+      if (gl && gl.getExtension("KHR_parallel_shader_compile")) ciziciAl();
+      const kayip = gl && gl.getExtension("WEBGL_lose_context");
+      if (kayip) kayip.loseContext();
+    } catch (e) { /* önemsiz */ }
+  }, 1200);
   async function duraklat() {
     oy.durdu = suan(); oy.calis = false;
     await A.ctx.suspend();
@@ -1329,6 +1413,7 @@
   korkuKutusu.addEventListener("change", () => { if (A && oy.T0 && !oy.bitti) { const t = suan(); oy.T0 = A.ctx.currentTime - t; } });
 
   function dongu(now) {
+    if (hazirlik.bekle) hazirlikKontrol();
     const t = suan();
     if (oy.calis && t >= ZAMAN.sure) { oy.calis = false; oy.bitti = true; oy.durdu = ZAMAN.sure; arayuz(); }
     const cizilsin = oy.calis && fragmanGorunur && !document.hidden && !cizimKapali && now - sonCizim >= KARE_ARASI;
@@ -1348,7 +1433,7 @@
     } else if (!oy.calis) {
       sonCizim = 0;
     }
-    kartGuncelle(A && oy.T0 ? t : -1);
+    if (!hazirlik.bekle) kartGuncelle(A && oy.T0 ? t : -1);
     document.getElementById("serit").style.width = ((t / ZAMAN.sure) * 100).toFixed(2) + "%";
     document.getElementById("sure").textContent = iki(t / 60) + ":" + iki(t % 60) + " / 01:18";
     document.getElementById("saat").textContent = "23.09.1994 02:14:" + iki(t % 60);
@@ -1373,10 +1458,13 @@
   let korkuOldu = false, korkuSayac = null, korkuCizici = null;
   function sayfaKorkusu() {
     if (korkuOldu || !korkuKutusu.checked || !A || cizimKapali) return;
+    // Yalnızca arka planda derlenmiş, hazır bir çizici varsa: sayfayı asla dondurma.
+    let hazir = false;
+    try { hazir = !!(korkuCizici && korkuCizici.paralel && korkuCizici.hazir()); } catch (e) { korkuCizici = null; }
+    if (!hazir) return;
     korkuOldu = true;
     const kap = document.getElementById("korkutma");
     kap.hidden = false;
-    try { korkuCizici = korkuCizici || new Cizici(document.getElementById("korkuTuval")); } catch (e) { kap.hidden = true; return; }
     if (oy.calis) duraklat();
     A.ctx.resume().then(() => {
       const b = yeniBus();
@@ -1397,6 +1485,14 @@
   }
   new IntersectionObserver((girdi) => {
     girdi.forEach((g) => {
+      // Kayıt görünmeye başlayınca korkutma çizicisini arka planda hazırla (yalnızca paralel derleme varsa)
+      if (g.isIntersecting && !korkuCizici && !cizimKapali && korkuKutusu.checked && A) {
+        try {
+          const c = new Cizici(document.getElementById("korkuTuval"));
+          if (c.paralel) korkuCizici = c;
+          else { const k = c.gl.getExtension("WEBGL_lose_context"); if (k) k.loseContext(); }
+        } catch (e) { /* korkutma atlanır */ }
+      }
       if (g.isIntersecting && g.intersectionRatio > 0.6) { clearTimeout(korkuSayac); korkuSayac = setTimeout(sayfaKorkusu, 3200); }
       else clearTimeout(korkuSayac);
     });
