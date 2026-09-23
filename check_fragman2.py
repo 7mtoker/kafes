@@ -80,6 +80,19 @@ def main():
             fail(f"lisans baglantisi yok: {lisans}")
     if 'href="fragman2.html"' not in (ROOT / "index.html").read_text(encoding="utf-8"):
         fail("ana sayfada ikinci fragman baglantisi yok")
+
+    # Korkutmalar: en az 3 ayri an, her birinde ses ile goruntu 1 kare (42 ms) icinde
+    anlar = json.loads((ROOT / "korkutmalar.json").read_text(encoding="utf-8"))["anlar"]
+    if len({round(a["sn"]) for a in anlar}) < 3:
+        fail("en az 3 ayri korkutma ani bekleniyor")
+    env = dict(os.environ, PENCERE="0.12")
+    if ffprobe:
+        env["FFMPEG_BIN"] = str(Path(ffprobe).parent)
+    r = subprocess.run([sys.executable, str(ROOT / "senkron_olc.py"), str(video)] + [str(a["sn"]) for a in anlar],
+                       capture_output=True, text=True, env=env)
+    print(r.stdout.strip())
+    if r.returncode != 0:
+        fail("korkutma ses-goruntu senkronu 1 kareyi asiyor")
     return bitir(sure)
 
 
